@@ -2,17 +2,18 @@
 
 ## Módulo 1: Ecosistema Foundry
 
+- aula 0: Apresentação
 - aula 1: História do EVM Tooling
-- aula 2: Foundry: Forge, Anvil, Cast, Chisel
+- aula 2: Foundry - Forge, Anvil, Cast, Chisel
 
 ## Módulo 2: Forge
 
 - aula 1: CLI
 - aula 2: Configuração
-- aula 3: Instalando Deps
-- aula 4: Criando projeto
+- aula 3: Criando projeto
+- aula 4: Instalando Deps
 - aula 5: Estrutura do projeto
-- aula 6: Testes
+- aula 6: Testes e Coverage
 - aula 7: Deploy (scripts)
 - aula 8: Debug
 
