@@ -58,6 +58,10 @@ Nossa aulas vão seguir o seguinte roteiro
 
 Por essa aula é isso.
 
+## Lição de casa
+
+Vou deixar pra você como lição de casa baixar e instalar o Foundry na sua máquina, coisa simples mas essencial.
+
 ## 7. Próxima aula
 
 Na próxima aula, vamos focar na **história das ferramentas EVM**, entender suas origens e algumas as principais ferramentas para desenvolvedores de blockchain. Nos vemos lá!

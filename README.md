@@ -3,8 +3,7 @@
 ## Módulo 1: Ecosistema Foundry
 
 - aula 1: História do EVM Tooling
-- aula 2: História do Foundry
-- aula 3: Forge, Anvil, Cast, Chisel
+- aula 2: Foundry: Forge, Anvil, Cast, Chisel
 
 ## Módulo 2: Forge
 
@@ -46,3 +45,4 @@
 - aula 6: Assinaturas EIP-712
 - aula 7: Suporte ao Vyper
 - aula 8: Testes Fuzzy
+- aula 9: Guardando chaves com cast wallet

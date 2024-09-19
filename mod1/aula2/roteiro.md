@@ -15,7 +15,11 @@ Olá! Bem-vindo à primeira aula do curso Foundry 101. Hoje, vamos falar sobre a
 
 ## 2. Introdução à EVM
 
+- [Docs Oficial](https://ethereum.org/pt-br/developers/docs/evm/#the-ethereum-state-transition-function)
+
 Primeiro, precisamos entender o que é a **Ethereum Virtual Machine** (EVM). A EVM é o ambiente onde todos os contratos inteligentes no Ethereum são executados. Ela funciona como uma máquina virtual descentralizada que processa transações e executa contratos.
+
+Como a EVM é uma máquina virtual teoricamente qualquer blockchain pode implementar ela. Quando uma blockchain é EVM-compatible ela deve suportar smartcontracts em solidity e qualquer linguagem que compila para solidity.
 
 Sem a EVM, não seria possível criar contratos inteligentes ou DApps. E é justamente por isso que as ferramentas de desenvolvimento são tão importantes: elas facilitam o processo de interação e deploy desses contratos na EVM.
 
@@ -28,7 +32,7 @@ Outro marco importante foi a criação da linguagem **Solidity**, também em 201
 
 ## 4. Remix e a Revolução do IDE Web (2016-2018)
 
-Então, em 2016, surge o **Remix**, que trouxe uma revolução no desenvolvimento de contratos inteligentes. Com o Remix, ficou muito mais fácil para os desenvolvedores escrever, testar e implantar contratos inteligentes diretamente do navegador, sem precisar de ferramentas externas complexas.
+Então, em 2016, surge o **Remix**, que trouxe uma revolução no desenvolvimento de contratos inteligentes. Com o Remix, ficou muito simples para os desenvolvedores escreverem, testarem e implantarem contratos inteligentes diretamente do navegador, sem precisar de ferramentas externas complexas.
 
 O Remix tornou o processo de desenvolvimento mais acessível, mas ele tinha limitações, especialmente em projetos maiores e na integração com outras ferramentas. Mesmo assim, ele marcou o início de uma nova era de IDEs voltados para a Ethereum.
 
@@ -54,8 +58,12 @@ Qual dessas ferramentas você já utilizou? Qual foi sua experiência? Na próxi
 1. Entendemos o que é a EVM,
 2. Vimos as primeiras ferramentas como Mist e Geth,
 3. Discutimos o impacto do Remix como um IDE Web,
-4. Exploramos como frameworks como Truffle, Hardhat, e Foundry mudaram o jogo para os desenvolvedores.  
+4. Exploramos como frameworks como Truffle, Hardhat, e Foundry mudaram o jogo para os desenvolvedores.
+
+## Lição de casa
+
+Quero que você vá na documentação do Foundry e dê um lida por cima, vamos passar por vários daqueles pontos que estão lá e se você ler com antecedência vai conseguir absorver mais.
 
 ## 8. Próxima aula
 
-Na próxima aula, vamos focar na **história do Foundry**, entender suas origens e o que o torna uma ferramenta tão poderosa para desenvolvedores de blockchain. Nos vemos lá!
+Na próxima aula, vamos focar na **história do Foundry**, entender suas origens, seus pontos fortes e seu ecosistema. Nos vemos lá!
