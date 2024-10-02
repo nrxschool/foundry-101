@@ -1,4 +1,4 @@
-# Aula 1: **História do EVM Tooling**
+# Aula 2: **História do EVM Tooling**
 
 ## 1. Abertura
 
@@ -38,14 +38,14 @@ O Remix tornou o processo de desenvolvimento mais acessível, mas ele tinha limi
 
 ## 5. Hardhat, Truffle e o Avanço com o Foundry (2018-presente)
 
-Com o crescimento do ecossistema, frameworks mais completos como **Truffle** e **Hardhat** foram lançados. O **Truffle**, em 2018, foi um dos primeiros a oferecer um ciclo de desenvolvimento completo, com ferramentas como o **Ganache** para simulação de uma blockchain local. Já o **Hardhat**, lançado em 2020, trouxe mais modularidade, permitindo a criação de plugins e uma experiência de debugging avançada. Além disso temos as alternativas em Python que são **Brownie** e o mais recente **ApeWorkx**.
+Com o crescimento do ecossistema, frameworks mais completos como **Truffle** e **Hardhat** foram lançados. O **Truffle**, em 2018, foi um dos primeiros a oferecer um ciclo de desenvolvimento completo, com ferramentas como o **Ganache** para simulação de uma blockchain local. Já o **Hardhat**, lançado em 2020, trouxe mais modularidade, permitindo a criação de plugins e uma experiência de debugging avançada. Além disso temos as alternativas em Python que são **Brownie** e o mais recente **ApeWorx**.
 
 Finalmente, temos o **Foundry**, lançado em 2021, que oferece uma abordagem mais rápida e eficiente, com menos dependência de JavaScript e maior integração com o EVM, sendo uma ferramenta moderna e robusta para o desenvolvimento de contratos inteligentes. Vamos explorá-lo mais a fundo nas próximas aulas.
 
 - [Hardhat](https://hardhat.org)
 - [Truffle](https://archive.trufflesuite.com)
 - [Brownie](https://github.com/eth-brownie)
-- [ApeWorkx](https://apeworx.io)
+- [ApeWorx](https://apeworx.io)
 - [Foundry](https://getfoundry.sh)
 
 ## 6. Conclusão
@@ -66,4 +66,4 @@ Quero que você vá na documentação do Foundry e dê um lida por cima, vamos p
 
 ## 8. Próxima aula
 
-Na próxima aula, vamos focar na **história do Foundry**, entender suas origens, seus pontos fortes e seu ecosistema. Nos vemos lá!
+Na próxima aula, vamos focar na **Ecossistema do Foundry**, entender suas origens, seus pontos fortes e seu ecosistema. Nos vemos lá!

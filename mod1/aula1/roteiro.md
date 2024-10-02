@@ -6,7 +6,7 @@ Olá! Bem-vindo à primeira aula do curso Foundry 101.
 
 ### Programação:
 
-1. NearX,
+1. NearX
 2. Lucas Oliveira
 3. Foundry 101
 4. Estrutura das aulas
@@ -35,7 +35,7 @@ Hoje (2024) eu estou envolvido em vários projetos:
 Pre-requisitos
 
 - Saber o minimo de Solidity
-- Ter feito pelo menos um deploy de ERC20 na testnet
+- Vontade de aprender e se atualizar
 
 Conteúdo
 
