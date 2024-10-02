@@ -6,9 +6,10 @@ Olá! Seja bem-vindo à nossa segunda aula do curso **Blockchain Focado em Found
 
 ### Programação
 
-1. Estrutura Básica do framework
+1. Estrutura básica de um projeto
 2. Com instalar dependências externas
 3. Criar um token ERC20 usando a biblioteca **Solady**.
+4. Deploy e interação com nosso token
 
 Ao final desta aula, você terá uma visão completa de como estruturar seu projeto, instalar bibliotecas externas e usar essas dependências para criar um contrato poderoso de forma eficiente.
 
@@ -72,18 +73,23 @@ Abra o arquivo `src/Token.sol` e vamos começar a escrever nosso contrato.
 
 Primeiro, vamos importar o contrato **ERC20** da biblioteca Solady:
 
-```solidity
+```javascript
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.24;
 
-import "solady/src/tokens/ERC20.sol";
+import {ERC20} from "solady/tokens/ERC20.sol";
 
-contract MeuToken is ERC20 {
-    constructor() {
-        // Defina o nome do token e o símbolo.
-        _initialize("MeuToken", "MTK", 18);
-        // Vamos cunhar 1 milhão de tokens para o criador do contrato.
-        _mint(msg.sender, 1_000_000 * 10 ** 18);
+contract Token is ERC20 {
+    constructor(uint256 amount) {
+        _mint(msg.sender, amount * 1e18);
+    }
+
+    function name() public pure override returns (string memory) {
+        return "My Token";
+    }
+
+    function symbol() public pure override returns (string memory) {
+        return "TOKEN";
     }
 }
 ```
@@ -91,8 +97,7 @@ contract MeuToken is ERC20 {
 ### O que está acontecendo aqui:
 
 - Estamos utilizando o contrato **ERC20** da **Solady** para criar nosso token.
-- Na função **`constructor()`**, usamos a função `_initialize()` para definir o nome do token (**"MeuToken"**), seu símbolo (**"MTK"**) e o número de casas decimais (18, que é o padrão para tokens ERC20).
-- Depois, usamos a função **`_mint()`** para cunhar 1 milhão de tokens e atribuí-los ao criador do contrato, ou seja, o endereço que fez o deploy.
+- Na função **`constructor(uint256 amount)`**, usamos a função `_mint(msg.sender, amount)` de `ERC20` para cunhar (mintart) a quantidade passada como `amount` de tokens e atribuí-los ao criador do contrato, ou seja, o endereço que fez o deploy.
 
 Com esse código simples, criamos um token ERC20 funcional e eficiente, aproveitando as otimizações da biblioteca Solady.
 
@@ -119,7 +124,7 @@ Se tudo estiver certo, o contrato será compilado sem erros.
 Agora, vamos iniciar o **Anvil**, que vai simular uma blockchain local para testarmos o contrato:
 
 ```
-anvil
+anvil -b 2
 ```
 
 O Anvil vai levantar uma blockchain local e exibir contas com suas respectivas chaves privadas que podemos usar para realizar transações.
@@ -129,7 +134,11 @@ O Anvil vai levantar uma blockchain local e exibir contas com suas respectivas c
 Agora, vamos fazer o deploy do contrato **MeuToken** usando o comando **`forge create`**:
 
 ```
-forge create src/Token.sol:MeuToken --rpc-url http://127.0.0.1:8545 --private-key <sua-chave-privada>
+forge create \
+    src/Token.sol:Token \
+    --constructor-args 100 "lucas" \
+    --rpc-url http://127.0.0.1:8545 \
+    --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
 Aqui estamos:
@@ -145,7 +154,9 @@ Se tudo correr bem, você verá o endereço do contrato no terminal após o depl
 Com o contrato implantado, vamos interagir com ele usando o **Cast**. Primeiro, podemos verificar o saldo de tokens na conta do deployer (que deve ser 1 milhão de tokens):
 
 ```
-cast call <endereço_contrato> "balanceOf(address)" <endereço_deployer>
+cast call \
+    0x5FbDB2315678afecb367f032d93F642f64180aa3 \
+    "balanceOf(address)" 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 ```
 
 Isso vai retornar o saldo de tokens da conta, que deverá ser **1.000.000 MTK**.
@@ -153,10 +164,20 @@ Isso vai retornar o saldo de tokens da conta, que deverá ser **1.000.000 MTK**.
 Para transferir tokens para outra conta, podemos usar:
 
 ```
-cast send <endereço_contrato> "transfer(address,uint256)" <endereço_destino> 1000000000000000000 --from <endereço_deployer>
+cast send \
+    0x5FbDB2315678afecb367f032d93F642f64180aa3 \
+    "transfer(address,uint256)" 0x0000000000000000000000000000000000000022 97000000000000000000 \
+    --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 ```
 
-Isso transfere **1 MTK** (1 \* 10^18) para o endereço de destino.
+```
+cast send \
+    0x5FbDB2315678afecb367f032d93F642f64180aa3 \
+    "transfer(address,uint256)" 0x0000000000000000000000000000000000000022 97000000000000000000 \
+    --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+```
+
+Isso transfere **97 TOKEN** (`97 * 10^18`) para o endereço de destino.
 
 Pronto! Você criou um token ERC20 e interagiu com ele diretamente na blockchain local.
 
@@ -168,15 +189,14 @@ Hoje, exploramos três coisas importantes:
 
 1. A **estrutura do projeto** no Foundry, entendendo como organizar o código.
 2. Vimos como **instalar dependências externas**, como o **Solady**, para otimizar nosso desenvolvimento.
-3. Criamos um **token ERC20** eficiente usando o Solady e fizemos o deploy desse token na blockchain local, interagindo com ele diretamente.
+3. Criamos um **token ERC20** eficiente usando o Solady
+4. Fizemos o deploy desse token na blockchain local, interagindo com ele diretamente.
 
 Com essas ferramentas, você pode começar a desenvolver seus próprios tokens e projetos mais complexos de forma eficiente e organizada.
 
 ---
 
 ## 7. Recapitulação
-
-(📝 Resumo rápido)
 
 Vamos recapitular o que aprendemos hoje:
 
@@ -189,26 +209,16 @@ Vamos recapitular o que aprendemos hoje:
 
 ## 8. Lição de casa
 
-(📚 Instruções práticas)
-
 Sua lição de casa para hoje:
 
 1. Criar um novo projeto no Forge.
 2. Instalar a biblioteca **Solady**.
-3. Criar um token ERC20 usando o Solady.
+3. Criar um token ERC20, ERC721 ou ERC1155 usando o Solady.
 4. Fazer o deploy do token na blockchain local usando o Anvil.
-5. Interagir com o token via Cast
-
-, verificando o saldo e fazendo transferências.
+5. Interagir com o token via Cast, verificando o saldo e fazendo transferências.
 
 ---
 
 ## 9. Próxima aula
 
-(🔜 Antecipação da próxima aula)
-
 Na próxima aula, vamos explorar o mundo dos **testes** no Foundry, entendendo como escrever testes eficazes para seus contratos e como gerar relatórios de cobertura para garantir que tudo está funcionando como deveria. Até lá, continue praticando, e nos vemos na próxima aula! 👋
-
----
-
-Esse roteiro foi ajustado para incluir a instalação da biblioteca **Solady** e a criação de um token ERC20, seguindo o modelo proposto para as aulas e mantendo a clareza para ser lido em um teleprompter.
