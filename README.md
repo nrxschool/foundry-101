@@ -9,7 +9,7 @@
 ## Módulo 2: Forge
 
 - aula 1: CLI, Configuração, Criando projeto
-- aula 2: Estrutura do framework, Instalando Deps
+- aula 2: Estrutura do framework, Instalando Deps e criando um Token
 - aula 3: Testes e Coverage
 - aula 4: Deploy (scripts)
 - aula 5: Debug

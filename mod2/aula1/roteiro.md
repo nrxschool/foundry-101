@@ -1,202 +1,169 @@
-# **Aula 1: CLI, Configuração e Criando Projeto**
+# Aula 1: **CLI, Criando Projeto, Configuração e Executando Projeto**
 
-## 1. **Abertura**
+## **1. Abertura**
 
-Olá, bem-vindo à nossa próxima aula do curso **Blockchain Focado em Foundry**! Hoje vamos colocar a mão na massa e iniciar um projeto do zero usando o **Forge**, a ferramenta principal dentro do ecossistema Foundry. Nessa aula, vamos passar por três etapas fundamentais:
+Olá! Seja bem-vindo à nossa aula do curso **Foundry 101**. Hoje vamos mergulhar nas bases práticas de como usar o Forge e configurar seu ambiente de desenvolvimento com o Foundry. Esta é uma aula cheia de prática, onde criaremos e configuraremos um projeto do zero.
 
-### Programação:
+Vamos seguir a seguinte programação:
 
-1. **CLI do Forge**: vamos aprender os principais comandos que você vai usar no dia a dia.
-2. **Configuração inicial**: como preparar o ambiente do Forge corretamente.
-3. **Criando um projeto**: vamos iniciar e estruturar um projeto desde o começo.
+1. Principais comandos da CLI
+2. Criar novo projeto
+3. Configurações úteis
+4. Executar projeto
 
-Se você seguiu a lição de casa da última aula, já deve ter instalado o Foundry. Agora, vamos ver como essa ferramenta vai funcionar na prática!
+Então, prepare-se, porque hoje é a hora de colocar a mão na massa! Vamos começar entendendo os principais comandos da CLI do Forge.
+
+## Principais comandos da CLI `forge`
+
+Vamos começar conhecendo os principais comandos da **CLI do Forge**. A linha de comando (CLI) é onde você vai interagir diretamente com o Forge e realizar ações como criar, compilar, testar e fazer deploy de contratos.
+
+Aqui estão os comandos mais importantes:
+
+- **`forge init`**: Inicia um novo projeto.
+- **`forge build`**: Compila os contratos no seu projeto.
+- **`forge test`**: Roda os testes unitários para os contratos.
+- **`forge install`**: Instala dependências externas (como bibliotecas).
+- **`forge create`**: Faz o deploy de um contrato diretamente na blockchain.
+- **`forge script`**: Executa scripts personalizados, como scripts de deploy.
 
 ---
 
-## 2. **CLI do Forge**
+## Criando um novo projeto
 
-(👨‍💻 Tom explicativo com exemplos práticos)
+Agora que já conhecemos os comandos principais da CLI, vamos criar um **novo projeto** para colocar tudo isso em prática.
 
-Vamos começar falando sobre a **CLI** do Forge. A CLI, ou **linha de comando**, é onde você vai interagir diretamente com o Forge. É aqui que você vai compilar seus contratos, rodar testes, fazer deploys e muito mais.
+### 1. Criando um projeto chamado **Counter**.
 
-Os principais comandos que você vai usar são:
-
-- **`forge init`**: para iniciar um novo projeto.
-- **`forge build`**: para compilar seus contratos.
-- **`forge test`**: para rodar os testes unitários.
-- **`forge install`**: para instalar dependências.
-- **`forge script`**: para rodar scripts de deploy ou interação com contratos.
-
-Vamos começar criando um projeto. Abra o terminal e rode:
+No terminal, digite:
 
 ```
-forge init meu-projeto
+forge init counter
 ```
 
-Esse comando vai inicializar um novo projeto do Forge com uma estrutura básica. Você verá que ele já cria uma pasta com alguns arquivos e diretórios importantes, como `src/` (onde você colocará seus contratos) e `test/` (onde ficarão seus testes). Isso já te dá uma base inicial para trabalhar sem precisar configurar tudo manualmente.
+Isso vai criar a estrutura básica do projeto, com pastas como `src/` para seus contratos, `test/` para seus testes, e o arquivo `foundry.toml`, que contém as configurações do projeto.
 
-Agora, vamos compilar os contratos. Como acabamos de criar um projeto novo, ele já vem com um contrato básico de exemplo. Para compilar, tudo o que você precisa fazer é rodar:
+- Vamos estudar sobre a **estrutura básica do projeto** na próxima aula.
+
+### 2. Entender o projeto e o contrato **Counter**
+
+O forge vai criar um contrato simples para o nosso projeto chamdo Counter.
+
+### 3. Compilando o projeto
+
+Depois de escrevermos nossos contratos, o comando **`forge build`** vai compilar os contratos:
 
 ```
 forge build
 ```
 
-E pronto! Ele compila os contratos em questão de segundos.
-
-Esses são os comandos principais que você vai usar com frequência, então é importante se familiarizar com eles.
-
 ---
 
-## 3. **Configuração inicial**
+## Configurações úteis do projeto
 
-(🔧 Tom mais técnico com foco na configuração)
+Agora que o projeto está criado, vamos dar uma olhada nas **configurações úteis** que podemos ajustar no arquivo `foundry.toml`.
 
-Agora que já vimos a CLI básica, vamos falar sobre a **configuração** do Forge. O Forge usa um arquivo chamado **`foundry.toml`**, que é o coração da configuração do seu projeto.
+Abrindo o arquivo `foundry.toml`, você verá configurações importantes como:
 
-Vamos abrir esse arquivo para ver o que ele já traz por padrão. Dentro do arquivo `foundry.toml`, você vai encontrar configurações como:
+- **Versão do Solidity**: Aqui você define qual versão do Solidity será usada no projeto.
 
-- O **compiler** usado para compilar os contratos, normalmente o **solc** (Solidity Compiler).
-- **Paths** que definem onde os contratos e testes estão localizados.
-- Outras opções como **optimizations** para deixar seus contratos mais eficientes.
+Por exemplo, para definir a versão do Solidity, podemos ajustar da seguinte forma:
 
-Você pode personalizar esses valores de acordo com as necessidades do seu projeto. Um exemplo comum é ajustar a versão do Solidity que você está usando. No `foundry.toml`, basta editar a linha `solc_version` para a versão que você quer, como por exemplo:
-
-```
+```toml
 [profile.default]
-solc_version = '0.8.19'
+solc_version = '0.8.24'
 ```
-
-Outra configuração interessante é o **optimizador**. Para habilitar o otimization e reduzir o custo de gas, você pode adicionar:
-
-```
-optimizer = true
-optimizer_runs = 200
-```
-
-Essas são apenas algumas das configurações que você pode ajustar, mas o importante é entender que o arquivo `foundry.toml` controla como o Forge se comporta.
 
 ---
 
-## 4. **Criando um projeto**
+## Executando Projeto
 
-(👨‍💻 Tom prático com exemplo)
+Agora que criamos e compilamos nosso contrato, vamos fazer o **deploy** usando o comando **`forge create`**, que facilita a implantação do contrato diretamente na blockchain simulada pelo Anvil ou até em redes reais.
 
-Agora que configuramos o ambiente, vamos **criar um contrato** para ver o Forge em ação.
+### 1 Rodar a blockchain local
 
-Abra o arquivo `src/Contract.sol` que foi criado automaticamente quando iniciamos o projeto. Ele já vem com um contrato simples de exemplo. Vamos substituir esse contrato por algo mais prático. Por exemplo, um contrato que armazena e recupera um número:
-
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-contract SimpleStorage {
-    uint256 private storedData;
-
-    function set(uint256 x) public {
-        storedData = x;
-    }
-
-    function get() public view returns (uint256) {
-        return storedData;
-    }
-}
-```
-
-Esse é um contrato super simples. Ele tem duas funções:
-
-- Uma função **set()** para armazenar um número.
-- Uma função **get()** para recuperar o número armazenado.
-
-Agora que criamos o contrato, vamos compilá-lo rodando novamente o comando:
+Primeiro, vamos iniciar o **Anvil**, que simula uma blockchain local minerando blocos a cada 2 segundos:
 
 ```
-forge build
+anvil -b 2
 ```
 
-Se tudo estiver certo, o contrato será compilado rapidamente. E pronto! Criamos nosso primeiro contrato no Forge.
-
-Agora, para testar esse contrato, podemos criar um teste na pasta `test/`. No arquivo `test/Contract.t.sol`, você pode escrever um teste simples para verificar se o contrato está funcionando:
-
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-import "forge-std/Test.sol";
-import "../src/Contract.sol";
-
-contract SimpleStorageTest is Test {
-    SimpleStorage simpleStorage;
-
-    function setUp() public {
-        simpleStorage = new SimpleStorage();
-    }
-
-    function testSetAndGet() public {
-        simpleStorage.set(42);
-        uint256 result = simpleStorage.get();
-        assertEq(result, 42);
-    }
-}
-```
-
-Esse teste cria uma instância do contrato e verifica se a função `set()` e `get()` estão funcionando corretamente. Agora, rodamos o teste:
+Veja que o `anvil` fornece algumas chaves com saldo em ETH para usarmos no ambiente de teste, vamos usar essa:
 
 ```
-forge test
+0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
-E se tudo estiver certo, você verá uma saída no terminal mostrando que o teste passou com sucesso.
+### 2 Deploy do contrato
+
+Agora, com o Anvil rodando, podemos usar o **`forge create`** para fazer o deploy do nosso contrato. Certifique-se de que o contrato foi compilado e rode o seguinte comando:
+
+```
+forge create src/Counter.sol:Counter --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+```
+
+Esse comando vai:
+
+- Especificar o contrato que queremos implantar (`src/Counter.sol:Counter`).
+- Usar a URL da blockchain local criada pelo Anvil (`http://127.0.0.1:8545`).
+- Usar sua chave privada para assinar a transação. (`0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`)
+
+Se tudo estiver correto, o contrato será implantado e o endereço do deploy será exibido no terminal.
+
+### 3 Interagir com o contrato
+
+Agora, vamos interagir com o contrato usando o **Cast**.
+
+**Primeiro vamos LER da blockchain qual o valor atual de `number`**
+
+```
+cast call <endereço_contrato> "number"
+```
+
+**Agora vamos ESCREVER na blockchain usando a fução `setNumber` e LER o valor alterado**
+
+```
+cast send <endereço_contrato> "setNumber(uint256)" 42
+```
+
+```
+cast call <endereço_contrato> "number"
+```
+
+E pronto! Conseguimos fazer o deploy do contrato e interagir com ele usando as ferramentas do Foundry.
 
 ---
 
-## 5. **Conclusão**
+## **6. Conclusão**
 
-(🎯 Amarrar os tópicos)
+Nesta aula, vimos como trabalhar com os **principais comandos da CLI do Forge**, incluindo o comando **`forge create`** para deploy de contratos. Criamos um projeto do zero, ajustamos o arquivo `foundry.toml` para otimização, e fizemos um **deploy completo** usando o **Anvil** e interagindo com o contrato através do **Cast**.
 
-Então, nesta aula, aprendemos três coisas fundamentais:
-
-1. Como usar os principais comandos da **CLI do Forge** para iniciar, compilar e testar projetos.
-2. Vimos a **configuração inicial** no arquivo `foundry.toml` e como ajustar opções como a versão do Solidity e a otimização de contratos.
-3. E, por fim, criamos um projeto simples, com um contrato básico e um teste para garantir que ele funciona como esperado.
-
-Agora você já tem tudo o que precisa para começar seus próprios projetos no Forge. Com essa base, você pode construir, compilar e testar contratos de forma rápida e eficiente.
+Essa prática te deu uma base sólida para desenvolver, compilar e implantar seus contratos de forma eficiente.
 
 ---
 
-## 6. **Recapitulação**
+## **7. Recapitulação**
 
-(📝 Resumo rápido)
-
-Vamos recapitular os principais pontos:
-
-1. **CLI do Forge**: Aprendemos comandos como `forge init`, `forge build` e `forge test`.
-2. **Configuração inicial**: Ajustamos o arquivo `foundry.toml` para configurar o ambiente.
-3. **Criando projeto**: Iniciamos um projeto, criamos um contrato simples e rodamos testes.
+1. **CLI do Forge**: Exploramos comandos como `forge init`, `forge build`, e `forge create` para o deploy.
+2. **Criando projeto**: Iniciamos um novo projeto e criamos um contrato simples.
+3. **Configurações úteis**: Ajustamos o `foundry.toml` para otimizar o projeto.
+4. **Deploy completo**: Usamos o `forge create` para fazer o deploy no Anvil e interagimos com o contrato via Cast.
 
 ---
 
-## 7. **Lição de casa**
+## **8. Lição de casa**
 
-(📚 Instruções práticas)
+Sua lição de casa para hoje é:
 
-Agora é sua vez! Sua lição de casa para hoje é:
-
-1. Criar um novo projeto usando o Forge.
-2. Criar um contrato simples de sua escolha (pode ser algo como um contador ou um contrato de armazenamento).
-3. Escrever um teste básico para garantir que ele funciona.
-4. Testar tudo rodando `forge test`.
-
-Essa prática vai te ajudar a solidificar o que aprendemos hoje!
+1. Criar um novo projeto com o Forge.
+2. Criar um contrato simples, que salve outras informações e interagir com ele.
+3. Ajustar o `foundry.toml` para usar versões antigas do solidity.
+4. Fazer o deploy do contrato no Anvil usando o comando **`forge create`**.
+5. Interagir com o contrato via **Cast** para definir e ler valores.
 
 ---
 
-## 8. **Próxima aula**
+## **9. Próxima aula**
 
 (🔜 Antecipação da próxima aula)
 
-Na próxima aula, vamos explorar **instalando dependências** no Forge e entender a estrutura completa de um projeto. Vamos ver como adicionar bibliotecas e trabalhar com pacotes externos, algo essencial para projetos maiores e mais complexos. Até lá, continue praticando, e nos vemos na próxima aula! 👋
-
----
-
-Esse roteiro foi escrito para ser lido em um teleprompter, garantindo um fluxo natural e uma explicação clara dos conceitos.
+Na próxima aula, vamos aprender **explorar a estrutura básica de um projeto**, **como instalar dependências** com `forge` e **como criar um Token ERC20**. Não perca! Até lá, continue praticando e nos vemos na próxima aula! 👋

@@ -1,8 +1,8 @@
-# **Aula 2: Ecossistema Foundry**
+# Aula 3: **Ecossistema Foundry**
 
-## 1. **Abertura**
+## 1. Abertura
 
-Olá, seja muito bem-vindo à nossa segunda aula do curso **Blockchain Focado em Foundry**! Hoje vamos explorar um pouco mais a fundo o **ecossistema Foundry**, uma das ferramentas mais modernas e poderosas para desenvolvimento na blockchain.
+Olá, seja muito bem-vindo à nossa segunda aula do curso **Foundry 101**! Hoje vamos explorar um pouco mais a fundo o **ecossistema Foundry**, uma das ferramentas mais modernas e poderosas para desenvolvimento na blockchain.
 
 Na aula de hoje, vamos passar pelos seguintes tópicos:
 
