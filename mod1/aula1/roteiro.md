@@ -27,6 +27,8 @@ Hoje (2024) eu estou envolvido em vários projetos:
 - Head de Education @ NearX
 - Ambassador @ OpenSense | Stellar
 - Founder @ Floripa Web3
+- Senior Blockchain Engineer
+- Mathematician
 
 ## 4. Foundry 101
 
