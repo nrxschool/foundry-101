@@ -98,7 +98,10 @@ Veja que o `anvil` fornece algumas chaves com saldo em ETH para usarmos no ambie
 Agora, com o Anvil rodando, podemos usar o **`forge create`** para fazer o deploy do nosso contrato. Certifique-se de que o contrato foi compilado e rode o seguinte comando:
 
 ```
-forge create src/Counter.sol:Counter --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+forge create \
+    src/Counter.sol:Counter \
+    --rpc-url http://127.0.0.1:8545 \
+    --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
 Esse comando vai:
