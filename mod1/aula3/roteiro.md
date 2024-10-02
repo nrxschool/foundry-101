@@ -122,6 +122,8 @@ Anote suas dúvidas e teste à vontade!
 
 ## 9. **Próxima aula**
 
-Na próxima aula, vamos nos aprofundar ainda mais no **Forge**, explorando em detalhes sua interface de linha de comando e a configuração inicial de um projeto. Vamos ver como iniciar e estruturar um projeto do zero, instalar dependências e preparar o ambiente de desenvolvimento. Não perca, vai ser uma aula cheia de exemplos práticos!
+Na próxima aula, vamos nos aprofundar ainda mais no **Forge**, explorando em detalhes sua interface de linha de comando e a configuração inicial de um projeto.
+
+Vamos ver como iniciar e estruturar um projeto do zero, instalar dependências e preparar o ambiente de desenvolvimento. Não perca, vai ser uma aula cheia de exemplos práticos!
 
 Nos vemos lá! 👋
