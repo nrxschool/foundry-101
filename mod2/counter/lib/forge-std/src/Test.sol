@@ -11,6 +11,11 @@ import {console} from "./console.sol";
 import {console2} from "./console2.sol";
 import {safeconsole} from "./safeconsole.sol";
 import {StdAssertions} from "./StdAssertions.sol";
+import {console2} from "forge-std/console2.sol";
+import {Test} from "forge-std/Test.sol";
+import {Vm} from "forge-std/Vm.sol";
+
+
 import {StdChains} from "./StdChains.sol";
 import {StdCheats} from "./StdCheats.sol";
 import {stdError} from "./StdError.sol";
