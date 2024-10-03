@@ -2,7 +2,7 @@
 
 ## 1. Abertura
 
-Olá! Seja bem-vindo à nossa segunda aula do curso **Blockchain Focado em Foundry**. Hoje, vamos dar mais um passo importante no desenvolvimento com o Foundry. Nesta aula, vamos aprender a:
+Olá! Seja bem-vindo à nossa segunda aula do curso **Foundry 101**. Hoje, vamos dar mais um passo importante no desenvolvimento com o Foundry. Nesta aula, vamos aprender a:
 
 ### Programação
 
