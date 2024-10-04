@@ -12,14 +12,13 @@
 - ⏰ aula 2: Estrutura do framework, Instalando Deps e criando um Token
 - ⏰ aula 3: Testes e Coverage
 - ⏰ aula 4: Deploy (scripts)
-- ⏰ aula 5: Debug
+- ⏰ aula 5: Debug de Contratos
 
 ## Módulo 3: Anvil
 
-- ⏰ aula 1: CLI, Executando Blockchain
-- ⏰ aula 2: Configurando
-- ⏰ aula 3: Deploy local
-- ⏰ aula 4: Forks local
+- ⏰ aula 1: CLI, Executando e Configurando Blockchain
+- ⏰ aula 2: Deploy local
+- ⏰ aula 3: Forks local
 
 ## Módulo 4: Cast
 
