@@ -16,7 +16,7 @@
 
 ## Módulo 3: Anvil
 
-- ⏰ aula 1: CLI
+- ⏰ aula 1: CLI, Executando Blockchain
 - ⏰ aula 2: Configurando
 - ⏰ aula 3: Deploy local
 - ⏰ aula 4: Forks local
