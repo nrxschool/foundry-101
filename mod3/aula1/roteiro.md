@@ -1,4 +1,4 @@
-# Roteiro da Aula 1: CLI e Executando Blockchain com Anvil
+# Aula 1: CLI e Executando Blockchain com Anvil
 
 ## 1. Abertura
 

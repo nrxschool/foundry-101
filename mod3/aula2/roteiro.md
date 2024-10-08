@@ -28,7 +28,7 @@ Use a flag `--dump-state` para salvar o estado da blockchain em um arquivo JSON:
 ### Salvando o estado
 
 ```bash
-anvil --dump-state ./estado.json
+anvil --state ./estado.json
 ```
 
 O arquivo **estado.json** conterá o estado completo da blockchain, incluindo contas, contratos e balances.

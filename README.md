@@ -22,10 +22,9 @@
 
 ## Módulo 4: Cast
 
-- ⏰ aula 1: CLI
-- ⏰ aula 2: Interagindo com contratos
-- ⏰ aula 3: Leitura
-- ⏰ aula 4: Escrita
+- ⏰ aula 1: CLI, Interagindo com contratos
+- ⏰ aula 2: Leitura
+- ⏰ aula 3: Escrita
 
 ## Módulo 5: Chisel
 
@@ -36,10 +35,9 @@
 
 - ⏰ aula 1: Migração Hardhat para Foundry
 - ⏰ aula 2: Integração ScaffoldETH2 com forge
-- ⏰ aula 3: Cheetcodes e Lib Vm
-- ⏰ aula 4: Github Actions
-- ⏰ aula 5: Boas práticas
-- ⏰ aula 6: Assinaturas EIP-712
-- ⏰ aula 7: Suporte ao Vyper
-- ⏰ aula 8: Testes Fuzzy
-- ⏰ aula 9: Guardando chaves com cast wallet
+- ⏰ aula 3: Guardando chaves com cast wallet
+- ⏰ aula 4: Cheetcodes e Lib Vm
+- ⏰ aula 5: Suporte ao Vyper
+- ⏰ aula 6: Testes Fuzzy
+- ⏰ aula 7: Assinaturas EIP-712
+- ⏰ aula 8: Github Actions
