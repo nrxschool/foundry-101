@@ -1,8 +1,7 @@
-# Aula 4: Forks Locais com Anvil
+# Aula 3: Forks Locais com Anvil
 
 ## 1. Abertura
 
-(👋 Olhando para a câmera)
 
 Olá! Seja bem-vindo à **quarta aula do Módulo 3** do curso **Foundry 101**! Hoje, vamos explorar uma das funcionalidades mais poderosas do **Anvil**: o **Fork de Redes Locais**. Vamos aprender como podemos "copiar" o estado de uma rede real, como a mainnet ou uma testnet, e usar localmente para testar contratos com dados reais.
 

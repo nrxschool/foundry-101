@@ -81,7 +81,7 @@ anvil --dump-state ./estado.json
 
 Vamos usar um contrato simples de token ERC20:
 
-```solidity
+```javascript
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
