@@ -22,9 +22,9 @@
 
 ## Módulo 4: Cast
 
-- ⏰ aula 1: CLI, Interagindo com contratos
-- ⏰ aula 2: Leitura
-- ⏰ aula 3: Escrita
+- ✅ aula 1: CLI, Interação com smartcontract
+- ✅ aula 2: Utilidades e canivete suíço
+- ✅ aula 3: Gerenciando Contas e Carteiras
 
 ## Módulo 5: Chisel
 
@@ -34,10 +34,8 @@
 ## Módulo 6: Avançado
 
 - ⏰ aula 1: Migração Hardhat para Foundry
-- ⏰ aula 2: Integração ScaffoldETH2 com forge
 - ⏰ aula 3: Guardando chaves com cast wallet
+- ⏰ aula 2: Integração ScaffoldETH2 com forge
 - ⏰ aula 4: Cheetcodes e Lib Vm
 - ⏰ aula 5: Suporte ao Vyper
 - ⏰ aula 6: Testes Fuzzy
-- ⏰ aula 7: Assinaturas EIP-712
-- ⏰ aula 8: Github Actions

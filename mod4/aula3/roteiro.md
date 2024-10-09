@@ -6,13 +6,19 @@ Bem-vindo à **Aula 3 do Módulo 4**! Hoje vamos aprender como **gerenciar conta
 
 Nesta aula, vamos cobrir:
 
+1. Account-Model Base e EOA.
 1. **Account Commands**: Como consultar saldos, nonce e outros dados sobre contas.
-2. **Wallet Commands**: Criando, gerenciando e assinando mensagens/transações com carteiras.
-3. Explorando exemplos práticos para gerenciar contas de forma eficiente com o **Cast**.
+1. **Wallet Commands**: Criando, gerenciando e assinando mensagens/transações com carteiras.
+1. Explorando exemplos práticos para gerenciar contas de forma eficiente com o **Cast**.
 
 Vamos direto ao conteúdo!
 
 ---
+
+## Account-Model Base e EOA.
+
+- Explicar o que é o accounte model em comparação com UTXO
+- Falar sobre os tipos de contas do ethereum, EOA, e estorage associado a contas
 
 ## 2. **Account Commands** no Cast
 
@@ -163,29 +169,7 @@ A chave será armazenada de forma segura e poderá ser usada para assinar transa
 
 Agora, vamos ver um exemplo completo de como usar os comandos de **wallet** para criar uma nova conta, assinar uma mensagem e verificar a assinatura.
 
-1. **Criar uma nova chave privada**:
-
-```bash
-cast wallet new
-Private Key: 0xabc123...
-Address:     0x1234567890abcdef1234567890abcdef12345678
-```
-
-2. **Assinar uma mensagem com a chave privada**:
-
-```bash
-cast wallet sign --private-key 0xabc123... "Minha Mensagem"
-```
-
-3. **Verificar a assinatura**:
-
-Use o **`cast wallet verify`** para verificar se a assinatura corresponde ao endereço original:
-
-```bash
-cast wallet verify --address 0x1234567890abcdef1234567890abcdef12345678 "Minha Mensagem" [assinatura]
-```
-
-Isso valida a autenticidade da assinatura e confirma que foi gerada pela chave privada associada ao endereço fornecido.
+1. **Forge create com cast wallet**:
 
 ---
 
