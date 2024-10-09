@@ -1,90 +1,130 @@
-# Aula 3: Gerenciando Contas e Carteiras
+# Aula 3: Gerenciando Contas no Ethereum
 
 ## 1. Abertura
 
-Bem-vindo à **Aula 3 do Módulo 4**! Hoje vamos aprender como **gerenciar contas e carteiras** usando o **Cast**. Essas operações são essenciais para qualquer desenvolvedor de smart contracts, permitindo a criação de novas chaves, manipulação de endereços e até o gerenciamento de carteiras mais avançado.
+Bem-vindo à **Aula 3 do Módulo 4**! Hoje vamos entender de forma mais profunda como funciona o **Account Model** no Ethereum, seus tipos de contas e o armazenamento associado. Além disso, vamos explorar os comandos do **Cast** para consultar dados de contas e gerenciar carteiras, assinando transações e mensagens.
 
-Nesta aula, vamos cobrir:
+Nesta aula, cobriremos:
 
-1. Account-Model Base e EOA.
-1. **Account Commands**: Como consultar saldos, nonce e outros dados sobre contas.
-1. **Wallet Commands**: Criando, gerenciando e assinando mensagens/transações com carteiras.
-1. Explorando exemplos práticos para gerenciar contas de forma eficiente com o **Cast**.
+1. **Account Model e EOA**: Comparação com o modelo UTXO do Bitcoin e tipos de contas no Ethereum.
+2. **Account Commands**: Como consultar saldos, nonce e dados de storage, explorando as limitações do modificador `private`.
+3. **Wallet Commands**: Criando, gerenciando e assinando mensagens e transações com carteiras.
+4. **Transaction** Assinar uma transação crua e enviar para blockchain.
 
-Vamos direto ao conteúdo!
-
----
-
-## Account-Model Base e EOA.
-
-- Explicar o que é o accounte model em comparação com UTXO
-- Falar sobre os tipos de contas do ethereum, EOA, e estorage associado a contas
-
-## 2. **Account Commands** no Cast
-
-Os **Account Commands** permitem interagir com contas de Ethereum de forma rápida e eficiente. Vamos explorar como consultar saldos, códigos de contrato, nonce e muito mais.
-
-### **Verificando o saldo de uma conta com `cast balance`**
-
-O comando **`cast balance`** permite verificar o saldo de uma conta em **wei** (a menor unidade de ETH). Você também pode usar **ether** para uma leitura mais fácil.
-
-```bash
-cast balance 0x1234567890abcdef1234567890abcdef12345678 \
-    --rpc-url https://127.0.0.1:8545
-```
-
-Para mostrar o saldo diretamente em **ether**, use a flag `--ether`:
-
-```bash
-cast balance 0x1234567890abcdef1234567890abcdef12345678 --ether \
-    --rpc-url https://127.0.0.1:8545
-```
-
-### **Consultando o código de um contrato com `cast code`**
-
-Se você quiser obter o **bytecode** de um contrato já implantado, pode usar o comando **`cast code`**:
-
-```bash
-cast code 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 \
-    --rpc-url https://127.0.0.1:8545
-```
-
-Isso retorna o código de implementação do contrato. Você também pode verificar o tamanho do bytecode com **`cast codesize`**:
-
-```bash
-cast codesize 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 \
-    --rpc-url https://127.0.0.1:8545
-```
-
-### **Verificando o nonce de uma conta com `cast nonce`**
-
-O **nonce** é um contador que representa o número de transações enviadas por uma conta. Ele é crucial para a execução de transações na blockchain.
-
-```bash
-cast nonce 0x1234567890abcdef1234567890abcdef12345678 \
-    --rpc-url https://127.0.0.1:8545
-```
-
-### **Consultando o armazenamento de contratos com `cast storage`**
-
-Você pode inspecionar um **slot de armazenamento** de um contrato específico. Isso é útil quando você precisa entender como os dados estão sendo armazenados on-chain.
-
-```bash
-cast storage 0x1234567890abcdef1234567890abcdef12345678 0 \
-    --rpc-url https://127.0.0.1:8545
-```
-
-Este comando retorna o valor armazenado na primeira posição (slot `0`) do contrato.
+Vamos mergulhar nesses tópicos e entender como o Ethereum lida com contas e transações!
 
 ---
 
-## 3. **Wallet Commands** no Cast
+## 2. **Account Model e Tipos de Contas no Ethereum**
 
-Agora que sabemos como consultar informações sobre contas, vamos explorar as funcionalidades de **carteiras** no **Cast**. Isso inclui desde a criação de novos endereços até a assinatura de transações e mensagens.
+O Ethereum usa o **Account Model**, que é diferente do modelo **UTXO (Unspent Transaction Output)** utilizado pelo Bitcoin.
+
+### **UTXO vs. Account Model**
+
+- **UTXO (Bitcoin)**: As transações são compostas por saídas não gastas de transações anteriores. Cada transação utiliza saídas como inputs, e novas saídas são criadas.
+- **Account Model (Ethereum)**: No Ethereum, as contas têm um saldo e cada transação altera diretamente o saldo da conta. As transações são simplificadas em relação ao modelo UTXO, pois as contas têm estados e podem armazenar dados em contratos inteligentes.
+
+### **Tipos de Contas no Ethereum**
+
+O Ethereum possui dois tipos de contas:
+
+1. **Externally Owned Accounts (EOAs)**: Contas controladas por chaves privadas. São usadas para enviar e receber transações. Cada EOA tem:
+   - Um **saldo de ETH**.
+   - Um **nonce** (número de transações enviadas).
+2. **Contract Accounts**: Contas associadas a contratos inteligentes. Eles armazenam:
+   - **Código**: Código do contrato que é executado quando a conta é chamada.
+   - **Storage**: Dados do contrato armazenados em slots de armazenamento.
+
+---
+
+## 3. **Account Commands** no Cast: Consultando Dados e Storage
+
+Agora que entendemos o modelo de contas do Ethereum, vamos usar o **Cast** para consultar dados de uma conta e do storage de um contrato.
+
+### **Exemplo Prático**: Vault com senha privada
+
+Vamos criar um contrato chamado **Vault** com um dado privado (uma senha), mas que não está realmente velado na blockchain. Aqui está o contrato:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+contract Vault {
+    address public owner;
+    string private password;
+
+    error Unauthorized();
+
+    constructor(string memory pwd) {
+        owner = msg.sender;
+        password = pwd;
+    }
+
+    modifier onlyOwner() {
+        if (owner != msg.sender) {
+            revert Unauthorized();
+        }
+        _;
+    }
+
+    function set(string calldata pwd) external onlyOwner {
+        password = pwd;
+    }
+
+    function get() external view onlyOwner returns (string memory) {
+        return password;
+    }
+}
+```
+
+### **Deploy do Contrato e Consulta ao Storage**
+
+O contrato armazena a **senha** como uma string privada. No entanto, o modificador **`private`** apenas impede o acesso direto ao valor dentro do código Solidity, mas **qualquer pessoa pode ler o storage** do contrato na blockchain.
+
+1. **Deploy do contrato no Anvil**:
+
+```bash
+YOUR_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+forge create \
+    ./src/Vault.sol:Vault \
+    --rpc-url http://127.0.0.1:8545 \
+    --private-key $YOUR_PRIVATE_KEY \
+    --constructor-args "mySecretPassword"
+```
+
+2. **Consultar o storage** com o comando `cast storage`:
+
+```bash
+CONTRACT=
+cast storage \
+    $CONTRACT \
+    --rpc-url http://127.0.0.1:8545
+```
+
+Esse comando retorna o valor armazenado nos slots (no slot 1 está armazenada a string **password**). Porém, o valor está em formato hexadecimal. Para decodificá-lo:
+
+3. **Converter o valor para ASCII** usando `cast to-ascii`:
+
+```bash
+VALUE=
+cast to-ascii $VALUE
+```
+
+Isso exibe a string em texto legível, revelando que mesmo dados **privados** podem ser lidos diretamente do storage da blockchain.
+
+### **Importância do Modificador `private`**
+
+O modificador `private` no Solidity não esconde os dados da blockchain. Ele apenas restringe o acesso ao valor dentro do contrato. Para garantir que dados sensíveis não sejam revelados, você deve criptografar os dados **antes de armazená-los** no blockchain.
+
+---
+
+## 4. **Wallet Commands** no Cast
+
+Agora vamos explorar os **Wallet Commands** do Cast para criar, gerenciar e assinar mensagens e transações com carteiras.
 
 ### **Criando uma nova chave privada com `cast wallet new`**
 
-Você pode criar uma nova chave privada com o comando **`cast wallet new`**. Isso gera uma nova chave privada e o endereço correspondente.
+Você pode criar uma nova chave privada e o endereço correspondente com o comando:
 
 ```bash
 cast wallet new
@@ -92,32 +132,15 @@ Private Key: 0x...
 Address:     0x...
 ```
 
-Se você quiser salvar essa chave em um **keystore** protegido por senha, basta especificar o caminho:
+Se quiser salvar a chave em um **keystore** protegido por senha:
 
 ```bash
 cast wallet new keystore --password
 ```
 
-### **Criando uma nova mnemonic com `cast wallet new-mnemonic`**
-
-O **Cast** também permite criar uma nova **mnemonic phrase** (frase de recuperação), que pode ser usada para gerar várias contas.
-
-```bash
-cast wallet new-mnemonic --words 12
-Phrase:
-scene toward ... [12 palavras]
-
-Accounts:
-- Account 0:
-Address:     0x1234567890abcdef1234567890abcdef12345678
-Private key: 0x...
-```
-
-Você pode gerar mnemonics com 12, 15, 18, 21 ou 24 palavras, sendo 12 o padrão.
-
 ### **Convertendo uma chave privada para um endereço com `cast wallet address`**
 
-Se você já possui uma chave privada e deseja obter o endereço correspondente, pode usar **`cast wallet address`**.
+Se já tiver uma chave privada, você pode convertê-la para um endereço Ethereum usando:
 
 ```bash
 cast wallet address --private-key 0x...
@@ -126,7 +149,7 @@ Address: 0x1234567890abcdef1234567890abcdef12345678
 
 ### **Assinando mensagens com `cast wallet sign`**
 
-O **Cast** também permite que você assine mensagens usando uma chave privada ou um **keystore**.
+Para assinar uma mensagem, você pode usar a chave privada ou um **keystore**:
 
 **Exemplo**: Assinando uma mensagem com uma chave privada:
 
@@ -134,66 +157,74 @@ O **Cast** também permite que você assine mensagens usando uma chave privada o
 cast wallet sign --private-key 0x... "minha mensagem"
 ```
 
-Isso retorna a assinatura que pode ser verificada posteriormente.
+Isso gera uma assinatura que pode ser usada para verificar a autenticidade da mensagem.
 
-Se você quiser assinar com uma carteira de hardware, como uma **Trezor** ou **Ledger**, pode usar os comandos:
+Se preferir assinar com uma **Trezor** ou **Ledger**, use os comandos:
 
 ```bash
 cast wallet sign --trezor "minha mensagem"
 cast wallet sign --ledger "minha mensagem"
 ```
 
-### **Gerando endereços de vanity com `cast wallet vanity`**
+### **Gerenciando múltiplas contas e chaves**
 
-Você também pode usar **`cast wallet vanity`** para gerar endereços que começam ou terminam com uma sequência específica.
+Se você está gerenciando múltiplas contas, pode utilizar o **`cast wallet list`** para listar todas as contas no diretório de keystore padrão.
+
+---
+
+## 5. **Transações**: Assinar uma Transação Crua e Enviar para a Blockchain
+
+Aqui, vamos passar pelo processo de criar e assinar uma transação crua, gerar o `calldata` manualmente e enviar para a blockchain usando o **Cast**.
+
+### Passo 1: Gerar o `calldata`
+
+O **calldata** é a parte da transação que contém os dados da função que queremos chamar. Para gerar o `calldata`, usamos o comando `cast calldata`:
 
 ```bash
-cast wallet vanity --starts-with dead
+cast calldata "set(string)" "newPassword123"
 ```
 
-Isso gera um endereço que começa com a sequência "dead". Esse processo pode demorar, dependendo da complexidade do padrão.
+Este comando codifica a função `set(string)` com o argumento `"newPassword123"`. O resultado será uma string hexadecimal que representa o `calldata`.
 
-### **Importando chaves privadas com `cast wallet import`**
+### Passo 2: Assinar a Transação Crua
 
-Se você tiver uma chave privada e quiser importá-la para um **keystore** protegido, pode usar o comando **`cast wallet import`**:
+Assinamos a transação com nossa chave privada usando o comando `cast wallet sign`. Para isso, utilizamos o `calldata` e os outros parâmetros da transação:
 
 ```bash
-cast wallet import MyWallet --private-key 0x...
+cast mktx \
+    --private-key $PRIVATE_KEY \
+    $CONTRACT \
+    $CALLDATA
 ```
 
-A chave será armazenada de forma segura e poderá ser usada para assinar transações no futuro.
+Isso irá gerar uma assinatura da transação pronta para ser enviada.
+
+### Passo 4: Enviar a Transação
+
+Com a transação assinada, podemos enviá-la para a blockchain usando o comando `cast send`. Basta passar a transação assinada para o comando:
+
+```bash
+cast publish $SIGNED_TX
+```
+
+O **Cast** irá enviar a transação para a rede e você poderá acompanhar o hash da transação para verificar o status.
 
 ---
 
-## 4. Exemplos Práticos
+## 6. Conclusão
 
-Agora, vamos ver um exemplo completo de como usar os comandos de **wallet** para criar uma nova conta, assinar uma mensagem e verificar a assinatura.
-
-1. **Forge create com cast wallet**:
+Hoje, cobrimos os conceitos fundamentais do **Account Model** no Ethereum e exploramos os diferentes tipos de contas (EOA e contratos). Também mostramos como usar **Account Commands** para consultar saldos, nonce e storage, destacando as limitações do modificador `private` em contratos inteligentes. Por fim, aprendemos a criar e gerenciar carteiras usando os **Wallet Commands** do Cast.
 
 ---
 
-## 5. Conclusão
+## 7. Lição de casa
 
-Nesta aula, cobrimos os principais comandos para **gerenciar contas e carteiras** com o **Cast**. Vimos como:
-
-- Consultar dados de contas, como saldo, código de contrato, nonce e armazenamento.
-- Criar, importar e gerenciar carteiras.
-- Assinar mensagens e transações usando chaves privadas ou keystores.
-- Gerar endereços de vanity e proteger chaves com **keystores**.
-
-Esses comandos são fundamentais para garantir a segurança e a eficiência ao trabalhar com contas e carteiras no ambiente Ethereum.
+1. Faça o deploy do contrato **Vault**, armazene uma senha e consulte o storage para verificar se a senha pode ser lida diretamente da blockchain.
+2. Crie uma nova carteira com **`cast wallet new`**, e assine uma mensagem.
+3. Explore outros comandos como **`cast nonce`** e **`cast storage`** para consultar dados de diferentes contas e contratos.
 
 ---
 
-## 6. Lição de casa
+## 8. Próxima Aula
 
-1. Use o **`cast balance`** para verificar o saldo de uma conta testnet e tente consultar o **nonce** e o **código** de um contrato implantado.
-2. Crie uma nova **wallet** com **`cast wallet new`** e assine uma mensagem. Depois, use **`cast wallet verify`** para verificar a assinatura.
-3. Gere um endereço de **vanity** com **`cast wallet vanity`** e experimente as opções para começar ou terminar com uma sequência específica.
-
----
-
-## 7. Próxima Aula
-
-Na próxima aula, vamos mergulhar em tópicos avançados, como **escrita de transações na blockchain** e otimização de **gas**. Também exploraremos exemplos práticos de **deploy de contratos** e **execução de funções** em contratos já implantados. Nos vemos lá!
+Na próxima aula, vamos ver sobre o **chisel**. Até lá!
