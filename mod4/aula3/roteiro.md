@@ -1,4 +1,4 @@
-# Aula 3: Gerenciando Contas no Ethereum
+# Aula 3: Gerenciando Contas com Cast
 
 ## 1. Abertura
 
@@ -45,7 +45,7 @@ Agora que entendemos o modelo de contas do Ethereum, vamos usar o **Cast** para 
 
 Vamos criar um contrato chamado **Vault** com um dado privado (uma senha), mas que não está realmente velado na blockchain. Aqui está o contrato:
 
-```solidity
+```js
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
@@ -132,12 +132,6 @@ Private Key: 0x...
 Address:     0x...
 ```
 
-Se quiser salvar a chave em um **keystore** protegido por senha:
-
-```bash
-cast wallet new keystore --password
-```
-
 ### **Convertendo uma chave privada para um endereço com `cast wallet address`**
 
 Se já tiver uma chave privada, você pode convertê-la para um endereço Ethereum usando:
@@ -191,10 +185,13 @@ Este comando codifica a função `set(string)` com o argumento `"newPassword123"
 Assinamos a transação com nossa chave privada usando o comando `cast wallet sign`. Para isso, utilizamos o `calldata` e os outros parâmetros da transação:
 
 ```bash
+CONTRACT=0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 cast mktx \
     --private-key $PRIVATE_KEY \
     $CONTRACT \
     $CALLDATA
+>>>
+0x02f8c9827a6905010f82736794dc64a140aa3e981100a9beca4e685f962f0cf6c980b8644ed3885e0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e6e657750617373776f7264313233000000000000000000000000000000000000c080a03a12b7229ba09120c6567a223b3ff0410c07dde19f9a55d3e162234ea2fdc3bfa02fe168e8667a8e1137bb4809192cac609aab8864ec639e5ec2679e34337bca06
 ```
 
 Isso irá gerar uma assinatura da transação pronta para ser enviada.

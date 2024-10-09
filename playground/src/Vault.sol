@@ -27,4 +27,3 @@ contract Vault {
         return password;
     }
 }
-
