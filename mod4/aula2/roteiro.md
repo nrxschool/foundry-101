@@ -43,18 +43,6 @@ $ cast calldata-decode "transfer(address,uint256)" 0xa9059cbb0000000000000000000
 
 O resultado mostrará os valores originais passados como argumentos para a função.
 
-### **Decodificando retornos com `cast abi-decode`**
-
-Além dos dados de entrada, podemos decodificar os valores retornados por uma transação ou chamada com o **`cast abi-decode`**.
-
-**Exemplo**: Decodificando um retorno que contém um valor `uint256`:
-
-```bash
-$ cast abi-decode "(uint256)" 0x00000000000000000000000000000000000000000000000000000000000000a0
-```
-
-Isso resulta no valor `160`, que foi retornado pela função.
-
 ### Outras utilidades de ABI
 
 - **`cast abi-encode`**: Codifica os argumentos para uma função ou transação.

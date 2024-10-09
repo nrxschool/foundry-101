@@ -97,7 +97,7 @@ cast block-number --rpc-url http://127.0.0.1:8545
 
 ```bash
 # Obtém o bytecode de um contrato.
-CONTRACT=0x1234567890abcdef1234567890abcdef12345678
+CONTRACT=0x5FbDB2315678afecb367f032d93F642f64180aa3
 cast code \
     $CONTRACT \
     --rpc-url http://127.0.0.1:8545
