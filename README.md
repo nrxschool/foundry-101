@@ -28,8 +28,8 @@
 
 ## Módulo 5: Chisel
 
-- ⏰ aula 1: CLI
-- ⏰ aula 2: REPL
+- ✅ aula 1: Introdução ao Chisel
+- ✅ aula 2: Uso avançado do Chisel
 
 ## Módulo 6: Avançado
 

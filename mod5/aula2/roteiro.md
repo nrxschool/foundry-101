@@ -1,4 +1,4 @@
-# Aula 2: Manipulação de Sessões e Execução de Códigos Complexos
+# Aula 2: Uso avançado do Chisel
 
 ## Abertura
 

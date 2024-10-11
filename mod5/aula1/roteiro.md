@@ -1,4 +1,4 @@
-# Aula 1: Introdução ao Chisel e Uso Básico
+# Aula 1: Introdução ao Chisel
 
 ## Abertura
 
