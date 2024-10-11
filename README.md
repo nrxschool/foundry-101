@@ -31,7 +31,7 @@
 - ✅ aula 1: Introdução ao Chisel
 - ✅ aula 2: Uso avançado do Chisel
 
-## Módulo 6: Avançado
+## Módulo 6: Avançado (Bônus)
 
 - ⏰ aula 1: Migração Hardhat para Foundry
 - ⏰ aula 3: Guardando chaves com cast wallet
