@@ -17,14 +17,14 @@ contract TokenTest is Test {
         token = new Token(1_000_000);
     }
 
-    function testInitialSupply() public {
+    function testInitialSupply() public view {
         assertEq(token.totalSupply(), 1_000_000 * 1e18);
         assertLe(token.totalSupply(), 1_000_000 * 1e18);
         assertGt(token.totalSupply(), 0);
         assertNotEq(token.totalSupply(), 0);
     }
 
-    function testInitialAliceBalance() public {
+    function testInitialAliceBalance() public view {
         assertEq(token.balanceOf(alice), 1_000_000 * 1e18);
     }
 
@@ -41,11 +41,21 @@ contract TokenTest is Test {
         token.transfer(bob, 2_000_000 * 1e18);
     }
 
-    function testName() public {
+    function testName() public view {
         assertEq(token.name(), "My Token");
     }
 
-    function testSymbol() public {
+    function testSymbol() public view {
         assertEq(token.symbol(), "TOKEN");
+    }
+
+    // Expected CALL
+    function testTransferCall() public {
+        vm.prank(alice);
+        vm.expectCall(
+            address(token),
+            abi.encodeCall(token.transfer, (bob, 10))
+        );
+        token.transfer(bob, 10);
     }
 }
