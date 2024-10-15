@@ -59,5 +59,5 @@ contract CartesianTest is Test {
         emit Vector(14);
 
         b.makeVector(1, 2, 3);
-   }
+    }
 }

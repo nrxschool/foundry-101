@@ -33,9 +33,9 @@
 
 ## Módulo 6: Avançado (Bônus)
 
-- ⏰ aula 1: Migração Hardhat para Foundry
-- ⏰ aula 2: Guardando chaves com cast wallet
-- ⏰ aula 3: Integração ScaffoldETH2 com forge
-- ⏰ aula 4: Cheetcodes e Lib Vm
-- ⏰ aula 5: Suporte ao Vyper
-- ⏰ aula 6: Testes Avançado
+- ✅ aula 1: Migração Hardhat para Foundry
+- ✅ aula 2: Guardando chaves com cast wallet
+- ✅ aula 3: Integração ScaffoldETH2 com forge
+- ✅ aula 4: Cheetcodes e Lib Vm
+- ✅ aula 5: Suporte ao Vyper
+- ✅ aula 6: Testes Avançado

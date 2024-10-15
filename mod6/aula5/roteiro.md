@@ -1,7 +1,3 @@
-Aqui está a sua aula sobre suporte ao Vyper no Foundry, utilizando o template fornecido:
-
----
-
 # Aula 5: Suporte ao Vyper
 
 ## Abertura
@@ -35,16 +31,18 @@ Para usar o Vyper no Foundry, primeiro precisamos instalá-lo. Existem várias m
 
 ### Instalação do Vyper:
 
-1. **Usando PIP**:
+1. **Crie um ambiente Python**:
 
 ```bash
-pip install vyper
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-2. **Usando Docker**:
+2. **Instale o Vyper**:
 
 ```bash
-docker pull vyperlang/vyper
+pip3 install vyper
+which vyper
 ```
 
 ### Configurando o Foundry:
@@ -58,89 +56,201 @@ path = "/path/to/vyper"
 
 ---
 
-## 3. Escrevendo um Contrato Simples e Testes em Vyper
+## 3. Testando nosso contrato em Vyper
 
-### Contrato Vyper Simples (Contador):
+### Contrato Vyper Simples (Greatting):
 
 ```python
-number: public(uint256)
+#pragma version >0.4.0
 
-@deploy
-@payable
-def __init__(initial_number: uint256):
-    self.number = initial_number
+voted: public(HashMap[address, bool])
+candidate: public(HashMap[address, uint256])
 
 @external
-def set_number(new_number: uint256):
-    self.number = new_number
+def vote(candidate: address) -> bool:
+    assert not self.voted[msg.sender], "You have already voted."
 
-@external
-def increment():
-    self.number += 1
+    self.voted[msg.sender] = True
+    self.candidate[candidate] += 1
+
+    return True
 ```
 
 ### Testando o Contrato:
 
-Usaremos Solidity para escrever os testes, validando as funcionalidades do contrato.
+Usaremos Solidity para escrever os testes, e um deployer.
 
 ```javascript
-import { Test } from "forge-std/Test.sol";
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
 
-interface ICounter {
-    function increment() external;
-    function number() external view returns (uint256);
-    function set_number(uint256 newNumber) external;
+import {Test} from "forge-std/Test.sol";
+
+contract VyperDeployer is Test {
+    ///@notice Compiles a Vyper contract and returns the address that the contract was deployeod to
+    ///@notice If deployment fails, an error will be thrown
+    ///@param fileName - The file name of the Vyper contract. For example, the file name for "SimpleStore.vy" is "SimpleStore"
+    ///@return deployedAddress - The address that the contract was deployed to
+    function deployContract(string memory fileName) public returns (address) {
+        ///@notice create a list of strings with the commands necessary to compile Vyper contracts
+        string[] memory cmds = new string[](2);
+        cmds[0] = "vyper";
+        cmds[1] = string.concat("src/", fileName, ".vy");
+
+        ///@notice compile the Vyper contract and return the bytecode
+        bytes memory bytecode = vm.ffi(cmds);
+
+        ///@notice deploy the bytecode with the create instruction
+        address deployedAddress;
+        assembly {
+            deployedAddress := create(0, add(bytecode, 0x20), mload(bytecode))
+        }
+
+        ///@notice check that the deployment was successful
+        require(deployedAddress != address(0), "VyperDeployer could not deploy contract");
+
+        ///@notice return the address that the contract was deployed to
+        return deployedAddress;
+    }
+
+    ///@notice Compiles a Vyper contract with constructor arguments and returns the address that the contract was deployeod to
+    ///@notice If deployment fails, an error will be thrown
+    ///@param fileName - The file name of the Vyper contract. For example, the file name for "SimpleStore.vy" is "SimpleStore"
+    ///@return deployedAddress - The address that the contract was deployed to
+    function deployContract(string memory fileName, bytes calldata args) public returns (address) {
+        ///@notice create a list of strings with the commands necessary to compile Vyper contracts
+        string[] memory cmds = new string[](2);
+        cmds[0] = "vyper";
+        cmds[1] = string.concat("src/", fileName, ".vy");
+
+        ///@notice compile the Vyper contract and return the bytecode
+        bytes memory _bytecode = vm.ffi(cmds);
+
+        //add args to the deployment bytecode
+        bytes memory bytecode = abi.encodePacked(_bytecode, args);
+
+        ///@notice deploy the bytecode with the create instruction
+        address deployedAddress;
+        assembly {
+            deployedAddress := create(0, add(bytecode, 0x20), mload(bytecode))
+        }
+
+        ///@notice check that the deployment was successful
+        require(deployedAddress != address(0), "VyperDeployer could not deploy contract");
+
+        ///@notice return the address that the contract was deployed to
+        return deployedAddress;
+    }
+}
+```
+
+Vamos escrever os testes agora:
+
+```javascript
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {VyperDeployer} from "./VyperDeploy.sol";
+
+interface IVoting {
+    function vote(address) external returns (bool);
+
+    function voted(address) external returns (bool);
+
+    function candidate(address) external returns (uint256);
 }
 
-contract CounterTest is Test {
-    ICounter public counter;
-    uint256 initialNumber = 5;
+contract VotingTest is VyperDeployer {
+    VyperDeployer deployer;
+    IVoting voting;
+    address alice = address(0xaAaAaAaaAaAaAaaAaAAAAAAAAaaaAaAaAaaAaaAa);
+    address bob = address(0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB);
 
     function setUp() public {
-        counter = ICounter(deployCode("Counter", abi.encode(initialNumber)));
-        assertEq(counter.number(), initialNumber);
+        deployer = new VyperDeployer();
+        voting = IVoting(deployer.deployContract("Voting"));
     }
 
-    function test_Increment() public {
-        counter.increment();
-        assertEq(counter.number(), initialNumber + 1);
+    function testVote() public {
+        vm.prank(alice);
+        voting.vote(alice);
+
+        assertEq(voting.candidate(alice), 1);
+        assertEq(voting.voted(alice), true);
     }
 
-    function testFuzz_SetNumber(uint256 x) public {
-        counter.set_number(x);
-        assertEq(counter.number(), x);
+    function testVoteTwice() public {
+        voting.vote(alice);
+
+        vm.expectRevert("You have already voted.");
+        voting.vote(alice);
     }
 }
 ```
 
 ---
 
-## 4. Escrevendo um Script em Vyper e Interagindo com o Contrato
+## 4. Deploy do nosso contrato em Vyper
 
-### Script Vyper para Interação:
+### Deploy com `forge create`
 
-```python
-interface ICounter:
-    def increment(): nonpayable
-    def number() -> uint256: view
-
-@external
-def run(counter: address):
-    number_before: uint256 = staticcall ICounter(counter).number()
-
-    extcall ICounter(counter).increment()
-
-    number_after: uint256 = staticcall ICounter(counter).number()
-
-    assert number_after == number_before + 1
+```bash
+forge create \
+    ./src/Voting.vy:Voting \
+    --account my-net
 ```
 
-### Executando o Script:
+### Deploy com `Script`:
+
+```javascript
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {console2} from "forge-std/console2.sol";
+import {Script} from "forge-std/Script.sol";
+import {VyperDeployer} from "../test/vyper/VyperDeploy.sol";
+
+interface IVoting {
+    function candidate(address) external returns (uint256);
+    function voted(address) external returns (bool);
+    function vote(address) external returns (bool);
+}
+
+contract Deploy is Script {
+    VyperDeployer deployer;
+    IVoting voting;
+
+    function setUp() public {
+        deployer = new VyperDeployer();
+        voting = IVoting(deployer.deployContract("Voting"));
+    }
+
+    function run() external {
+        vm.startBroadcast();
+
+        vm.stopBroadcast();
+    }
+}
+```
+
+### Interagindo com o contrato com `cast`:
 
 Use o seguinte comando para rodar o script e interagir com o contrato:
 
+**Votar**
+
 ```bash
-forge script script/Increment.s.vy --sig 'run' '<counter address>' --rpc-url $RPC_URL --broadcast --private-key $PRIVATE_KEY
+cast send \
+    0x700b6A60ce7EaaEA56F065753d8dcB9653dbAD35 \
+    "vote(address)(bool)" 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720 \
+    --account my-net
+```
+
+**Verificar voto**
+
+```bash
+cast call 0x700b6A60ce7EaaEA56F065753d8dcB9653dbAD35 "voted(address)(bool)" 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720
+cast call 0x700b6A60ce7EaaEA56F065753d8dcB9653dbAD35 "candidate(address)(uint256)" 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720
 ```
 
 ---
@@ -161,8 +271,4 @@ Nesta aula, aprendemos sobre o **Vyper** e sua integração com o **Foundry**. E
 
 ## Próxima Aula
 
-Na próxima aula, vamos explorar como otimizar contratos Vyper e implementar boas práticas de segurança no desenvolvimento de contratos inteligentes. Até lá!
-
----
-
-Sinta-se à vontade para ajustar qualquer parte ou adicionar mais detalhes!
+Na próxima aula, vamos explorar como criar Testes Avançados. Até lá!

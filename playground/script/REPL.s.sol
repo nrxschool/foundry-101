@@ -7,7 +7,7 @@ contract REPL {
     Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
     /// @notice REPL contract entry point
-    function run() public {
+    function run() public pure {
         uint8 x = 255;
     }
 }

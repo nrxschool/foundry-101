@@ -52,10 +52,7 @@ contract TokenTest is Test {
     // Expected CALL
     function testTransferCall() public {
         vm.prank(alice);
-        vm.expectCall(
-            address(token),
-            abi.encodeCall(token.transfer, (bob, 10))
-        );
+        vm.expectCall(address(token), abi.encodeCall(token.transfer, (bob, 10)));
         token.transfer(bob, 10);
     }
 }
