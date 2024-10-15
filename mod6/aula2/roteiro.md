@@ -1,27 +1,137 @@
-# Aula 2: Guardando chaves com Cast wallet
+# Aula 2: Guardando Chaves com Cast Wallet
 
+## Abertura
 
-Com base nesse artigo crie a aula 2 com o seguinte:
+Nesta aula, vamos aprender a gerenciar chaves privadas de maneira segura usando o **Cast Wallet**. O Cast permite importar, criar e utilizar carteiras, facilitando o gerenciamento de transações e deploys com segurança. Vamos também ver como proteger nossas chaves privadas com keystores, usando o formato criptografado JSON, que é amplamente utilizado no ecossistema Ethereum.
 
+### Programa da aula:
 
-- importação de chave via cast wallet import --interactive
-- deploy usando --account
+1. Importação de chave privada via Cast Wallet.
+2. Usando chaves para deploys e transações.
+3. Protegendo chaves com **keystores**.
+4. Boas práticas de segurança no gerenciamento de chaves.
 
-vate Key Management
+---
 
-Script execution requires a private key to send transactions. This key controls all funds in the account, so it must be protected carefully. There are a few options for securely broadcasting transactions through a script:
+## 1. Importação de Chave Privada via Cast Wallet
 
-Use a hardware wallet. Hardware wallets such as Ledger and Trezor store seed phrases in a secure enclave. Forge can send a raw transaction to the wallet, and the wallet will sign the transaction. The signed transaction is returned to forge and broadcaster. This way, private keys never leave the hardware wallet, making this a very secure approach. To use a hardware wallet with scripts, see the --ledger and --trezor flags.
+O primeiro passo para usar uma chave privada em scripts e deploys é importá-la. Usaremos o comando `cast wallet import` para importar a chave privada e protegê-la com uma senha.
 
-Use a private key directly. With this approach you expose a private key on your machine, making it riskier than the above option. Therefore the suggested way to directly use a private key is to generate a new wallet for executing the script, and only send that wallet enough funds to run the script. Then, stop using the key after the script is complete. This way, if the key is compromised, only the funds on this throwaway key are lost, as opposed to losing everything in your wallet.
+### Importando uma chave:
 
-With this approach, it’s very important that your scripts or contracts don’t rely on msg.sender since the sender will not be an account that’s meant to be used again. For example, if a deploy script configures a contract owner, ensure the owner a constructor argument and not set to msg.sender.
-To use this approach, you can either store the private key in an environment variable and use cheat codes to read it in, or use the --private-key flag to directly provide the key.
-Use a keystore. This can be thought of as a middle ground between the above two approaches. With cast wallet import you import a private key and encrypt it with a password. This still temporarily exposes your private key on your machine, but it becomes encrypted and you’ll provide the password to decrypt it to run a script.
+1. **Crie um keystore protegido com senha**:
 
-Additional security precautions when using scripts:
+O comando abaixo solicitará sua chave privada e pedirá uma senha para protegê-la. A chave será criptografada e armazenada de forma segura no arquivo keystore.
 
-Use a separate wallet for testing and development, instead of using your main wallet with real funds. Diversifying minimizes the risk of losing funds if your development wallet is compromised.
-If you accidentally push a private key or seed phrase to GitHub, or expose it online via other means—even momentarily—treat it as compromised. Act immediately to transfer your funds to a safer destination.
-When in doubt about whether a wallet contains real funds or not, assume it does. Always be certain about a wallet’s balances and status when using it for development purposes. Use blockscan to easily check many chains to see where the address has been used.
-Remember that adding an account in wallets like Metamask generates a new private key. However, that private key is derived from the same mnemonic as the other accounts generated in that wallet. Therefore, never expose the mnemonic as it may compromise all of your accounts.
+```bash
+cast wallet import --interactive
+```
+
+Ao executar este comando, você será solicitado a inserir a chave privada e uma senha. O keystore será gerado e armazenado no diretório padrão `~/.foundry/keystores`.
+
+2. **Exemplo de saída ao importar uma chave privada**:
+
+```bash
+Enter your private key: ****************
+Enter your password: ****************
+Keystore successfully created at: ~/.foundry/keystores/my-wallet
+```
+
+---
+
+## 2. Usando Chaves para Deploys e Transações
+
+Depois de importar a chave privada, podemos usá-la para realizar deploys e enviar transações na blockchain. Ao invés de expor a chave diretamente, usamos o arquivo **keystore** com sua senha para desbloquear a chave durante a execução.
+
+### Deploy com Cast usando um keystore:
+
+Suponha que você tenha um contrato chamado `Lock.sol`. Podemos utilizar o comando `cast` para realizar o deploy desse contrato com a chave protegida.
+
+```bash
+forge script script/Deploy.s.sol --broadcast --rpc-url <RPC_URL> --account <NOME_DA_CONTA>
+```
+
+O Cast automaticamente usará a chave que foi importada no keystore e solicitará a senha para desbloqueá-la. Isso garante que a chave privada nunca fique exposta diretamente.
+
+---
+
+## 3. Protegendo Chaves com **Keystores**
+
+Agora, vamos entender o que é um **keystore** e como ele protege sua chave privada.
+
+### O que é um **Keystore**?
+
+O **keystore** é um arquivo JSON que armazena a chave privada criptografada e protegida com uma senha. Este arquivo garante que a chave privada não seja exposta em texto plano, tornando o uso de chaves mais seguro.
+
+Aqui está um exemplo de um keystore armazenado no seu sistema:
+
+```bash
+drwxr-xr-x  5 olivmath  staff   160B Oct 15 00:27 .
+drwxr-xr-x  8 olivmath  staff   256B Sep 16 18:19 ..
+-rw-r--r--  1 olivmath  staff   436B Sep 16 18:20 main
+-rw-r--r--  1 olivmath  staff   436B Oct 15 00:27 my-net
+-rw-r--r--  1 olivmath  staff   436B Oct  8 17:22 nova
+```
+
+### Explicação do conteúdo do Keystore:
+
+```json
+{
+  "crypto": {
+    "cipher": "aes-128-ctr",
+    "cipherparams": { "iv": "0996e371ce75e28afacfa7d24f4df127" },
+    "ciphertext": "33f3dc39b98f3996cdd869bb6cec90e1d18605de0c73844e81b949b380f2f696",
+    "kdf": "scrypt",
+    "kdfparams": {
+      "dklen": 32,
+      "n": 8192,
+      "p": 1,
+      "r": 8,
+      "salt": "777f5c801d9810dff19a8cda8da05decf5b6c6e081843d636459eff4faff5d6d"
+    },
+    "mac": "789a9310dd9250c570497f9f16200cbebf0be992880215525fb59e112898d63f"
+  },
+  "id": "a12c3d32-fb8d-493b-adaf-6d3cebd2555e",
+  "version": 3
+}
+```
+
+### Campos Explicados:
+
+- **crypto**: Contém todos os parâmetros criptográficos necessários para proteger e recuperar a chave privada.
+  - **cipher**: O algoritmo usado para criptografar a chave (neste caso, `aes-128-ctr`).
+  - **cipherparams**: Parâmetros adicionais, como o **IV** usado na criptografia.
+  - **ciphertext**: A chave privada criptografada.
+  - **kdf**: A função de derivação de chave usada (aqui, `scrypt`).
+  - **kdfparams**: Parâmetros como **salt**, **n**, **p**, e **r** para derivar a chave de criptografia a partir da senha.
+  - **mac**: Código de autenticação da mensagem, usado para garantir a integridade do keystore.
+
+Ao usar um **keystore**, a chave privada é criptografada e protegida, oferecendo uma camada adicional de segurança. Para descriptografar e usar a chave, será necessário fornecer a senha usada durante a criação do keystore.
+
+---
+
+## 4. Boas Práticas de Segurança no Gerenciamento de Chaves
+
+- **Use carteiras separadas para desenvolvimento e produção**: Nunca use sua carteira principal com fundos reais em desenvolvimento.
+- **Proteja seu keystore**: Nunca compartilhe o arquivo keystore ou a senha.
+- **Tenha cuidado com exposição de chaves**: Se você expuser uma chave privada online, considere-a comprometida e transfira os fundos imediatamente.
+- **Usar carteiras de hardware**: Para maior segurança, carteiras de hardware como Ledger e Trezor podem ser usadas para assinar transações diretamente sem expor a chave privada.
+
+---
+
+## Conclusão
+
+Nesta aula, aprendemos como importar e proteger chaves privadas usando **Cast Wallet**, além de como usar **keystores** para maior segurança. Também vimos como usar essas chaves para realizar deploys e enviar transações na blockchain. A segurança no gerenciamento de chaves é fundamental para evitar perdas de fundos, então sempre siga as melhores práticas.
+
+---
+
+## Lição de casa
+
+1. Importe uma chave privada usando `cast wallet import --interactive` e proteja-a com uma senha.
+2. Utilize o keystore gerado para fazer o deploy de um contrato simples na rede local usando `forge script`.
+
+---
+
+## Próxima Aula
+
+Na próxima aula, vamos integrar o **ScaffoldETH2** com o **Foundry** para construir uma interface frontend interativa para nossos contratos. Até lá!
