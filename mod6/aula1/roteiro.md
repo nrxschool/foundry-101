@@ -53,36 +53,37 @@ npx hardhat
 
 ---
 
-## 2. Comparando com a Estrutura do Foundry
+## 2. Configurando Foundry
 
-Agora que temos um projeto Hardhat, vamos criar um projeto Foundry para comparação.
+Para poder adicionar o foundry no nosso projeto precisamos:
 
-### Criando um Projeto Foundry:
+### Installar dependencias
 
-1. Inicialize o Foundry:
+```
+npm install --save-dev @nomicfoundation/hardhat-foundry
+```
 
-   ```bash
-   forge init my-foundry-project
-   ```
+### Configurar hardhat-foundry
 
-2. A estrutura do Foundry será:
 
-   ```
-   ├── src/
-   │   └── Greeter.sol
-   ├── script/
-   │   └── Deploy.s.sol
-   ├── test/
-   │   └── GreeterTest.t.sol
-   ├── foundry.toml
-   ```
+**Adicione em `hardhat.config.js`:**
 
-### Diferenças entre Hardhat e Foundry:
+```javascript
+require("@nomicfoundation/hardhat-toolbox");
 
-- **contracts/** vs **src/**: Foundry usa o diretório **src** para contratos.
-- **scripts/** vs **script/**: Scripts de deploy no Foundry são escritos em **Solidity**, enquanto no Hardhat são geralmente em JavaScript.
-- **hardhat.config.js** vs **foundry.toml**: Foundry usa o **foundry.toml** para configurar o projeto, substituindo o arquivo JavaScript de configuração do Hardhat.
-- **test/**: Os testes no Foundry são escritos em Solidity, enquanto no Hardhat usam Mocha/Chai com JavaScript ou TypeScript.
+// Adicione essa linha
+require("@nomicfoundation/hardhat-foundry");
+
+module.exports = {
+  solidity: "0.8.27",
+};
+```
+
+**No terminal execute**
+
+```bash
+npx hardhat init-foundry
+```
 
 ---
 
