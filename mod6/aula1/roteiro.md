@@ -2,7 +2,7 @@
 
 ## Abertura
 
-Bem-vindo à primeira aula do módulo avançado. Hoje, vamos abordar como migrar um projeto existente de **Hardhat** para **Foundry**. Hardhat é amplamente usado no desenvolvimento de contratos inteligentes, mas o Foundry traz novas abordagens e benefícios, como a execução nativa de testes em Solidity e scripts mais simples e eficientes. Nosso objetivo nesta aula será guiar você pelos principais passos dessa transição.
+Bem-vindo à primeira aula do módulo avançado! Hoje, vamos abordar como migrar um projeto existente de **Hardhat** para **Foundry**. O Hardhat é amplamente utilizado no desenvolvimento de contratos inteligentes, mas o Foundry oferece novas abordagens e benefícios, como a execução nativa de testes em Solidity e scripts mais simples e eficientes. Nosso objetivo nesta aula será guiar você pelos principais passos dessa transição.
 
 ### Programa da aula:
 
@@ -19,7 +19,7 @@ Vamos começar criando um projeto simples em Hardhat para entendermos sua estrut
 
 ### Requisitos
 
-- [node](https://nodejs.org/pt)
+- [Node.js](https://nodejs.org/pt)
 
 ### Passos para criar o projeto:
 
@@ -49,29 +49,26 @@ npx hardhat
 - **contracts/**: Diretório com os contratos Solidity.
 - **scripts/**: Scripts de deploy escritos em JavaScript/TypeScript.
 - **test/**: Testes escritos em Mocha/Chai (JavaScript/TypeScript).
-- **hardhat.config.js**: Configurações de rede, paths, e plugins.
+- **hardhat.config.js**: Configurações de rede, paths e plugins.
 
 ---
 
-## 2. Configurando Foundry
+## 2. Configurando o Foundry
 
-Para poder adicionar o foundry no nosso projeto precisamos:
+Para adicionar o Foundry ao nosso projeto Hardhat, siga os seguintes passos:
 
-### Installar dependencias
+### Instalando dependências
 
-```
+```bash
 npm install --save-dev @nomicfoundation/hardhat-foundry
 ```
 
-### Configurar hardhat-foundry
-
+### Configurando `hardhat-foundry`
 
 **Adicione em `hardhat.config.js`:**
 
 ```javascript
 require("@nomicfoundation/hardhat-toolbox");
-
-// Adicione essa linha
 require("@nomicfoundation/hardhat-foundry");
 
 module.exports = {
@@ -79,7 +76,7 @@ module.exports = {
 };
 ```
 
-**No terminal execute**
+**No terminal, execute:**
 
 ```bash
 npx hardhat init-foundry
@@ -89,76 +86,73 @@ npx hardhat init-foundry
 
 ## 3. Migrando Testes
 
+Agora, vamos ver como migrar um teste escrito em JavaScript no Hardhat para Solidity no Foundry.
+
 ### Exemplo de Teste em Hardhat (JavaScript):
 
 ```javascript
 const { expect } = require("chai");
 
-describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+describe("Lock", function () {
+  it("Should set the right unlockTime", async function () {
+    const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
+    const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
+    const Lock = await ethers.getContractFactory("Lock");
+    const lock = await Lock.deploy(unlockTime);
 
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
-    await setGreetingTx.wait();
-
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
+    expect(await lock.unlockTime()).to.equal(unlockTime);
   });
 });
 ```
 
 ### Migrando o Teste para Foundry (Solidity):
 
-No Foundry, os testes são escritos em **Solidity**. Vamos migrar o teste acima:
+No Foundry, os testes são escritos diretamente em Solidity, o que melhora a integração com os contratos. Abaixo está a versão migrada do teste em Solidity:
 
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
-import "../src/Greeter.sol";
+import "../src/Lock.sol";
 
-contract GreeterTest is Test {
-    Greeter greeter;
+contract LockTest is Test {
+    Lock lock;
+    uint256 unlockTime;
 
     function setUp() public {
-        greeter = new Greeter("Hello, world!");
+        uint256 ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
+        unlockTime = block.timestamp + ONE_YEAR_IN_SECS;
+        lock = new Lock(unlockTime);
     }
 
-    function testGreet() public {
-        assertEq(greeter.greet(), "Hello, world!");
-    }
-
-    function testSetGreeting() public {
-        greeter.setGreeting("Hola, mundo!");
-        assertEq(greeter.greet(), "Hola, mundo!");
+    function testUnlockTimeIsCorrect() public {
+        assertEq(lock.unlockTime(), unlockTime);
     }
 }
 ```
 
 ### Diferenças Chave:
 
-- **Mocha/Chai** vs **Solidity**: Foundry utiliza funções como `assertEq` e `vm` em vez de `expect` ou `assert` do Mocha/Chai.
-- **Execução nativa**: O teste é escrito na mesma linguagem que os contratos, resultando em melhor integração e performance.
+- **JavaScript** vs **Solidity**: No Foundry, os testes são escritos na mesma linguagem dos contratos, o que facilita o processo de desenvolvimento e execução de testes.
+- **Hardhat**: Usa Mocha e Chai para fazer asserções.
+- **Foundry**: Usa funções nativas como `assertEq` para comparações.
 
 ---
 
 ## 4. Migrando Scripts
 
-Scripts no Hardhat são usados para deploys e interações. No Foundry, esses scripts são escritos diretamente em Solidity.
+Scripts no Hardhat geralmente são escritos em JavaScript, enquanto no Foundry, eles são escritos diretamente em Solidity, utilizando a biblioteca `forge-std` para interagir com a EVM.
 
-### Exemplo de Script de Deploy em Hardhat:
+### Exemplo de Script de Deploy em Hardhat (JavaScript):
 
 ```javascript
 async function main() {
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, world!");
-  await greeter.deployed();
+  const Lock = await ethers.getContractFactory("Lock");
+  const lock = await Lock.deploy(unlockTime);
 
-  console.log("Greeter deployed to:", greeter.address);
+  console.log("Lock deployed to:", lock.address);
 }
 
 main();
@@ -166,17 +160,22 @@ main();
 
 ### Migrando o Script para Foundry (Solidity):
 
+No Foundry, os scripts de deploy podem ser escritos como scripts Solidity:
+
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "forge-std/Script.sol";
-import "../src/Greeter.sol";
+import "../src/Lock.sol";
 
 contract DeployScript is Script {
     function run() external {
+        uint256 ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
+        uint256 unlockTime = block.timestamp + ONE_YEAR_IN_SECS;
+
         vm.startBroadcast();
-        new Greeter("Hello, world!");
+        new Lock(unlockTime);
         vm.stopBroadcast();
     }
 }

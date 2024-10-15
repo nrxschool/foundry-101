@@ -8,7 +8,8 @@ contract LockTest is Test {
     address alice = address(0xaaa);
     address bob = address(0xbbb);
     Lock lock;
-    uint256 constant JAN_1ST_2030 = 1893456000;
+
+    uint256 unlockTime = block.timestamp + 365 days;
 
     function setUp() public {
         vm.label(alice, "ALICE");
@@ -17,11 +18,11 @@ contract LockTest is Test {
         vm.deal(alice, 2 ether);
 
         vm.prank(alice);
-        lock = new Lock{value: 1 ether}(JAN_1ST_2030);
+        lock = new Lock{value: 1 ether}(unlockTime);
     }
 
     function testDeployment() public view {
-        assertEq(lock.unlockTime(), JAN_1ST_2030, "Unlock time should be set correctly");
+        assertEq(lock.unlockTime(), unlockTime, "Unlock time should be set correctly");
         assertEq(lock.owner(), alice, "Owner should be set correctly");
     }
 
@@ -43,7 +44,7 @@ contract LockTest is Test {
     }
 
     function testWithdrawNotOwner() public {
-        vm.warp(JAN_1ST_2030);
+        vm.warp(unlockTime);
         vm.prank(bob);
         vm.expectRevert("You aren't the owner");
         lock.withdraw();
@@ -51,7 +52,7 @@ contract LockTest is Test {
 
     function testWithdrawSuccess() public {
         // Fast forward time to unlock time
-        vm.warp(JAN_1ST_2030);
+        vm.warp(unlockTime);
 
         vm.prank(alice);
         lock.withdraw();
@@ -59,7 +60,7 @@ contract LockTest is Test {
     }
 
     function testEmitWithdrawalEvent() public {
-        vm.warp(JAN_1ST_2030 + 1);
+        vm.warp(unlockTime + 1);
         vm.prank(alice);
         vm.expectEmit(address(lock));
         emit Lock.Withdrawal(1 ether, block.timestamp);
@@ -68,7 +69,7 @@ contract LockTest is Test {
 
     function testTransferFundsToOwner() public {
         // Fast forward time to unlock time
-        vm.warp(JAN_1ST_2030);
+        vm.warp(unlockTime);
         uint256 initialBalance = alice.balance;
 
         vm.prank(alice);
