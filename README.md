@@ -38,4 +38,4 @@
 - ⏰ aula 3: Integração ScaffoldETH2 com forge
 - ⏰ aula 4: Cheetcodes e Lib Vm
 - ⏰ aula 5: Suporte ao Vyper
-- ⏰ aula 6 : Testes Fuzzy
+- ⏰ aula 6: Testes Avançado
