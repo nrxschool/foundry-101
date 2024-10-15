@@ -91,18 +91,14 @@ Agora, vamos ver como migrar um teste escrito em JavaScript no Hardhat para Soli
 ### Exemplo de Teste em Hardhat (JavaScript):
 
 ```javascript
-const { expect } = require("chai");
+it("Should emit an event on withdrawals", async function () {
+    const { lock, unlockTime, lockedAmount } = await loadFixture(deployOneYearLockFixture);
 
-describe("Lock", function () {
-  it("Should set the right unlockTime", async function () {
-    const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-    const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
+    await time.increaseTo(unlockTime);
 
-    const Lock = await ethers.getContractFactory("Lock");
-    const lock = await Lock.deploy(unlockTime);
-
-    expect(await lock.unlockTime()).to.equal(unlockTime);
-  });
+    await expect(lock.withdraw())
+      .to.emit(lock, "Withdrawal")
+      .withArgs(lockedAmount, anyValue);
 });
 ```
 
@@ -110,34 +106,29 @@ describe("Lock", function () {
 
 No Foundry, os testes são escritos diretamente em Solidity, o que melhora a integração com os contratos. Abaixo está a versão migrada do teste em Solidity:
 
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-import "forge-std/Test.sol";
-import "../src/Lock.sol";
-
-contract LockTest is Test {
-    Lock lock;
-    uint256 unlockTime;
-
-    function setUp() public {
-        uint256 ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-        unlockTime = block.timestamp + ONE_YEAR_IN_SECS;
-        lock = new Lock(unlockTime);
-    }
-
-    function testUnlockTimeIsCorrect() public {
-        assertEq(lock.unlockTime(), unlockTime);
-    }
+```javascript
+function testEmitWithdrawalEvent() public {
+    vm.warp(unlockTime + 1);
+    vm.prank(alice);
+    vm.expectEmit(address(lock));
+    emit Lock.Withdrawal(1 ether, block.timestamp);
+    lock.withdraw();
 }
 ```
 
 ### Diferenças Chave:
 
-- **JavaScript** vs **Solidity**: No Foundry, os testes são escritos na mesma linguagem dos contratos, o que facilita o processo de desenvolvimento e execução de testes.
-- **Hardhat**: Usa Mocha e Chai para fazer asserções.
-- **Foundry**: Usa funções nativas como `assertEq` para comparações.
+**Verificação do Evento:**
+- Hardhat: Usa .to.emit() para capturar o evento diretamente na função de teste.
+- Foundry: Usa vm.expectEmit() para definir as expectativas de um evento antes de chamar a função que deve emitir o evento.
+
+**Captura de Argumentos:**
+- Hardhat: O método .withArgs() permite verificar os valores dos argumentos do evento. No caso de anyValue, ele aceita qualquer valor para aquele argumento específico.
+- Foundry: Não tem a função equivalente a anyValue. O evento esperado deve ser declarado explicitamente, com os argumentos exatos que você espera, como emit Lock.Withdrawal(1 ether, block.timestamp).
+
+**Contexto de Tempo:**
+- Hardhat: Usa time.increaseTo(unlockTime) para avançar o tempo até o unlockTime.
+- Foundry: Usa vm.warp(JAN_1ST_2030 + 1) para definir o tempo diretamente.
 
 ---
 
@@ -162,19 +153,19 @@ main();
 
 No Foundry, os scripts de deploy podem ser escritos como scripts Solidity:
 
-```solidity
+```javascript
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "forge-std/Script.sol";
-import "../src/Lock.sol";
+import "../../contracts/Lock.sol";
 
-contract DeployScript is Script {
+contract Deploy is Script {
     function run() external {
         uint256 ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
         uint256 unlockTime = block.timestamp + ONE_YEAR_IN_SECS;
 
-        vm.startBroadcast();
+        vm.startBroadcast(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80);
         new Lock(unlockTime);
         vm.stopBroadcast();
     }
@@ -185,15 +176,15 @@ contract DeployScript is Script {
 
 - **Hardhat**:
 
-  ```bash
-  npx hardhat run scripts/sample-script.js --network localhost
-  ```
+```bash
+ npx hardhat ignition deploy ignition/modules/Lock.js --network localhost
+```
 
 - **Foundry**:
 
-  ```bash
-  forge script script/Deploy.s.sol --broadcast --rpc-url http://localhost:8545
-  ```
+```bash
+forge script ignition/modules/Lock.s.sol:Deploy --broadcast --rpc-url http://localhost:8545
+```
 
 ---
 
@@ -212,4 +203,4 @@ Nesta aula, migramos um projeto de **Hardhat** para **Foundry**, comparando suas
 
 ## Próxima Aula
 
-Na próxima aula, vamos explorar como integrar o **ScaffoldETH2** com o **Forge** para criar um ambiente de front-end interativo com seus contratos Solidity. Até lá!
+Na próxima aula, vamos explorar como **Guardando chaves com cast wallet** para não passar mais a chave via `vm.startBroadcast`. Até lá!
