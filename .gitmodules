@@ -1,0 +1,9 @@
+[submodule "playground/lib/forge-std"]
+	path = playground/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "playground/lib/solady"]
+	path = playground/lib/solady
+	url = https://github.com/Vectorized/solady
+[submodule "mod6/aula1/example/lib/forge-std"]
+	path = mod6/aula1/example/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
