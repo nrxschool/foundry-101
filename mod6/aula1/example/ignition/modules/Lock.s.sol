@@ -10,7 +10,7 @@ contract Deploy is Script {
         uint256 unlockTime = block.timestamp + ONE_YEAR_IN_SECS;
 
         vm.startBroadcast();
-        new Lock(unlockTime);
+        new Lock{value: 10 ether}(unlockTime);
         vm.stopBroadcast();
     }
 }

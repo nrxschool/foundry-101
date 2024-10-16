@@ -36,7 +36,7 @@ npx hardhat
 ```
 ├── contracts/
 │   └── Greeter.sol
-├── scripts/
+├── ignition/
 │   └── sample-script.js
 ├── test/
 │   └── sample-test.js
@@ -47,7 +47,7 @@ npx hardhat
 ### O que temos:
 
 - **contracts/**: Diretório com os contratos Solidity.
-- **scripts/**: Scripts de deploy escritos em JavaScript/TypeScript.
+- **ignition/**: Scripts de deploy escritos em JavaScript/TypeScript.
 - **test/**: Testes escritos em Mocha/Chai (JavaScript/TypeScript).
 - **hardhat.config.js**: Configurações de rede, paths e plugins.
 

@@ -1,4 +1,4 @@
-# Aula 3: Integração ScaffoldETH2 com Forge
+# Aula 3: Integração ScaffoldETH2 com Foundry
 
 ## Abertura
 
@@ -21,14 +21,24 @@ Sem a ABI, o frontend não consegue se comunicar com o contrato, tornando-a a po
 
 ### Exemplo de uma ABI:
 
+**solidity**
+
+```javascript
+function flip() public {
+    state = !state;
+}
+```
+
+**ABI**
+
 ```json
 [
   {
+    "type": "function",
+    "name": "flip",
     "inputs": [],
-    "name": "storeData",
     "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "stateMutability": "nonpayable"
   }
 ]
 ```
@@ -116,4 +126,4 @@ Nesta aula, vimos como o ScaffoldETH2 e o Forge podem ser integrados para criar 
 
 ## Próxima Aula
 
-Na próxima aula, vamos abordar o suporte ao **Vyper** no Forge. Até lá!
+Na próxima aula, vamos ver **Cheetcodes e Lib Vm** no Forge. Até lá!
