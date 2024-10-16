@@ -58,10 +58,10 @@ path = "/path/to/vyper"
 
 ## 3. Testando nosso contrato em Vyper
 
-### Contrato Vyper Simples (Greatting):
+### Contrato Vyper Simples (Voting):
 
 ```python
-#pragma version >0.4.0
+#pragma version >0.3.0
 
 voted: public(HashMap[address, bool])
 candidate: public(HashMap[address, uint256])
