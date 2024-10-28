@@ -15,20 +15,26 @@ Olá! Bem-vindo à primeira aula do curso Foundry 101.
 
 ## 2. NearX
 
-Se você ainda não entendeu, a NearX é um ecosistema de aprendizagem e dentro da nossa comunidade temos mentorias, dojos e indicações de vagas.
+Se você ainda não entendeu, a NearX é um ecosistema de aprendizagem com uma comunidade de mais de 2.000 alunos com bootcamps, hackathons, mentorias, dojos e aceleração de carreiras.
+
+Já fizemos parcerias com:
+
+AnimocaBrands
+Stellar
+Optimism
+Arbitrum
+Starknet
 
 ## 3. Lucas Oliveira
 
-Sou matemático e engenheiro de blockchain desde 2020.
-Já trabalhei com core blockchain, criei SDKs, escrevi smartcontracts com Solidity e fiz integrações e testes com o DREX em 2023.
+Sou matemático e engenheiro de blockchain desde 2020. Já trabalhei com core blockchain, criei SDKs, escrevi smartcontracts com Solidity e fiz integrações e testes com o DREX em 2023.
 
 Hoje (2024) eu estou envolvido em vários projetos:
 
 - Head de Education @ NearX
 - Ambassador @ OpenSense | Stellar
 - Founder @ Floripa Web3
-- Senior Blockchain Engineer
-- Mathematician
+- Colaborador @ Python Floripa
 
 ## 4. Foundry 101
 
