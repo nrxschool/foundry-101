@@ -2,7 +2,7 @@
 
 ## Módulo 1: Ecosistema Foundry
 
-- ✅ aula 1: [Apresentação](./en/mod1/aula1/roteiro.md)
+- ✅ aula 1: Apresentação
 - ✅ aula 2: História do EVM Tooling
 - ✅ aula 3: Foundry - Forge, Anvil, Cast, Chisel
 
