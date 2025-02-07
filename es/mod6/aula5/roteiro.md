@@ -1,274 +1,207 @@
-# Aula 5: Suporte ao Vyper
+# **Clase 5: Meta-Transacciones en Solidity**  
 
-## Abertura
+## **1. Apertura**  
 
-Nesta aula, vamos explorar o **Vyper**, uma linguagem de programação para contratos inteligentes, e como configurá-lo no **Foundry**. Vamos aprender a compilar contratos Vyper, escrever testes e scripts, além de interagir com os contratos. O objetivo é entender como o Vyper pode ser utilizado em conjunto com o Foundry para desenvolver contratos inteligentes seguros e eficientes.
+¡Bienvenido a la **quinta clase del Módulo 6**! Hoy exploraremos **meta-transacciones en Solidity**, una técnica que permite a los usuarios interactuar con contratos inteligentes **sin pagar gas directamente**.  
 
-### Programa da aula:
+📌 **¿Por qué usar meta-transacciones?**  
+✅ Permiten que los usuarios sin ETH realicen transacciones.  
+✅ Reducen la fricción en la adopción de DApps.  
+✅ Se utilizan en protocolos como **Gnosis Safe, OpenZeppelin Defender y Biconomy**.  
 
-1. Apresentando o Vyper e suas diferenças em relação ao Solidity.
-2. Configurando o Foundry para compilar Vyper.
-3. Escrevendo um contrato simples e testes em Vyper.
-4. Escrevendo um script em Vyper e interagindo com o contrato.
+📌 **Lo que veremos hoy:**  
+1. **Cómo funcionan las meta-transacciones.**  
+2. **Cómo implementar un contrato con meta-transacciones.**  
+3. **Cómo firmar y enviar transacciones sin gas.**  
+4. **Casos de uso y herramientas para implementarlas.**  
 
----
-
-## 1. Apresentando o Vyper e Comparando com Solidity
-
-O Vyper é uma linguagem de programação para contratos inteligentes que prioriza a simplicidade e a segurança. Ao contrário do Solidity, que possui uma sintaxe mais flexível e recursos mais complexos, o Vyper se concentra em uma abordagem mais restrita, o que pode levar a um código mais seguro.
-
-### Principais Diferenças:
-
-- **Sintaxe mais simples**: O Vyper tem uma sintaxe mais intuitiva e legível.
-- **Sem suporte a sobrecarga de funções**: Cada função deve ter um nome único.
-- **Foco em segurança**: O design do Vyper é voltado para evitar vulnerabilidades comuns.
+✅ **¡Vamos a ello!** 🚀  
 
 ---
 
-## 2. Configurando o Foundry para Compilar Vyper
+## **2. ¿Cómo Funcionan las Meta-Transacciones?**  
 
-Para usar o Vyper no Foundry, primeiro precisamos instalá-lo. Existem várias maneiras de fazer isso, incluindo Docker e PIP. Abaixo estão as instruções para configurá-lo:
+En una transacción normal:  
+- Un usuario necesita **ETH** para pagar el gas.  
+- La transacción se firma y se envía a la red.  
 
-### Instalação do Vyper:
+En una **meta-transacción**:  
+1. El usuario **firma** una transacción fuera de la blockchain.  
+2. Envía la firma a un **"relayer"** (un servicio que paga el gas).  
+3. El **relayer envía la transacción** a la blockchain.  
+4. El contrato **verifica la firma** y ejecuta la acción.  
 
-1. **Crie um ambiente Python**:
+✅ **Esto permite que los usuarios interactúen con contratos sin tener ETH.**  
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-2. **Instale o Vyper**:
-
-```bash
-pip3 install vyper
-which vyper
-```
-
-### Configurando o Foundry:
-
-Adicione a configuração do Vyper no arquivo `foundry.toml`:
-
-```toml
-[vyper]
-path = "/path/to/vyper"
-```
+📌 **Ejemplo de uso:**  
+- Un usuario interactúa con una DApp **sin pagar gas**.  
+- Un contrato **subvenciona** el gas a ciertos usuarios.  
+- Un servicio externo (relayer) **cubre los costos**.  
 
 ---
 
-## 3. Testando nosso contrato em Vyper
+## **3. Implementación de Meta-Transacciones en Solidity**  
 
-### Contrato Vyper Simples (Greatting):
+Vamos a escribir un contrato que permita **ejecutar transacciones en nombre de otro usuario**.  
 
-```python
-#pragma version >0.4.0
+📌 **Paso 1: Crear un contrato con verificación de firma**  
 
-voted: public(HashMap[address, bool])
-candidate: public(HashMap[address, uint256])
-
-@external
-def vote(candidate: address) -> bool:
-    assert not self.voted[msg.sender], "You have already voted."
-
-    self.voted[msg.sender] = True
-    self.candidate[candidate] += 1
-
-    return True
-```
-
-### Testando o Contrato:
-
-Usaremos Solidity para escrever os testes, e um deployer.
-
-```javascript
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Test} from "forge-std/Test.sol";
+import "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol";
 
-contract VyperDeployer is Test {
-    ///@notice Compiles a Vyper contract and returns the address that the contract was deployeod to
-    ///@notice If deployment fails, an error will be thrown
-    ///@param fileName - The file name of the Vyper contract. For example, the file name for "SimpleStore.vy" is "SimpleStore"
-    ///@return deployedAddress - The address that the contract was deployed to
-    function deployContract(string memory fileName) public returns (address) {
-        ///@notice create a list of strings with the commands necessary to compile Vyper contracts
-        string[] memory cmds = new string[](2);
-        cmds[0] = "vyper";
-        cmds[1] = string.concat("src/", fileName, ".vy");
+contract MetaTx {
+    using ECDSA for bytes32;
 
-        ///@notice compile the Vyper contract and return the bytecode
-        bytes memory bytecode = vm.ffi(cmds);
+    mapping(address => uint256) public nonces;
 
-        ///@notice deploy the bytecode with the create instruction
-        address deployedAddress;
-        assembly {
-            deployedAddress := create(0, add(bytecode, 0x20), mload(bytecode))
-        }
+    event MetaTransactionExecuted(address user, address relayer);
 
-        ///@notice check that the deployment was successful
-        require(deployedAddress != address(0), "VyperDeployer could not deploy contract");
+    function executeMetaTransaction(
+        address user,
+        bytes memory functionSignature,
+        bytes memory signature
+    ) public {
+        bytes32 hash = keccak256(abi.encodePacked(user, functionSignature, nonces[user]));
+        require(_verify(user, hash, signature), "Firma inválida");
 
-        ///@notice return the address that the contract was deployed to
-        return deployedAddress;
+        nonces[user]++; // Evita reenvío de la transacción
+
+        (bool success, ) = address(this).call(functionSignature);
+        require(success, "Ejecución fallida");
+
+        emit MetaTransactionExecuted(user, msg.sender);
     }
 
-    ///@notice Compiles a Vyper contract with constructor arguments and returns the address that the contract was deployeod to
-    ///@notice If deployment fails, an error will be thrown
-    ///@param fileName - The file name of the Vyper contract. For example, the file name for "SimpleStore.vy" is "SimpleStore"
-    ///@return deployedAddress - The address that the contract was deployed to
-    function deployContract(string memory fileName, bytes calldata args) public returns (address) {
-        ///@notice create a list of strings with the commands necessary to compile Vyper contracts
-        string[] memory cmds = new string[](2);
-        cmds[0] = "vyper";
-        cmds[1] = string.concat("src/", fileName, ".vy");
-
-        ///@notice compile the Vyper contract and return the bytecode
-        bytes memory _bytecode = vm.ffi(cmds);
-
-        //add args to the deployment bytecode
-        bytes memory bytecode = abi.encodePacked(_bytecode, args);
-
-        ///@notice deploy the bytecode with the create instruction
-        address deployedAddress;
-        assembly {
-            deployedAddress := create(0, add(bytecode, 0x20), mload(bytecode))
-        }
-
-        ///@notice check that the deployment was successful
-        require(deployedAddress != address(0), "VyperDeployer could not deploy contract");
-
-        ///@notice return the address that the contract was deployed to
-        return deployedAddress;
+    function _verify(address user, bytes32 hash, bytes memory signature) internal pure returns (bool) {
+        return hash.toEthSignedMessageHash().recover(signature) == user;
     }
 }
 ```
 
-Vamos escrever os testes agora:
+📌 **Explicación del código:**  
+- **El usuario firma la transacción fuera de la blockchain.**  
+- **El relayer (msg.sender) paga el gas** y envía la transacción.  
+- **El contrato verifica la firma** para asegurarse de que el usuario la autorizó.  
+- **La transacción se ejecuta en nombre del usuario.**  
+
+✅ **Con este contrato, un usuario sin ETH puede ejecutar funciones sin pagar gas.**  
+
+---
+
+## **4. Firmar y Enviar una Meta-Transacción**  
+
+📌 **Paso 1: Crear una firma fuera de la blockchain**  
+
+En **JavaScript (Ethers.js)**, el usuario puede firmar su transacción:  
 
 ```javascript
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+const ethers = require("ethers");
 
-import {VyperDeployer} from "./VyperDeploy.sol";
+async function signMetaTransaction(user, functionSignature, nonce, privateKey) {
+    const messageHash = ethers.utils.solidityKeccak256(
+        ["address", "bytes", "uint256"],
+        [user, functionSignature, nonce]
+    );
 
-interface IVoting {
-    function vote(address) external returns (bool);
-
-    function voted(address) external returns (bool);
-
-    function candidate(address) external returns (uint256);
-}
-
-contract VotingTest is VyperDeployer {
-    VyperDeployer deployer;
-    IVoting voting;
-    address alice = address(0xaAaAaAaaAaAaAaaAaAAAAAAAAaaaAaAaAaaAaaAa);
-    address bob = address(0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB);
-
-    function setUp() public {
-        deployer = new VyperDeployer();
-        voting = IVoting(deployer.deployContract("Voting"));
-    }
-
-    function testVote() public {
-        vm.prank(alice);
-        voting.vote(alice);
-
-        assertEq(voting.candidate(alice), 1);
-        assertEq(voting.voted(alice), true);
-    }
-
-    function testVoteTwice() public {
-        voting.vote(alice);
-
-        vm.expectRevert("You have already voted.");
-        voting.vote(alice);
-    }
+    const wallet = new ethers.Wallet(privateKey);
+    return await wallet.signMessage(ethers.utils.arrayify(messageHash));
 }
 ```
 
----
-
-## 4. Deploy do nosso contrato em Vyper
-
-### Deploy com `forge create`
-
-```bash
-forge create \
-    ./src/Voting.vy:Voting \
-    --account my-net
-```
-
-### Deploy com `Script`:
+📌 **Paso 2: El Relayer envía la transacción**  
 
 ```javascript
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+const tx = await metaTxContract.executeMetaTransaction(
+    userAddress,
+    functionSignature,
+    signedMessage,
+    { gasLimit: 100000 }
+);
+await tx.wait();
+console.log("Meta-transacción enviada con éxito.");
+```
 
-import {console2} from "forge-std/console2.sol";
-import {Script} from "forge-std/Script.sol";
-import {VyperDeployer} from "../test/vyper/VyperDeploy.sol";
+✅ **El relayer paga el gas y el contrato ejecuta la transacción en nombre del usuario.**  
 
-interface IVoting {
-    function candidate(address) external returns (uint256);
-    function voted(address) external returns (bool);
-    function vote(address) external returns (bool);
-}
+---
 
-contract Deploy is Script {
-    VyperDeployer deployer;
-    IVoting voting;
+## **5. Herramientas para Implementar Meta-Transacciones**  
 
-    function setUp() public {
-        deployer = new VyperDeployer();
-        voting = IVoting(deployer.deployContract("Voting"));
+📌 **1️⃣ OpenZeppelin EIP-2771 Context**  
+Permite crear contratos compatibles con **meta-transacciones estándar**.  
+
+```solidity
+import "openzeppelin-contracts/contracts/metatx/ERC2771Context.sol";
+
+contract MetaTxContract is ERC2771Context {
+    constructor(address trustedForwarder) ERC2771Context(trustedForwarder) {}
+
+    function myFunction() public {
+        address sender = _msgSender(); // Compatible con meta-transacciones
     }
-
-    function run() external {
-        vm.startBroadcast();
-
-        vm.stopBroadcast();
-    }
 }
 ```
 
-### Interagindo com o contrato com `cast`:
+📌 **2️⃣ Biconomy**  
+Plataforma que ofrece relayers para **manejar gas gratis** para los usuarios.  
 
-Use o seguinte comando para rodar o script e interagir com o contrato:
+📌 **3️⃣ Gnosis Safe**  
+Permite transacciones multi-firma y **ejecución de transacciones en batch**.  
 
-**Votar**
-
-```bash
-cast send \
-    0x700b6A60ce7EaaEA56F065753d8dcB9653dbAD35 \
-    "vote(address)(bool)" 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720 \
-    --account my-net
-```
-
-**Verificar voto**
-
-```bash
-cast call 0x700b6A60ce7EaaEA56F065753d8dcB9653dbAD35 "voted(address)(bool)" 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720
-cast call 0x700b6A60ce7EaaEA56F065753d8dcB9653dbAD35 "candidate(address)(uint256)" 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720
-```
+✅ **Estas herramientas facilitan la implementación de meta-transacciones en producción.**  
 
 ---
 
-## Conclusão
+## **6. Casos de Uso de Meta-Transacciones**  
 
-Nesta aula, aprendemos sobre o **Vyper** e sua integração com o **Foundry**. Exploramos a configuração do ambiente, a escrita de contratos simples e testes, além de scripts em Vyper para interagir com contratos. Essas habilidades são essenciais para desenvolver contratos inteligentes de forma segura e eficiente.
+📌 **🎮 Juegos Blockchain** → Permiten que jugadores sin ETH interactúen con contratos.  
+📌 **📲 Aplicaciones móviles Web3** → Mejoran la experiencia del usuario al evitar pagos de gas.  
+📌 **💰 Proyectos DeFi** → Permiten interacciones con contratos sin necesidad de tokens nativos.  
+📌 **🎟️ NFTs** → Usuarios pueden acuñar NFTs sin tener ETH.  
 
----
-
-## Lição de casa
-
-1. Crie um contrato Vyper que utilize eventos e escreva testes para garantir que esses eventos são emitidos corretamente.
-2. Utilize o `prank` para simular diferentes contas interagindo com o contrato que você criou.
-3. Tente implementar uma função que falhe e utilize `expectRevert` em seus testes para validar as falhas.
+✅ **Las meta-transacciones hacen que las DApps sean más accesibles para todos.**  
 
 ---
 
-## Próxima Aula
+## **7. Conclusión**  
 
-Na próxima aula, vamos explorar como criar Testes Avançados. Até lá!
+📌 **Hoy aprendimos:**  
+✔ **Cómo funcionan las meta-transacciones y por qué son útiles.**  
+✔ **Cómo implementar un contrato que permite transacciones sin gas.**  
+✔ **Cómo firmar y enviar una meta-transacción con JavaScript y Solidity.**  
+✔ **Qué herramientas existen para integrar meta-transacciones en proyectos reales.**  
+
+✅ **Con meta-transacciones, podemos mejorar la usabilidad de nuestras DApps.**  
+
+---
+
+## **8. Recapitulación**  
+
+📌 **Resumen de la clase:**  
+1. **Explicación del modelo de meta-transacciones.**  
+2. **Implementación de un contrato con verificación de firma.**  
+3. **Firma y envío de transacciones sin gas.**  
+4. **Herramientas como OpenZeppelin, Biconomy y Gnosis Safe.**  
+
+---
+
+## **9. Tarea para Casa**  
+
+✏ **Ejercicio práctico:**  
+
+1. **Implementa un contrato con meta-transacciones y pruébalo en Anvil.**  
+2. **Firma una transacción con JavaScript y verifica su autenticidad en Solidity.**  
+3. **Investiga cómo integrar OpenZeppelin Defender para automatizar relayers.**  
+
+📌 **Anota tus resultados y prueba diferentes configuraciones.**  
+
+---
+
+## **10. Próxima Clase**  
+
+📅 **En la próxima clase, exploraremos estrategias avanzadas de seguridad en Solidity y cómo evitar vulnerabilidades comunes en contratos inteligentes.**  
+
+🚀 **¡Nos vemos allí!**  
