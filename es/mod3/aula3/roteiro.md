@@ -1,106 +1,108 @@
-# Aula 3: Forks Locais com Anvil
+# **Clase 3: Forks Locales con Anvil**  
 
-## 1. Abertura
+## **1. Apertura**  
 
+¡Hola! Bienvenido a la **tercera clase del Módulo 3** del curso **Foundry 101**.  
 
-Olá! Seja bem-vindo à **quarta aula do Módulo 3** do curso **Foundry 101**! Hoje, vamos explorar uma das funcionalidades mais poderosas do **Anvil**: o **Fork de Redes Locais**. Vamos aprender como podemos "copiar" o estado de uma rede real, como a mainnet ou uma testnet, e usar localmente para testar contratos com dados reais.
+Hoy exploraremos una de las funcionalidades más poderosas de **Anvil**: los **Forks Locales**. Aprenderemos cómo "copiar" el estado de una red real, como la **Mainnet** o una **testnet**, y usarlo localmente para probar contratos con datos reales.  
 
-Os tópicos que vamos cobrir hoje são:
+📌 **Lo que aprenderemos hoy:**  
 
-1. O que é um **fork local** e por que usá-lo.
-2. Como configurar e rodar um fork de uma rede real no **Anvil**.
-3. Executar interações com contratos já existentes em um fork.
-4. Testar novas implementações no fork de uma rede.
+1. **Qué es un fork local** y por qué utilizarlo.  
+2. **Cómo configurar y ejecutar un fork** de una red real en **Anvil**.  
+3. **Interactuar con contratos existentes en el fork**.  
+4. **Probar nuevas implementaciones en un fork de red**.  
 
-Essa funcionalidade é uma das mais úteis para desenvolvedores que querem simular o comportamento de seus contratos em uma rede real sem gastar gás. Vamos começar!
-
----
-
-## 2. O que é um Fork Local e Por que Usá-lo
-
-### O que é um fork?
-
-Um **fork local** é uma cópia exata de uma blockchain real (como a mainnet Ethereum, Goerli, ou Sepolia), com todos os contratos, transações e estados de conta daquela rede. Com o **Anvil**, você pode rodar essa cópia localmente em seu computador e testar contratos ou interações sem a necessidade de pagar taxas de gás.
-
-### Por que usar forks locais?
-
-1. **Simular a Mainnet/Testnet localmente**: Ao fazer um fork da mainnet ou testnet, você tem acesso ao estado atual de todos os contratos da rede. Isso permite simular interações reais, como testar transações complexas ou interagir com contratos populares (por exemplo, Uniswap, Aave).
-2. **Testar alterações sem custos**: Ao testar um contrato ou uma interação em um fork, você não paga taxas de gás reais, o que torna o desenvolvimento e depuração muito mais rápido e barato.
-3. **Depuração avançada**: O **fork** permite que você pause, volte no tempo e inspecione estados anteriores da blockchain enquanto realiza testes.
+✅ **¡Vamos a ello!** 🚀  
 
 ---
 
-## 3. Como Configurar e Rodar um Fork no Anvil
+## **2. Qué es un Fork Local y Por Qué Usarlo**  
 
-### Passo 1: Rodar um Fork de uma Rede Real
+### **¿Qué es un fork?**  
 
-Para fazer um fork local de uma rede real, você precisa de um **RPC URL** de um provedor de blockchain (como Infura, Alchemy, ou Ankr). Vamos usar a Mainnet **Ethereum** como exemplo.
+Un **fork local** es una copia exacta del estado de una blockchain real (como la **Mainnet** de Ethereum, **Goerli** o **Sepolia**). Con **Anvil**, puedes ejecutar esta copia en tu computadora y probar contratos o interacciones **sin pagar gas real**.  
 
-1. Suba o Anvil apontando para o RPC da Ethereum com o seguinte comando:
+📌 **Beneficios de usar forks locales:**  
+
+✅ **Simular la Mainnet/Testnet localmente**: Puedes interactuar con contratos reales como si estuvieras en la red real.  
+✅ **Probar cambios sin costos**: No gastas ETH real, lo que hace que las pruebas sean más económicas.  
+✅ **Depuración avanzada**: Puedes inspeccionar estados anteriores y analizar el comportamiento de contratos reales.  
+
+📌 **Ejemplo de uso:**  
+- Probar una **swap en Uniswap** sin gastar dinero.  
+- Simular interacciones con **Aave**, **Compound** u otros protocolos DeFi.  
+- Desplegar y probar un contrato con datos reales antes de enviarlo a producción.  
+
+---
+
+## **3. Cómo Configurar y Ejecutar un Fork en Anvil**  
+
+### **Paso 1: Ejecutar un Fork de una Red Real**  
+
+Para hacer un fork local, necesitamos un **RPC URL** de un proveedor de blockchain (como **Infura**, **Alchemy** o **Ankr**).  
+
+Ejemplo de fork de la **Mainnet** de Ethereum usando **Alchemy**:  
 
 ```bash
 anvil --fork-url https://eth-mainnet.g.alchemy.com/v2/<API_KEY>
 ```
 
-Esse comando cria uma cópia exata do estado atual da rede Ethereum e a executa localmente no **Anvil**.
+📌 **Explicación del comando:**  
+- **`--fork-url`** → Indica la URL del RPC de la red a forkear.  
+- **`<API_KEY>`** → Debes reemplazarlo con tu clave de API del proveedor de RPC.  
 
-**`--fork-url`**: Define a URL do RPC da rede que será forkeada.
+✅ Esto creará una copia local del estado de la **Mainnet**, permitiendo interactuar con contratos reales.  
 
-Você pode rodar esse comando para qualquer rede suportada, como **Mainnet**, **Sepolia** ou **Optimism**, mudando o URL do RPC.
+### **Paso 2: Hacer Fork de una Testnet**  
 
-### Passo 2: Definir um Bloco Específico (Opcional)
-
-Se você quiser forkar a rede a partir de um bloco específico, pode adicionar a flag `--fork-block-number`:
+Si queremos forkear **Sepolia**, el comando sería:  
 
 ```bash
-anvil --fork-url https://eth-mainnet.g.alchemy.com/v2/<API_KEY> --fork-block-number 1234567
+anvil --fork-url https://eth-sepolia.g.alchemy.com/v2/<API_KEY>
 ```
 
-Isso é útil se você estiver testando uma transação ou evento que ocorreu em um bloco específico e quer garantir que o estado da rede reflita aquele momento exato.
+📌 **Puedes forkear cualquier red EVM**, como **Optimism**, **Arbitrum**, **Polygon**, etc.  
 
 ---
 
-## 4. Interagindo com Contratos Existentes em um Fork
+## **4. Interactuar con Contratos Existentes en un Fork**  
 
-Agora que temos o **fork** rodando, podemos interagir com os contratos que já existem na rede. Isso é uma maneira prática de testar interações com contratos reais.
+Ahora que tenemos el fork en ejecución, podemos interactuar con **contratos que ya existen en la red real**.  
 
-### Passo 1: Usar Cast para Chamar Funções de Contratos
+### **Paso 1: Usar Cast para Leer Datos de un Contrato**  
 
-Suponha que você queira interagir com o contrato do **Uniswap V2** na Ethereum testnet. Você pode usar o **Cast** para chamar funções no contrato diretamente.
-
-1. Identifique o endereço do contrato **Uniswap V2** na rede Ethereum.
-2. Use o comando **Cast** para chamar uma função do contrato:
+📌 **Ejemplo: Obtener el saldo de un usuario en Uniswap V2**  
 
 ```bash
-cast call 0xUniswapV2ContractAddress "getReserves()"
+cast call 0xUniswapV2ContractAddress "balanceOf(address)(uint256)" 0xYourAddress --rpc-url http://127.0.0.1:8545
 ```
 
-Esse comando chama a função `getReserves()` de um par de tokens no contrato Uniswap V2 e retorna o estado das reservas atuais.
-
-### Passo 2: Modificar Estados no Fork com Transações Simuladas
-
-Você também pode simular transações que modificam o estado da blockchain. Vamos supor que você queira testar uma **swap** no contrato Uniswap sem pagar gás real.
-
-1. Use **Cast** para enviar uma transação simulada:
-
-```bash
-cast send 0xUniswapV2ContractAddress "swap(uint amount0Out, uint amount1Out, address to, bytes calldata data)" 100 0 0xYourAddress "0x"
-```
-
-Aqui, estamos simulando uma troca de tokens no Uniswap.
+✅ **Este comando consulta el saldo sin modificar la blockchain**.  
 
 ---
 
-## 5. Testando Novas Implementações no Fork
+### **Paso 2: Modificar el Estado en el Fork**  
 
-Uma das funcionalidades mais interessantes de um fork é a capacidade de **implementar novos contratos** ou **testar atualizações** em contratos existentes.
+Podemos **simular transacciones** sin gastar ETH real.  
 
-### Passo 1: Deploy de um Novo Contrato em um Fork
+📌 **Ejemplo: Simular un swap en Uniswap**  
 
-Vamos fazer o deploy de um contrato ERC20 simples na rede Ethereum, usando o fork local:
+```bash
+cast send 0xUniswapV2ContractAddress "swap(uint amount0Out, uint amount1Out, address to, bytes calldata data)" 100 0 0xYourAddress "0x" --rpc-url http://127.0.0.1:8545 --private-key <PRIVATE_KEY>
+```
 
-1. Primeiro, suba o **Anvil** com o fork da rede Ethereum.
-2. Em seguida, crie um script de deploy para o contrato:
+✅ **Esto ejecuta la transacción en el fork sin afectar la red real.**  
+
+---
+
+## **5. Probar Nuevas Implementaciones en un Fork**  
+
+Una de las mejores características de los forks es que puedes **desplegar y probar nuevos contratos** en un entorno realista.  
+
+### **Paso 1: Desplegar un Contrato en un Fork**  
+
+📌 **Ejemplo: Desplegar un token ERC20 en la Mainnet forkeada**  
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -115,37 +117,56 @@ contract MyToken is ERC20 {
 }
 ```
 
-3. Execute o deploy usando o **Forge** no ambiente forkeado:
+### **Paso 2: Ejecutar el Despliegue**  
+
+1. **Iniciar Anvil con el fork**  
+2. **Ejecutar el script de despliegue**  
 
 ```bash
 forge script script/DeployToken.s.sol --fork-url http://127.0.0.1:8545 --broadcast
 ```
 
-Agora, o contrato está implantado no seu fork local da Ethreum, e você pode interagir com ele como faria normalmente.
+✅ **Ahora el contrato está desplegado en tu fork local de la Mainnet.**  
+
+📌 **Puedes interactuar con él usando Cast, pruebas unitarias o scripts.**  
 
 ---
 
-## 6. Conclusão
+## **6. Conclusión**  
 
-Hoje, exploramos como fazer forks locais de redes reais usando o **Anvil**, como interagir com contratos já existentes e testar novas implementações. Essa técnica permite testar interações complexas em um ambiente realista sem pagar taxas de gás, oferecendo um ambiente de desenvolvimento mais eficiente e seguro.
+Hoy aprendimos a:  
+✔ **Crear forks locales de redes reales usando Anvil**.  
+✔ **Interactuar con contratos ya desplegados en la blockchain real**.  
+✔ **Probar nuevas implementaciones en un fork sin costos reales**.  
 
----
-
-## Recapitulação
-
-- **Forks Locais**: Copiamos o estado da rede Goerli para um ambiente local e interagimos com contratos reais.
-- **Interação com Contratos**: Usamos o **Cast** para chamar funções e enviar transações simuladas.
-- **Deploy de Novos Contratos**: Fizemos o deploy de um contrato ERC20 no fork e testamos suas interações.
+Esta técnica es extremadamente útil para simular escenarios reales y hacer pruebas sin riesgos.  
 
 ---
 
-## Lição de Casa
+## **7. Recapitulación**  
 
-1. Faça o fork de uma rede real (como Sepolia ou Mainnet) e interaja com um contrato existente.
-2. Implante um novo contrato no fork e teste sua interação com outros contratos da rede.
+📌 **Hoy vimos:**  
+1. **Qué es un fork local y sus ventajas.**  
+2. **Cómo ejecutar un fork con Anvil** usando `--fork-url`.  
+3. **Cómo interactuar con contratos existentes** en la red forkeada.  
+4. **Cómo desplegar y probar nuevos contratos en un fork local**.  
 
 ---
 
-## Próxima Aula
+## **8. Tarea para casa**  
 
-Na próxima aula, vamos continuar explorando como interagir com contratos na blockchain, usando **Cast** e tudo o que aprendemos até agora. Até lá, continue praticando e nos vemos na próxima aula! 👋
+✏ **Ejercicio práctico:**  
+
+1. **Haz un fork de la testnet Sepolia** y consulta el saldo de un contrato ERC20.  
+2. **Despliega un nuevo contrato en el fork** y prueba sus funciones.  
+3. **Modifica el estado de un contrato existente en el fork** y verifica los cambios.  
+
+📌 **Toma notas de los resultados y experimenta lo máximo posible.**  
+
+---
+
+## **9. Próxima clase**  
+
+📅 **En la próxima clase, aprenderemos a interactuar con contratos en la blockchain usando `Cast` y todo lo que hemos aprendido hasta ahora.**  
+
+🚀 **¡Nos vemos allí!**  
