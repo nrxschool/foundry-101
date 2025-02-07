@@ -1,87 +1,89 @@
-# Aula 2: Deploy Local no Anvil
+# **Clase 2: Despliegue Local en Anvil**  
 
-## 1. Abertura
+## **1. Apertura**  
 
-Olá! Seja bem-vindo à **segunda aula do Módulo 3** do nosso curso **Foundry 101**! Hoje, vamos falar sobre **deploy local com o Anvil** e como salvar, carregar e gerenciar o estado da blockchain local. Vamos explorar as flags do Anvil que permitem a persistência do estado, trabalhar com logs e rodar testes.
+¡Hola! Bienvenido a la **segunda clase del Módulo 3** de nuestro curso **Foundry 101**. Hoy hablaremos sobre **despliegue local con Anvil** y cómo guardar, cargar y gestionar el estado de la blockchain local. También exploraremos las flags de Anvil que permiten la persistencia del estado, trabajaremos con logs y ejecutaremos pruebas.  
 
-Os tópicos que vamos abordar são:
+📌 **Temas que veremos hoy:**  
 
-1. Gerenciar estados da blockchain com **Anvil**.
-2. Cenário prático de persistencia de estado.
+1. Cómo **gestionar estados de la blockchain** con **Anvil**.  
+2. Escenario práctico de **persistencia de estado**.  
 
-Vamos direto ao ponto!
+¡Vamos directo al punto! 🚀  
 
 ---
 
-## 2. Explicação de como funcionam as flags no Anvil
+## **2. Flags y Configuración en Anvil**  
 
-O **Anvil** oferece várias opções para salvar, carregar e gerenciar o estado da blockchain local. Isso é extremamente útil para manter o progresso do seu ambiente de testes ou simular diferentes cenários sem perder dados.
+Anvil ofrece varias opciones para **guardar, cargar y gestionar** el estado de la blockchain local. Esto es extremadamente útil para mantener el progreso del entorno de pruebas o simular diferentes escenarios sin perder datos.  
 
-### Flags principais
+### **Flags principales en Anvil**  
 
-**`--dump-state`**:
+📌 **Guardar el estado al cerrar Anvil (`--dump-state`)**  
 
 ```bash
-# Quando o Anvil é encerrado ele salva o estado no json `./estado.json`. Isso inclui contas, contratos e balances.
+# Cuando Anvil se cierra, guarda el estado en un archivo JSON llamado `estado.json`.
 anvil --dump-state ./estado.json
 ```
 
-**`--load-state`**:
+📌 **Cargar un estado guardado anteriormente (`--load-state`)**  
 
 ```bash
-# Carrega um estado salvo anteriormente ao iniciar o Anvil.
+# Carga un estado previamente guardado al iniciar Anvil.
 anvil --load-state ./estado.json
 ```
 
-**`--max-persisted-states <NUM>`**:
+📌 **Definir el número máximo de estados guardados (`--max-persisted-states`)**  
 
 ```bash
-# Define o número máximo de estados persistentes no disco. (Rotation)
+# Configura el número máximo de estados almacenados en disco (rotación).
 anvil --max-persisted-states 5
 ```
 
-**`--preserve-historical-states`**:
+📌 **Preservar historial de estados (`--preserve-historical-states`)**  
 
 ```bash
-# Preserva histórico de estados da blockchain.
+# Mantiene un historial de estados de la blockchain.
 anvil --preserve-historical-states
 ```
 
-**`--state-interval <SECONDS>`**:
+📌 **Configurar el intervalo de guardado de estado (`--state-interval`)**  
 
 ```bash
-# Intervalo de tempo para persistir o estado no disco.
+# Define el intervalo de tiempo para guardar el estado en disco (en segundos).
 anvil --state-interval 60
 ```
 
-**`--state <PATH>`**:
+📌 **Combinar carga y guardado de estado (`--state`)**  
 
 ```bash
-# Combina as funcionalidades de `--load-state` e `--dump-state`.
+# Usa el mismo archivo JSON tanto para cargar como para guardar el estado.
 anvil --state ./estado.json
 ```
 
-Essas flags são essenciais quando você está desenvolvendo contratos inteligentes e quer garantir que não perderá o estado da blockchain entre execuções do Anvil.
+✅ **Estas flags son esenciales para el desarrollo de contratos inteligentes sin perder datos entre sesiones.**  
 
 ---
 
-## 3. Prática: Deploy, Interação e Persistência do Estado
+## **3. Práctica: Despliegue, Interacción y Persistencia del Estado**  
 
-Agora, vamos colocar em prática o que aprendemos sobre as flags de estado do Anvil.
+Ahora aplicaremos lo que aprendimos sobre las flags de Anvil.  
 
-### Passo 1: Subir o Anvil com persistência de estado
+### **Paso 1: Iniciar Anvil con persistencia de estado**  
 
-Vamos subir o **Anvil** com a flag `--dump-state` para garantir que o estado da blockchain seja salvo quando o Anvil for encerrado.
+Ejecutemos **Anvil** con la opción `--dump-state` para asegurarnos de que el estado se guardará al cerrarlo:  
 
 ```bash
 anvil --dump-state ./estado.json
 ```
 
-### Passo 2: Fazer deploy de um contrato
+---
 
-Vamos usar um contrato simples de token ERC20:
+### **Paso 2: Desplegar un contrato**  
 
-```javascript
+Usaremos un contrato simple llamado **Counter**:  
+
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
@@ -100,10 +102,9 @@ contract Counter {
         return count;
     }
 }
-
 ```
 
-Agora, faça deploy com `forge create`:
+📌 **Ejecutar el despliegue con `forge create`**  
 
 ```bash
 forge create \
@@ -112,11 +113,15 @@ forge create \
     --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
-### Passo 3: Interagir com o contrato
+✅ Esto desplegará el contrato en la blockchain local de Anvil.  
 
-Agora que o contrato foi implantado, vamos interagir com ele usando o **Cast**.
+---
 
-**Pegar o valor inicial**
+### **Paso 3: Interactuar con el contrato**  
+
+Ahora que el contrato está desplegado, interactuemos con él usando **Cast**.  
+
+📌 **Obtener el valor inicial**  
 
 ```bash
 CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
@@ -125,67 +130,85 @@ cast call \
     "get()(uint256)"
 ```
 
-**Editar o valor para `7889`**
+📌 **Actualizar el valor a `7889`**  
 
 ```bash
-CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
 cast send \
     $CONTRACT_ADDRESS \
-    "set(uint256)()" 7889 \
+    "set(uint256)" 7889 \
     --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
-**Pegar o último valor**
+📌 **Verificar el último valor**  
 
 ```bash
-CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
 cast call \
     $CONTRACT_ADDRESS \
     "get()(uint256)"
 ```
 
-### Passo 4: Reiniciar o Anvil e carregar o estado salvo
+✅ **El contrato ahora tiene un nuevo valor almacenado en la blockchain local de Anvil.**  
 
-Depois de fazer o deploy e as interações, vamos encerrar o **Anvil**. Isso salvará o estado atual no arquivo **estado.json**. Para garantir que o estado persista após o reinício, carregue o estado salvo ao reiniciar o **Anvil**:
+---
+
+### **Paso 4: Reiniciar Anvil y cargar el estado guardado**  
+
+Después de interactuar con el contrato, cerremos Anvil. El estado se guardará en `estado.json`.  
+
+Ahora reiniciemos Anvil con la opción `--load-state` para restaurar el estado anterior:  
 
 ```bash
 anvil --load-state ./estado.json
 ```
 
-Agora, você pode interagir com o contrato novamente e validar que o último estado foi mantido (7889):
-
-**Pegar o último valor**
+📌 **Verificar el estado tras la recarga**  
 
 ```bash
-CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
 cast call \
     $CONTRACT_ADDRESS \
     "get()(uint256)"
 ```
 
+Si todo salió bien, el valor almacenado debería seguir siendo **7889**, lo que demuestra que el estado de la blockchain persistió correctamente.  
+
+✅ **¡Ahora podemos guardar y restaurar estados en Anvil sin perder datos!**  
 
 ---
 
-## 6. Conclusão
+## **6. Conclusión**  
 
-Hoje, aprendemos como fazer deploy localmente usando o **Anvil**, salvar e carregar o estado da blockchain, e usar logs para monitorar transações e contratos. Também vimos como rodar testes com **Forge**, manter o estado da blockchain ativo e interagir com contratos usando o **Cast**.
+Hoy aprendimos a:  
+✔ **Hacer despliegue localmente con Anvil.**  
+✔ **Guardar y cargar estados de la blockchain con flags avanzadas.**  
+✔ **Interactuar con contratos y verificar persistencia de datos.**  
 
----
-
-## Recapitulação
-
-- **Flags de estado do Anvil**: Vimos como usar `--dump-state`, `--load-state` e outras opções para salvar e restaurar o estado da blockchain.
-- **Prática de deploy**: Fizemos deploy de um contrato, interagimos com ele, reiniciamos o Anvil e garantimos que o estado persistiu.
+Estas herramientas facilitan un desarrollo más eficiente y evitan la pérdida de datos en pruebas.  
 
 ---
 
-## Lição de casa
+## **7. Recapitulación**  
 
-1. Faça o deploy de um contrato no **Anvil**, salve o estado da blockchain e verifique a persistência do estado após reiniciar o **Anvil**.
-2. Explore os logs do **Anvil** para monitorar as transações e chamadas de contrato.
+📌 **Hoy vimos:**  
+1. **Flags esenciales en Anvil** (`--dump-state`, `--load-state`).  
+2. **Práctica de despliegue e interacción con contratos.**  
+3. **Guardado y restauración del estado de la blockchain local.**  
 
 ---
 
-## Próxima aula
+## **8. Tarea para casa**  
 
-Na próxima aula, vamos aprofundar ainda mais em como usar o **Anvil** para testar e simular diferentes redes, incluindo forks de redes reais. Até lá, continue praticando e nos vemos na próxima aula! 👋
+✏ **Ejercicio práctico:**  
+
+1. **Despliega un contrato en Anvil** y realiza interacciones con él.  
+2. **Guarda el estado de la blockchain** y verifica que persiste tras reiniciar Anvil.  
+3. **Explora los logs de Anvil** para monitorear transacciones y llamadas a contratos.  
+
+📌 **Anota tus dudas y experimenta al máximo.**  
+
+---
+
+## **9. Próxima clase**  
+
+📅 **En la próxima clase, exploraremos cómo hacer forks de redes reales y probar interacciones con contratos existentes en un entorno local.**  
+
+🚀 **¡Nos vemos allí!**  
