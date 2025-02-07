@@ -1,75 +1,74 @@
-# Aula 1: **Foundry 101**
+# **Clase 1: Foundry 101**  
 
-## 1. Abertura
+## **1. Apertura**  
 
-Olá! Bem-vindo à primeira aula do curso Foundry 101.
+¡Hola! Bienvenido a la primera clase del curso **Foundry 101**.  
 
-### Programação:
-
-1. NearX
-2. Lucas Oliveira
-3. Foundry 101
-4. Estrutura das aulas
+### **Programación:**  
+1. NearX  
+2. Lucas Oliveira  
+3. Foundry 101  
+4. Estructura de las clases  
 
 ---
 
-## 2. NearX
+## **2. NearX**  
 
-Se você ainda não entendeu, a NearX é um ecosistema de aprendizagem com uma comunidade de mais de 2.000 alunos com bootcamps, hackathons, mentorias, dojos e aceleração de carreiras.
+Si aún no lo has entendido, **NearX** es un ecosistema de aprendizaje con una comunidad de más de 2.000 estudiantes que participan en bootcamps, hackatones, mentorías, dojos y aceleración de carreras.  
 
-Já fizemos parcerias com:
+Hemos realizado asociaciones con:  
 
-AnimocaBrands
-Stellar
-Optimism
-Arbitrum
-Starknet
+- **AnimocaBrands**  
+- **Stellar**  
+- **Optimism**  
+- **Arbitrum**  
+- **Starknet**  
 
-## 3. Lucas Oliveira
+## **3. Lucas Oliveira**  
 
-Sou matemático e engenheiro de blockchain desde 2020. Já trabalhei com core blockchain, criei SDKs, escrevi smartcontracts com Solidity e fiz integrações e testes com o DREX em 2023.
+Soy matemático e ingeniero de blockchain desde 2020. He trabajado con blockchain a nivel central, he creado SDKs, escrito smart contracts en Solidity e integrado y probado DREX en 2023.  
 
-Hoje (2024) eu estou envolvido em vários projetos:
+Actualmente (2024), estoy involucrado en varios proyectos:  
 
-- Head de Education @ NearX
-- Ambassador @ OpenSense | Stellar
-- Founder @ Floripa Web3
-- Colaborador @ Python Floripa
+- **Head de Educación @ NearX**  
+- **Embajador @ OpenSense | Stellar**  
+- **Fundador @ Floripa Web3**  
+- **Colaborador @ Python Floripa**  
 
-## 4. Foundry 101
+## **4. Foundry 101**  
 
-Pre-requisitos
+### **Requisitos previos**  
+- Tener conocimientos básicos de Solidity  
+- Tener ganas de aprender y mantenerse actualizado  
 
-- Saber o minimo de Solidity
-- Vontade de aprender e se atualizar
+### **Contenido**  
+- Aprender a usar `forge`, `anvil`, `cast`, `chisel`  
+- Contenido avanzado, desde pruebas fuzzing hasta migración de proyectos de Hardhat a Foundry  
 
-Conteúdo
+## **5. Estructura de las clases**  
 
-- Aprender como usar `forge`, `anvil`, `cast`, `chisel`
-- Conteúdo avançado como: Fuzzy teste até migrar projetos hardhat para foundry
+Nuestras clases seguirán el siguiente esquema:  
 
-## 5. Estrutura das aulas
+1. Apertura y presentación de los 4 temas de la clase  
+2. Tema 1  
+3. Tema 2  
+4. Tema 3  
+5. Tema 4  
+6. Conclusión y conexión de todos los temas  
+7. Recapitulación  
+8. Tarea para casa  
+9. Próxima clase  
 
-Nossa aulas vão seguir o seguinte roteiro
+## **6. Conclusión**  
 
-1. Abertura e apresentação dos 4 tópicos da aula
-2. Tópico 1
-3. Tópico 2
-4. Tópico 3
-5. Tópico 4
-6. Conclusão, amarrar todos os tópicos
-7. Recapitulação
-8. Lição de casa
-9. Próxima aula
+Eso es todo por esta clase.  
 
-## 6. Conclusão
+## **Tarea para casa**  
 
-Por essa aula é isso.
+Tu tarea es descargar e instalar Foundry en tu máquina. Es un paso simple, pero esencial.  
 
-## Lição de casa
+## **7. Próxima clase**  
 
-Vou deixar pra você como lição de casa baixar e instalar o Foundry na sua máquina, coisa simples mas essencial.
+En la próxima clase, nos enfocaremos en la **historia de las herramientas EVM**, entenderemos sus orígenes y analizaremos algunas de las principales herramientas para desarrolladores de blockchain.  
 
-## 7. Próxima aula
-
-Na próxima aula, vamos focar na **história das ferramentas EVM**, entender suas origens e algumas as principais ferramentas para desenvolvedores de blockchain. Nos vemos lá!
+¡Nos vemos allí!  
