@@ -1,81 +1,110 @@
-# Aula 3: **Ecossistema Foundry**
+# **Clase 3: Ecosistema Foundry**  
 
-## 1. Abertura
+## **1. Apertura**  
 
-Olá, seja muito bem-vindo à nossa segunda aula do curso **Foundry 101**! Hoje vamos explorar um pouco mais a fundo o **ecossistema Foundry**, uma das ferramentas mais modernas e poderosas para desenvolvimento na blockchain.
+¡Hola! ¡Bienvenido a nuestra tercera clase del curso **Foundry 101**!  
 
-Na aula de hoje, vamos passar pelos seguintes tópicos:
+Hoy exploraremos en profundidad el **ecosistema Foundry**, una de las herramientas más modernas y potentes para el desarrollo en blockchain.  
 
-### Programação:
+En esta clase, abordaremos los siguientes temas:  
 
-1. A **história do Foundry**, para entender como e por que essa ferramenta foi criada.
-2. O **Forge**, que é o coração do Foundry e a principal ferramenta de desenvolvimento.
-3. O **Anvil**, que permite simular um ambiente blockchain local.
-4. E, por fim, as ferramentas **Cast** e **Chisel**, que trazem ainda mais praticidade para o desenvolvimento e interação com contratos.
+### **Programación:**  
+1. **Historia de Foundry** → Cómo y por qué se creó esta herramienta.  
+2. **Forge** → El núcleo de Foundry y su principal herramienta de desarrollo.  
+3. **Anvil** → Permite simular un entorno blockchain local.  
+4. **Cast y Chisel** → Herramientas avanzadas para facilitar la interacción con contratos.  
 
-- **Se você não fez a lição de casa da aula 1 você não vai conseguir acompanhar essa aula ok!**
+📌 **⚠️ Importante:** Si no realizaste la tarea de la clase 1, te costará seguir esta lección.  
 
-Então, sem mais delongas, vamos começar entendendo como o Foundry surgiu e sua importância no ecossistema de desenvolvimento na blockchain!
-
----
-
-## 2. **História do Foundry**
-
-O **Foundry** nasceu da necessidade de uma ferramenta mais rápida e flexível para desenvolvedores que trabalham com contratos inteligentes na EVM, o **Ethereum Virtual Machine**. Tradicion almente, muitos desenvolvedores usavam ferramentas como **Truffle** ou **Hardhat**, que, apesar de populares, começaram a mostrar suas limitações em termos de performance e facilidade de uso, especialmente com projetos maiores.
-
-Aqui entra o Foundry: criado para ser mais leve, rápido e integrado, ele se destaca por ser uma suíte completa de ferramentas, tudo em uma única plataforma. Isso significa que você pode realizar todas as etapas de um projeto – desde a compilação, testes, deploys, até a interação com contratos – tudo sem sair do Foundry.
-
-Um exemplo prático: enquanto ferramentas como o Hardhat podem demorar alguns segundos para rodar testes, o Foundry pode fazer isso quase instantaneamente, economizando um tempo precioso para os desenvolvedores.
-
-Então, o Foundry surgiu para resolver essas dores e proporcionar uma experiência muito mais fluida para quem trabalha com contratos inteligentes. Com ele, você não precisa ficar instalando várias dependências externas ou depender de ambientes pesados. Tudo é mais direto e rápido!
-
-- Todo o ecosistema do Foundry é escrito em Rust.
+Ahora sí, ¡comencemos! 🚀  
 
 ---
 
-## 3. **Forge**
+## **2. Historia de Foundry**  
 
-Agora vamos falar sobre o **Forge**, que é a principal ferramenta dentro do Foundry. O Forge é o que você vai usar para **compilar**, **testar** e até **fazer deploy** dos seus contratos inteligentes. Pense o forge como o `npm` do javasript ou `poetry` do python ou o `cargo` do Rust.
+**Foundry** nació de la necesidad de una herramienta más rápida y flexible para los desarrolladores que trabajan con contratos inteligentes en la **Ethereum Virtual Machine (EVM)**.  
 
-Pra começar vamos ver quais são os comandos que o forge nos fornece que vou explicar um por um:
+### **¿Por qué se creó Foundry?**  
+
+Tradicionalmente, los desarrolladores utilizaban herramientas como **Truffle** o **Hardhat**, que aunque eran populares, presentaban limitaciones en cuanto a rendimiento y facilidad de uso, especialmente en proyectos grandes.  
+
+Aquí es donde aparece **Foundry**:  
+
+✅ **Más ligero**  
+✅ **Más rápido**  
+✅ **Menos dependencias externas**  
+✅ **Mayor integración con la EVM**  
+
+Con Foundry, puedes gestionar todo el ciclo de vida de un contrato inteligente: **compilación, pruebas, despliegue e interacción**, sin necesidad de herramientas adicionales.  
+
+📌 **Dato curioso:** Todo el ecosistema de Foundry está escrito en **Rust**.  
+
+---
+
+## **3. Forge**  
+
+**Forge** es la principal herramienta dentro de Foundry. Su función es compilar, probar y desplegar contratos inteligentes.  
+
+Podemos compararlo con:  
+- **`npm`** en JavaScript  
+- **`poetry`** en Python  
+- **`cargo`** en Rust  
+
+### **Comandos básicos de Forge**  
+
+Para ver los comandos disponibles en Forge, ejecuta:  
 
 ```bash
 $ forge
-```
+```  
 
 ---
 
-## 4. **Anvil**
+## **4. Anvil**  
 
-Agora, vamos falar sobre o **Anvil**, que é essencial para simular uma blockchain local. O Anvil funciona como uma espécie de "sandbox", onde você pode testar contratos e transações sem ter que interagir com a mainnet ou uma testnet pública. Isso é extremamente útil quando você está desenvolvendo e quer testar rapidamente suas interações.
+**Anvil** es fundamental para simular un entorno blockchain local.  
 
-Para rodar o Anvil, você simplesmente usa o comando:
+🔹 **¿Para qué sirve?**  
+Permite probar contratos y transacciones sin necesidad de interactuar con la mainnet o una testnet pública.  
 
-```
+🔹 **Ejemplo de uso:**  
+
+```bash
 $ anvil
-```
+```  
 
-Isso vai levantar uma blockchain local na sua máquina. A partir daí, você pode fazer deploy de contratos, enviar transações, e até testar diferentes cenários, tudo localmente. Um exemplo seria testar o deploy de um contrato no Anvil e verificar como ele se comporta com diferentes valores de gas.
+Esto iniciará una blockchain local en tu máquina. Desde allí, puedes desplegar contratos, enviar transacciones y probar escenarios sin riesgo.  
 
-Se você está desenvolvendo um contrato complexo, é muito importante poder rodar esses testes localmente antes de fazer qualquer interação real com a blockchain. E o Anvil oferece exatamente esse ambiente seguro e rápido para fazer isso.
+Si estás desarrollando un contrato complejo, es importante ejecutar pruebas localmente antes de interactuar con la blockchain real.  
 
 ---
 
-## 5. **Cast e Chisel**
+## **5. Cast y Chisel**  
 
-Agora, vamos falar sobre o **Cast** e o **Chisel**, que são ferramentas auxiliares no ecossistema Foundry, mas não menos importantes.
+Ahora hablaremos de **Cast** y **Chisel**, herramientas auxiliares pero muy importantes dentro del ecosistema Foundry.  
 
-O **Cast** é uma ferramenta de **linha de comando** que você vai usar para **interagir** com contratos já implantados. Digamos que você fez o deploy de um contrato no Anvil e agora quer chamar uma função desse contrato, como, por exemplo, verificar o saldo de um endereço. Com o Cast, basta usar um comando simples como:
+### **Cast**  
 
-```
-$ cast call <endereço_contrato> "balanceOf(address)" <endereço>
-```
+**Cast** es una **herramienta de línea de comandos** que permite interactuar con contratos ya desplegados.  
 
-Com isso, você recebe o saldo diretamente no terminal, sem a necessidade de uma interface gráfica.
+🔹 **Ejemplo:**  
+Si quieres verificar el saldo de un usuario en un contrato ERC20, puedes ejecutar:  
 
-Já o **Chisel** é uma ferramenta de **REPL** (Read-Eval-Print Loop), que permite a execução de comandos em tempo real. Com o Chisel, você pode "brincar" com os contratos e testar interações de maneira muito rápida e interativa. É como se fosse um playground onde você pode rodar snippets de código e ver os resultados instantaneamente.
+```bash
+$ cast call <dirección_contrato> "balanceOf(address)" <dirección_usuario>
+```  
 
-```
+Esto devuelve el saldo del usuario directamente en la terminal, sin necesidad de una interfaz gráfica.  
+
+---
+
+### **Chisel**  
+
+**Chisel** es una herramienta **REPL (Read-Eval-Print Loop)**, que permite ejecutar comandos en tiempo real.  
+
+🔹 **Ejemplo:**  
+
+```bash
 $ chisel
 Welcome to Chisel! Type `!help` to show available commands.
 $ 1 + 1
@@ -83,47 +112,50 @@ Type: uint256
 ├ Hex: 0x2
 ├ Hex (full word): 0x2
 └ Decimal: 2
-```
+```  
+
+Es un entorno interactivo donde puedes probar código y obtener resultados instantáneamente.  
 
 ---
 
-## 6. **Conclusão**
+## **6. Conclusión**  
 
-Então, para resumir: hoje vimos a **história do Foundry** e como ele surgiu para resolver as limitações de ferramentas mais antigas. Falamos sobre o **Forge**, que é o coração dessa suíte de ferramentas, o **Anvil**, que simula um ambiente blockchain local, e como o **Cast** e o **Chisel** facilitam a interação com contratos e a execução de comandos em tempo real.
+Hoy hemos aprendido sobre:  
+✔ **Historia de Foundry** y por qué se creó.  
+✔ **Forge** → La herramienta central para compilar, probar y desplegar contratos.  
+✔ **Anvil** → Un simulador de blockchain local para pruebas rápidas y seguras.  
+✔ **Cast y Chisel** → Herramientas para interactuar con contratos y ejecutar código en tiempo real.  
 
-Com tudo isso, você já tem uma visão completa do que é o ecossistema Foundry e de como ele pode transformar a forma como você desenvolve contratos inteligentes.
-
----
-
-## 7. **Recapitulação**
-
-Vamos fazer uma rápida recapitulação do que vimos hoje:
-
-1. **História do Foundry**: Como o Foundry surgiu para resolver limitações do Hardhat e Truffle.
-2. **Forge**: A principal ferramenta para compilar, testar e fazer deploy de contratos.
-3. **Anvil**: Um simulador de blockchain local para testes rápidos e seguros.
-4. **Cast e Chisel**: Ferramentas para interagir com contratos e testar código em tempo real.
+Con estos conocimientos, ahora tienes una visión completa del **ecosistema Foundry** y cómo puede mejorar tu flujo de desarrollo en blockchain.  
 
 ---
 
-## 8. **Lição de casa**
+## **7. Recapitulación**  
 
-Para fixar o que aprendemos hoje, a sua lição de casa é simples:
-
-1. Instale o Foundry na sua máquina, se ainda não fez isso.
-2. Crie um pequeno contrato inteligente em Solidity.
-3. Use o **Forge** para compilar e testar o contrato.
-4. Depois, levante o **Anvil** e tente fazer o deploy localmente.
-5. Por fim, use o **Cast** para interagir com o contrato e testar algumas funções.
-
-Anote suas dúvidas e teste à vontade!
+📌 **Hoy aprendimos:**  
+1. **Historia de Foundry** y sus ventajas sobre Hardhat y Truffle.  
+2. **Forge** → Herramienta para compilar, probar y desplegar contratos.  
+3. **Anvil** → Simulador de blockchain local.  
+4. **Cast y Chisel** → Herramientas para interacción con contratos y pruebas en tiempo real.  
 
 ---
 
-## 9. **Próxima aula**
+## **8. Tarea para casa**  
 
-Na próxima aula, vamos nos aprofundar ainda mais no **Forge**, explorando em detalhes sua interface de linha de comando e a configuração inicial de um projeto.
+✏ **Ejercicio práctico:**  
 
-Vamos ver como iniciar e estruturar um projeto do zero, instalar dependências e preparar o ambiente de desenvolvimento. Não perca, vai ser uma aula cheia de exemplos práticos!
+1. Instalar Foundry en tu máquina (si aún no lo hiciste).  
+2. Crear un contrato inteligente en Solidity.  
+3. Compilar y probarlo con **Forge**.  
+4. Ejecutar **Anvil** y desplegarlo localmente.  
+5. Interactuar con el contrato usando **Cast**.  
 
-Nos vemos lá! 👋
+📌 **Anota tus dudas y experimenta todo lo posible**.  
+
+---
+
+## **9. Próxima clase**  
+
+En la próxima clase, profundizaremos en **Forge**, exploraremos su interfaz de línea de comandos y configuraremos un proyecto desde cero.  
+
+📅 **¡Nos vemos allí!** 🚀  
