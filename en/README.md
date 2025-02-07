@@ -54,6 +54,7 @@ Welcome to the **Foundry 101** course, where you will learn how to develop, test
 1️⃣ [Migrating from Hardhat to Foundry](./mod6/aula1/roteiro.md)  
 2️⃣ [Storing Keys with Cast Wallet](./mod6/aula2/roteiro.md)  
 3️⃣ [Integrating ScaffoldETH2 with Forge](./mod6/aula3/roteiro.md)  
-4️⃣ [Gas Optimization in Solidity](./mod6/aula4/roteiro.md)  
-5️⃣ [Meta-Transactions in Solidity](./mod6/aula5/roteiro.md)  
-6️⃣ [Advanced Security in Solidity](./mod6/aula6/roteiro.md)  
+4️⃣ [Cheatcodes and Vm Library](./mod6/aula4/roteiro.md)  
+5️⃣ [Vyper Support](./mod6/aula5/roteiro.md)  
+6️⃣ [Advanced Testing](./mod6/aula6/roteiro.md)  
+
