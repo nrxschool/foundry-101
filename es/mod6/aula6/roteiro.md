@@ -1,130 +1,277 @@
-# Aula 5: Testes Avançados
+# **Clase 6: Seguridad Avanzada en Solidity**  
 
-## Abertura
+## **1. Apertura**  
 
-Nesta aula, vamos explorar as metodologias de teste em desenvolvimento de contratos inteligentes, focando em **Test-Driven Development (TDD)** e a importância dos testes na construção de aplicações em **Web3**. Em particular, vamos nos aprofundar no **Fuzz Testing**, uma técnica poderosa que ajuda a identificar comportamentos inesperados nos contratos. Além disso, abordaremos o uso de **cheatcodes** e como interpretar os resultados dos testes.
+¡Bienvenido a la **última clase del Módulo 6**! Hoy aprenderemos sobre **seguridad avanzada en Solidity** y cómo proteger contratos inteligentes contra ataques.  
 
-### Programa da aula:
+📌 **¿Por qué es importante la seguridad en Solidity?**  
+✅ Los contratos en blockchain son **inmutables** y no pueden corregirse después del despliegue.  
+✅ Los errores pueden causar **pérdidas millonarias** en protocolos DeFi.  
+✅ Las vulnerabilidades pueden ser **explotadas por hackers**.  
 
-1. O que é TDD e a importância de testes em Web3.
-2. Fuzz Testing.
-3. Cheatcodes.
-4. Interpretação de resultados.
+📌 **Lo que veremos hoy:**  
+1. **Principales vulnerabilidades en Solidity y cómo prevenirlas.**  
+2. **Herramientas para auditar contratos con Foundry.**  
+3. **Ejemplo práctico de un ataque y su solución.**  
 
----
-
-## 1. O que é TDD e a Importância de Testes em Web3
-
-**Test-Driven Development (TDD)** é uma metodologia que prioriza a escrita de testes antes do desenvolvimento do código. Isso garante que cada nova funcionalidade seja validada, resultando em um código mais robusto e menos propenso a falhas. Em um ambiente como o Web3, onde contratos inteligentes lidam com ativos valiosos e são expostos a ataques, a necessidade de testes rigorosos se torna ainda mais crítica.
-
-Os testes não apenas ajudam a validar a lógica do contrato, mas também garantem que ele se comporta como esperado sob diferentes condições, aumentando a confiança dos desenvolvedores e usuários.
+✅ **¡Vamos a ello!** 🚀  
 
 ---
 
-## 2. Fuzz Testing
+## **2. Principales Vulnerabilidades en Solidity**  
 
-O **Fuzz Testing** é uma abordagem de teste que se concentra em gerar uma variedade de entradas aleatórias para um contrato, a fim de explorar cenários que poderiam causar falhas ou comportamentos inesperados. O Forge, ferramenta de teste do Foundry, suporta este tipo de teste de maneira eficaz.
+Aquí están algunas de las vulnerabilidades más comunes en contratos inteligentes:  
 
-### Exemplo de Fuzz Testing
+---
 
-Vamos examinar um contrato simples e como podemos transformar um teste unitário em um teste baseado em propriedades usando Fuzz Testing:
+### **1️⃣ Reentrancy Attack (Ataque de Reentrada)**  
 
-```javascript
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+📌 **¿Cómo funciona?**  
+Un atacante explota un contrato llamando repetidamente una función **antes de que el estado se actualice**, permitiéndole retirar más fondos de lo permitido.  
 
+📌 **Código vulnerable:**  
 
-import {Test} from "forge-std/Test.sol";
+```solidity
+contract ReentrancyVulnerable {
+    mapping(address => uint256) public balances;
 
-contract Safe {
-    receive() external payable {}
-
-    function withdraw() external {
-        payable(msg.sender).transfer(address(this).balance);
-    }
-}
-
-contract SafeTest is Test {
-    Safe safe;
-    address alice;
-
-    receive() external payable {}
-
-    function setUp() public {
-        safe = new Safe();
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
     }
 
-    function test_Withdraw() public {
-        payable(address(safe)).transfer(1 ether);
-        uint256 preBalance = address(this).balance;
-        safe.withdraw();
-        uint256 postBalance = address(this).balance;
-        assertEq(preBalance + 1 ether, postBalance);
-    }
+    function withdraw() public {
+        require(balances[msg.sender] > 0, "Saldo insuficiente");
+        (bool success, ) = msg.sender.call{value: balances[msg.sender]}("");
+        require(success, "Fallo en la transferencia");
 
-    function testFuzz_Withdraw(uint256 amount) public {
-        vm.assume(amount > 0.1 ether && amount < 10000 ether);
-
-        vm.deal(alice, amount);
-        vm.prank(alice);
-        payable(address(safe)).transfer(amount);
-        uint256 preBalance = address(this).balance;
-        safe.withdraw();
-        uint256 postBalance = address(this).balance;
-        assertEq(preBalance + amount, postBalance);
+        balances[msg.sender] = 0; // ❌ ¡Esto ocurre después de enviar ETH!
     }
 }
 ```
 
-### Resultados do Teste
+📌 **Cómo se explota:**  
+Un contrato malicioso puede llamar a `withdraw()` y, antes de que `balances[msg.sender] = 0;` se ejecute, **llamar nuevamente a `withdraw()`** y retirar más fondos.  
 
-Ao executar o teste, o Forge executa múltiplas iterações com valores diferentes para `amount`. Se um valor inválido for gerado (como um número maior que o saldo do contrato), o teste falhará, permitindo identificar problemas potenciais.
+✅ **Solución: Usar el patrón "Checks-Effects-Interactions"**  
 
----
+```solidity
+contract ReentrancyFixed {
+    mapping(address => uint256) public balances;
 
-## 3. Cheatcodes
+    function withdraw() public {
+        uint256 amount = balances[msg.sender];
+        require(amount > 0, "Saldo insuficiente");
 
-Os **cheatcodes** são funções especiais disponíveis no Foundry que permitem manipular o estado da Ethereum Virtual Machine (EVM) em tempo de execução. Eles são extremamente úteis durante os testes, permitindo simular diferentes cenários de forma fácil.
+        balances[msg.sender] = 0; // ✅ Primero actualizamos el estado
 
-Alguns dos cheatcodes que você pode usar incluem:
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Fallo en la transferencia");
+    }
+}
+```
 
-- `vm.assume(condition)`: Descarta entradas que não satisfazem uma condição específica.
-- `vm.prank(address)`: Simula uma chamada de função a partir de um endereço específico.
-- `vm.deal(address, amount)`: Ajusta o saldo de um endereço.
+📌 **Aquí actualizamos `balances[msg.sender] = 0;` antes de la transferencia.**  
 
-### Exemplo de Uso de Cheatcodes
+✅ **También podemos usar el modificador `nonReentrant` de OpenZeppelin.**  
 
-```javascript
-function testFuzz_Withdraw(uint96 amount) public {
-    vm.assume(amount > 0); // Descarta valores que não atendem à condição
-    // ...
+```solidity
+import "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
+
+contract SecureContract is ReentrancyGuard {
+    function withdraw() public nonReentrant {
+        // Código seguro
+    }
 }
 ```
 
 ---
 
-## 4. Interpretação de Resultados
+### **2️⃣ Integer Overflow & Underflow**  
 
-Ao rodar testes fuzz, os resultados são apresentados de maneira um pouco diferente dos testes unitários:
+📌 **Antes de Solidity 0.8, los enteros podían desbordarse o subdesbordarse.**  
 
-- **"runs"**: Refere-se à quantidade de cenários que o fuzzer testou. Por padrão, o fuzzer gera 256 cenários.
-- **"μ" (mu)**: Média do gás usado em todas as execuções do fuzzer.
-- **"~" (tilde)**: Mediana do gás usado em todas as execuções do fuzzer.
+❌ **Código vulnerable en Solidity <0.8.0:**  
 
-### Configurando Execução de Testes Fuzz
+```solidity
+function decrement() public {
+    count -= 1; // ⚠️ Si `count == 0`, esto causará un underflow.
+}
+```
 
-Você pode configurar a execução de testes fuzz através de parâmetros que podem ser controlados pelo usuário. Isso inclui definir quantos cenários o fuzzer deve gerar ou ajustar os limites de valores aceitos.
+✅ **Solución: Usar `unchecked` para control manual o Solidity 0.8+**  
+
+```solidity
+function decrement() public {
+    unchecked {
+        count -= 1;
+    }
+}
+```
+
+✅ **Desde Solidity 0.8+, los overflows generan un error automáticamente.**  
 
 ---
 
-## Conclusão
+### **3️⃣ Frontrunning y MEV (Maximal Extractable Value)**  
 
-Nesta aula, aprendemos sobre **TDD** e a importância dos testes em **Web3**, além de explorar como realizar **Fuzz Testing** para identificar falhas em contratos inteligentes. Discutimos o uso de **cheatcodes** para manipular o ambiente de teste e a interpretação dos resultados para entender o comportamento do seu contrato.
+📌 **Problema:**  
+- Si envías una transacción con una oferta, un bot puede copiarla y pagar más gas para ejecutarla antes.  
+- Esto ocurre en subastas y trading DeFi.  
+
+📌 **Ejemplo vulnerable:**  
+
+```solidity
+function placeBid() public payable {
+    require(msg.value > highestBid, "Oferta demasiado baja");
+    highestBid = msg.value;
+    highestBidder = msg.sender;
+}
+```
+
+📌 **Solución:**  
+1. **Usar un sistema de ofertas encriptadas** (Commit-Reveal).  
+2. **Usar un mecanismo tipo "Dutch Auction"**.  
+3. **Incluir un retraso en la revelación de la oferta.**  
 
 ---
 
-## Lição de Casa
+### **4️⃣ Manipulación de Precios con Oráculos**  
 
-1. Crie um contrato e implemente um teste fuzz para garantir que as transferências de saldo funcionem conforme o esperado.
-2. Use o `assume` para filtrar entradas indesejadas em seus testes fuzz.
-3. Experimente com diferentes configurações de teste fuzz e interprete os resultados.
+📌 **Problema:**  
+Si un contrato depende del precio de un oráculo inseguro, un atacante puede manipular el precio y aprovecharse.  
+
+📌 **Ejemplo vulnerable:**  
+
+```solidity
+contract VulnerableOracle {
+    function getPrice() public view returns (uint256) {
+        return priceFeed.getLatestPrice(); // ⚠️ Si el oráculo es manipulable, el precio cambia.
+    }
+}
+```
+
+✅ **Solución:**  
+Usar **oráculos descentralizados** como **Chainlink** para evitar manipulación.  
+
+```solidity
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+
+contract SecureOracle {
+    AggregatorV3Interface internal priceFeed;
+
+    constructor(address _priceFeed) {
+        priceFeed = AggregatorV3Interface(_priceFeed);
+    }
+
+    function getPrice() public view returns (uint256) {
+        (, int256 price, , , ) = priceFeed.latestRoundData();
+        return uint256(price);
+    }
+}
+```
+
+✅ **Esto garantiza que el precio provenga de múltiples fuentes y no pueda ser manipulado.**  
+
+---
+
+## **3. Herramientas para Auditar Contratos con Foundry**  
+
+📌 **1️⃣ `forge test --gas-report`** → Detecta funciones costosas en gas.  
+
+```bash
+forge test --gas-report
+```
+
+📌 **2️⃣ `slither`** → Análisis estático de seguridad.  
+
+```bash
+slither .
+```
+
+📌 **3️⃣ `echidna`** → Fuzz testing para Solidity.  
+
+```bash
+echidna-test .
+```
+
+📌 **4️⃣ `mythril`** → Escaneo de vulnerabilidades en contratos.  
+
+```bash
+myth analyze contract.sol
+```
+
+✅ **Estas herramientas ayudan a encontrar vulnerabilidades antes del despliegue.**  
+
+---
+
+## **4. Ejemplo Práctico de un Ataque y su Solución**  
+
+📌 **Contrato vulnerable a reentrada:**  
+
+```solidity
+contract Vault {
+    mapping(address => uint256) public balances;
+
+    function withdraw() public {
+        require(balances[msg.sender] > 0, "Sin fondos");
+
+        (bool success, ) = msg.sender.call{value: balances[msg.sender]}("");
+        require(success, "Fallo en la transferencia");
+
+        balances[msg.sender] = 0; // ❌ ¡Actualización tardía!
+    }
+}
+```
+
+📌 **Exploit en Solidity:**  
+
+```solidity
+contract Attack {
+    Vault public vault;
+
+    constructor(address _vault) {
+        vault = Vault(_vault);
+    }
+
+    receive() external payable {
+        if (address(vault).balance >= 1 ether) {
+            vault.withdraw();
+        }
+    }
+
+    function attack() public payable {
+        vault.withdraw();
+    }
+}
+```
+
+📌 **Solución:**  
+- **Usar `ReentrancyGuard` de OpenZeppelin.**  
+- **Aplicar el patrón "Checks-Effects-Interactions".**  
+
+✅ **Con estos cambios, el ataque se vuelve imposible.**  
+
+---
+
+## **5. Conclusión**  
+
+📌 **Hoy aprendimos:**  
+✔ **Cómo prevenir ataques de reentrada.**  
+✔ **Cómo evitar overflows, frontrunning y manipulación de precios.**  
+✔ **Qué herramientas usar para auditar contratos.**  
+✔ **Cómo aplicar seguridad avanzada en Solidity.**  
+
+✅ **Con estas estrategias, puedes escribir contratos más seguros y resistentes a ataques.**  
+
+---
+
+## **6. Próxima Etapa**  
+
+🎉 **¡Felicidades! Has completado el curso Foundry 101.**  
+
+📌 **Lo que puedes hacer ahora:**  
+✅ **Explorar proyectos DeFi y NFTs con Foundry.**  
+✅ **Contribuir a repositorios de código abierto en Solidity.**  
+✅ **Seguir mejorando en seguridad y optimización de contratos.**  
+
+🚀 **¡Nos vemos en la blockchain!**  
