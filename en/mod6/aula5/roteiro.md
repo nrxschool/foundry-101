@@ -1,53 +1,53 @@
-# Aula 5: Suporte ao Vyper
+# **Lesson 5: Vyper Support**  
 
-## Abertura
+## **Introduction**  
 
-Nesta aula, vamos explorar o **Vyper**, uma linguagem de programação para contratos inteligentes, e como configurá-lo no **Foundry**. Vamos aprender a compilar contratos Vyper, escrever testes e scripts, além de interagir com os contratos. O objetivo é entender como o Vyper pode ser utilizado em conjunto com o Foundry para desenvolver contratos inteligentes seguros e eficientes.
+In this lesson, we will explore **Vyper**, a programming language for smart contracts, and how to set it up in **Foundry**. We will learn how to compile Vyper contracts, write tests and scripts, and interact with the contracts. The goal is to understand how Vyper can be used alongside Foundry to develop **secure and efficient** smart contracts.  
 
-### Programa da aula:
+### **Lesson Overview**  
 
-1. Apresentando o Vyper e suas diferenças em relação ao Solidity.
-2. Configurando o Foundry para compilar Vyper.
-3. Escrevendo um contrato simples e testes em Vyper.
-4. Escrevendo um script em Vyper e interagindo com o contrato.
-
----
-
-## 1. Apresentando o Vyper e Comparando com Solidity
-
-O Vyper é uma linguagem de programação para contratos inteligentes que prioriza a simplicidade e a segurança. Ao contrário do Solidity, que possui uma sintaxe mais flexível e recursos mais complexos, o Vyper se concentra em uma abordagem mais restrita, o que pode levar a um código mais seguro.
-
-### Principais Diferenças:
-
-- **Sintaxe mais simples**: O Vyper tem uma sintaxe mais intuitiva e legível.
-- **Sem suporte a sobrecarga de funções**: Cada função deve ter um nome único.
-- **Foco em segurança**: O design do Vyper é voltado para evitar vulnerabilidades comuns.
+1️⃣ Introducing Vyper and its differences from Solidity.  
+2️⃣ Setting up Foundry to compile Vyper.  
+3️⃣ Writing a simple contract and tests in Vyper.  
+4️⃣ Writing a script in Vyper and interacting with the contract.  
 
 ---
 
-## 2. Configurando o Foundry para Compilar Vyper
+## **1. Introducing Vyper and Comparing It to Solidity**  
 
-Para usar o Vyper no Foundry, primeiro precisamos instalá-lo. Existem várias maneiras de fazer isso, incluindo Docker e PIP. Abaixo estão as instruções para configurá-lo:
+Vyper is a smart contract programming language that prioritizes **simplicity and security**. Unlike Solidity, which has more flexible syntax and complex features, Vyper takes a **restricted approach** to reduce vulnerabilities.  
 
-### Instalação do Vyper:
+### **Key Differences:**  
 
-1. **Crie um ambiente Python**:
+- **Simpler syntax** → Vyper has a more intuitive and readable syntax.  
+- **No function overloading** → Each function must have a unique name.  
+- **Security-focused design** → Vyper is built to prevent common vulnerabilities.  
+
+---
+
+## **2. Setting Up Foundry to Compile Vyper**  
+
+To use Vyper in Foundry, we need to install it first. There are multiple installation methods, including **Docker** and **PIP**. Below are the instructions for setting it up:  
+
+### **Installing Vyper**  
+
+1. **Create a Python virtual environment**  
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-2. **Instale o Vyper**:
+2. **Install Vyper**  
 
 ```bash
 pip3 install vyper
 which vyper
 ```
 
-### Configurando o Foundry:
+### **Configuring Foundry**  
 
-Adicione a configuração do Vyper no arquivo `foundry.toml`:
+Add the Vyper configuration to the `foundry.toml` file:  
 
 ```toml
 [vyper]
@@ -56,9 +56,9 @@ path = "/path/to/vyper"
 
 ---
 
-## 3. Testando nosso contrato em Vyper
+## **3. Writing and Testing a Vyper Contract**  
 
-### Contrato Vyper Simples (Greatting):
+### **Simple Vyper Contract (Voting System)**  
 
 ```python
 #pragma version >0.4.0
@@ -76,77 +76,37 @@ def vote(candidate: address) -> bool:
     return True
 ```
 
-### Testando o Contrato:
+### **Testing the Contract**  
 
-Usaremos Solidity para escrever os testes, e um deployer.
+We will use Solidity to write the tests and deploy the contract.  
 
-```javascript
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 
 contract VyperDeployer is Test {
-    ///@notice Compiles a Vyper contract and returns the address that the contract was deployeod to
-    ///@notice If deployment fails, an error will be thrown
-    ///@param fileName - The file name of the Vyper contract. For example, the file name for "SimpleStore.vy" is "SimpleStore"
-    ///@return deployedAddress - The address that the contract was deployed to
     function deployContract(string memory fileName) public returns (address) {
-        ///@notice create a list of strings with the commands necessary to compile Vyper contracts
-        string[] memory cmds = new string[](2);
+        string;
         cmds[0] = "vyper";
         cmds[1] = string.concat("src/", fileName, ".vy");
 
-        ///@notice compile the Vyper contract and return the bytecode
         bytes memory bytecode = vm.ffi(cmds);
-
-        ///@notice deploy the bytecode with the create instruction
         address deployedAddress;
         assembly {
             deployedAddress := create(0, add(bytecode, 0x20), mload(bytecode))
         }
 
-        ///@notice check that the deployment was successful
         require(deployedAddress != address(0), "VyperDeployer could not deploy contract");
-
-        ///@notice return the address that the contract was deployed to
-        return deployedAddress;
-    }
-
-    ///@notice Compiles a Vyper contract with constructor arguments and returns the address that the contract was deployeod to
-    ///@notice If deployment fails, an error will be thrown
-    ///@param fileName - The file name of the Vyper contract. For example, the file name for "SimpleStore.vy" is "SimpleStore"
-    ///@return deployedAddress - The address that the contract was deployed to
-    function deployContract(string memory fileName, bytes calldata args) public returns (address) {
-        ///@notice create a list of strings with the commands necessary to compile Vyper contracts
-        string[] memory cmds = new string[](2);
-        cmds[0] = "vyper";
-        cmds[1] = string.concat("src/", fileName, ".vy");
-
-        ///@notice compile the Vyper contract and return the bytecode
-        bytes memory _bytecode = vm.ffi(cmds);
-
-        //add args to the deployment bytecode
-        bytes memory bytecode = abi.encodePacked(_bytecode, args);
-
-        ///@notice deploy the bytecode with the create instruction
-        address deployedAddress;
-        assembly {
-            deployedAddress := create(0, add(bytecode, 0x20), mload(bytecode))
-        }
-
-        ///@notice check that the deployment was successful
-        require(deployedAddress != address(0), "VyperDeployer could not deploy contract");
-
-        ///@notice return the address that the contract was deployed to
         return deployedAddress;
     }
 }
 ```
 
-Vamos escrever os testes agora:
+### **Writing the Tests**  
 
-```javascript
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
@@ -154,9 +114,7 @@ import {VyperDeployer} from "./VyperDeploy.sol";
 
 interface IVoting {
     function vote(address) external returns (bool);
-
     function voted(address) external returns (bool);
-
     function candidate(address) external returns (uint256);
 }
 
@@ -164,7 +122,6 @@ contract VotingTest is VyperDeployer {
     VyperDeployer deployer;
     IVoting voting;
     address alice = address(0xaAaAaAaaAaAaAaaAaAAAAAAAAaaaAaAaAaaAaaAa);
-    address bob = address(0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB);
 
     function setUp() public {
         deployer = new VyperDeployer();
@@ -181,7 +138,6 @@ contract VotingTest is VyperDeployer {
 
     function testVoteTwice() public {
         voting.vote(alice);
-
         vm.expectRevert("You have already voted.");
         voting.vote(alice);
     }
@@ -190,9 +146,9 @@ contract VotingTest is VyperDeployer {
 
 ---
 
-## 4. Deploy do nosso contrato em Vyper
+## **4. Deploying the Vyper Contract**  
 
-### Deploy com `forge create`
+### **Deploying with `forge create`**  
 
 ```bash
 forge create \
@@ -200,9 +156,9 @@ forge create \
     --account my-net
 ```
 
-### Deploy com `Script`:
+### **Deploying with a Foundry Script**  
 
-```javascript
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
@@ -227,17 +183,16 @@ contract Deploy is Script {
 
     function run() external {
         vm.startBroadcast();
-
         vm.stopBroadcast();
     }
 }
 ```
 
-### Interagindo com o contrato com `cast`:
+### **Interacting with the Contract Using `cast`**  
 
-Use o seguinte comando para rodar o script e interagir com o contrato:
+Run the following command to interact with the contract:  
 
-**Votar**
+**Voting**  
 
 ```bash
 cast send \
@@ -246,7 +201,7 @@ cast send \
     --account my-net
 ```
 
-**Verificar voto**
+**Checking the Vote**  
 
 ```bash
 cast call 0x700b6A60ce7EaaEA56F065753d8dcB9653dbAD35 "voted(address)(bool)" 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720
@@ -255,20 +210,31 @@ cast call 0x700b6A60ce7EaaEA56F065753d8dcB9653dbAD35 "candidate(address)(uint256
 
 ---
 
-## Conclusão
+## **5. Conclusion**  
 
-Nesta aula, aprendemos sobre o **Vyper** e sua integração com o **Foundry**. Exploramos a configuração do ambiente, a escrita de contratos simples e testes, além de scripts em Vyper para interagir com contratos. Essas habilidades são essenciais para desenvolver contratos inteligentes de forma segura e eficiente.
+📌 **Today we learned:**  
+✔ **What Vyper is and how it compares to Solidity.**  
+✔ **How to configure Foundry to compile Vyper contracts.**  
+✔ **How to write and test a Vyper smart contract.**  
+✔ **How to deploy and interact with a Vyper contract using Foundry.**  
 
----
-
-## Lição de casa
-
-1. Crie um contrato Vyper que utilize eventos e escreva testes para garantir que esses eventos são emitidos corretamente.
-2. Utilize o `prank` para simular diferentes contas interagindo com o contrato que você criou.
-3. Tente implementar uma função que falhe e utilize `expectRevert` em seus testes para validar as falhas.
+✅ **Now you can develop and test Vyper contracts with Foundry!**  
 
 ---
 
-## Próxima Aula
+## **6. Homework**  
 
-Na próxima aula, vamos explorar como criar Testes Avançados. Até lá!
+✏ **Practice Exercises:**  
+1️⃣ **Create a Vyper contract that emits events and write tests to verify event emissions.**  
+2️⃣ **Use `prank` to simulate different accounts interacting with your contract.**  
+3️⃣ **Implement a function that fails and use `expectRevert` in tests to validate failures.**  
+
+📌 **Experiment with different contract interactions to deepen your understanding!**  
+
+---
+
+## **7. Next Lesson**  
+
+📅 **In the next lesson, we will explore advanced testing strategies in Foundry.**  
+
+🚀 **See you there!**  

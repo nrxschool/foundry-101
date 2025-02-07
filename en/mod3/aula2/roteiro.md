@@ -1,191 +1,196 @@
-# Aula 2: Deploy Local no Anvil
-
-## 1. Abertura
-
-Olá! Seja bem-vindo à **segunda aula do Módulo 3** do nosso curso **Foundry 101**! Hoje, vamos falar sobre **deploy local com o Anvil** e como salvar, carregar e gerenciar o estado da blockchain local. Vamos explorar as flags do Anvil que permitem a persistência do estado, trabalhar com logs e rodar testes.
-
-Os tópicos que vamos abordar são:
-
-1. Gerenciar estados da blockchain com **Anvil**.
-2. Cenário prático de persistencia de estado.
-
-Vamos direto ao ponto!
+Here is the **English translation** of **Module 3 - Lesson 2: Storing Keys with Cast Wallet**.  
 
 ---
 
-## 2. Explicação de como funcionam as flags no Anvil
+# **Lesson 2: Storing Keys with Cast Wallet**  
 
-O **Anvil** oferece várias opções para salvar, carregar e gerenciar o estado da blockchain local. Isso é extremamente útil para manter o progresso do seu ambiente de testes ou simular diferentes cenários sem perder dados.
+## **1. Introduction**  
 
-### Flags principais
+👋 Welcome to **Module 3, Lesson 2** of the **Foundry 101** course!  
 
-**`--dump-state`**:
+In this lesson, we will learn how to securely **store and manage private keys** using **Cast Wallet**. This prevents us from exposing private keys in scripts or command-line interactions.  
 
-```bash
-# Quando o Anvil é encerrado ele salva o estado no json `./estado.json`. Isso inclui contas, contratos e balances.
-anvil --dump-state ./estado.json
-```
+📌 **What we will cover today:**  
+1️⃣ Why use Cast Wallet to store private keys.  
+2️⃣ Creating and managing wallets with Cast Wallet.  
+3️⃣ Signing transactions without exposing private keys.  
+4️⃣ Best security practices for handling private keys.  
 
-**`--load-state`**:
-
-```bash
-# Carrega um estado salvo anteriormente ao iniciar o Anvil.
-anvil --load-state ./estado.json
-```
-
-**`--max-persisted-states <NUM>`**:
-
-```bash
-# Define o número máximo de estados persistentes no disco. (Rotation)
-anvil --max-persisted-states 5
-```
-
-**`--preserve-historical-states`**:
-
-```bash
-# Preserva histórico de estados da blockchain.
-anvil --preserve-historical-states
-```
-
-**`--state-interval <SECONDS>`**:
-
-```bash
-# Intervalo de tempo para persistir o estado no disco.
-anvil --state-interval 60
-```
-
-**`--state <PATH>`**:
-
-```bash
-# Combina as funcionalidades de `--load-state` e `--dump-state`.
-anvil --state ./estado.json
-```
-
-Essas flags são essenciais quando você está desenvolvendo contratos inteligentes e quer garantir que não perderá o estado da blockchain entre execuções do Anvil.
+✅ **By the end of this lesson, you will be able to securely manage and use private keys in Foundry!**  
 
 ---
 
-## 3. Prática: Deploy, Interação e Persistência do Estado
+## **2. Why Store Keys with Cast Wallet?**  
 
-Agora, vamos colocar em prática o que aprendemos sobre as flags de estado do Anvil.
+📌 **Advantages of using Cast Wallet:**  
+✅ **Prevents exposing private keys** in scripts and commands.  
+✅ **Enables signing transactions without manually copying keys.**  
+✅ **Easily integrates with Foundry scripts and tools.**  
 
-### Passo 1: Subir o Anvil com persistência de estado
+📌 **Instead of storing your private key in plaintext, Cast Wallet encrypts it securely.**  
 
-Vamos subir o **Anvil** com a flag `--dump-state` para garantir que o estado da blockchain seja salvo quando o Anvil for encerrado.
+---
 
-```bash
-anvil --dump-state ./estado.json
-```
+## **3. Creating and Managing Wallets**  
 
-### Passo 2: Fazer deploy de um contrato
+### **📌 Generating a New Wallet**  
 
-Vamos usar um contrato simples de token ERC20:
-
-```javascript
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
-
-contract Counter {
-    uint256 count;
-
-    function incc() external {
-        count++;
-    }
-
-    function set(uint256 number) external {
-        count = number;
-    }
-
-    function get() external view returns (uint256) {
-        return count;
-    }
-}
-
-```
-
-Agora, faça deploy com `forge create`:
+📌 **Run the following command to create and save a new wallet:**  
 
 ```bash
-forge create \
-    ./src/Counter.sol:Counter \
-    --rpc-url http://127.0.0.1:8545 \
-    --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+cast wallet new --save
 ```
 
-### Passo 3: Interagir com o contrato
+✅ **Example output:**  
 
-Agora que o contrato foi implantado, vamos interagir com ele usando o **Cast**.
-
-**Pegar o valor inicial**
-
-```bash
-CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
-cast call \
-    $CONTRACT_ADDRESS \
-    "get()(uint256)"
+```
+New wallet generated!
+Address: 0x1234567890abcdef1234567890abcdef12345678
+Keystore: ~/.foundry/keystore
 ```
 
-**Editar o valor para `7889`**
+📌 **The encrypted wallet file is stored at `~/.foundry/keystore`.**  
+
+---
+
+### **📌 Listing Stored Wallets**  
+
+📌 **To see all stored wallets, run:**  
 
 ```bash
-CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
+cast wallet list
+```
+
+✅ **This displays all private keys securely stored by Cast Wallet.**  
+
+---
+
+### **📌 Importing an Existing Private Key**  
+
+📌 **If you already have a private key, import it into Cast Wallet:**  
+
+```bash
+cast wallet import 0xYourPrivateKey
+```
+
+✅ **The private key will be securely stored in the keystore.**  
+
+---
+
+### **📌 Exporting a Stored Private Key**  
+
+📌 **To retrieve a stored private key:**  
+
+```bash
+cast wallet export 0xYourWalletAddress
+```
+
+✅ **You will be prompted for a password before the private key is revealed.**  
+
+🚨 **Never expose or share your private key!**  
+
+---
+
+## **4. Signing Transactions with Cast Wallet**  
+
+### **📌 Sending ETH Using a Stored Wallet**  
+
+📌 **Instead of providing a private key manually, use Cast Wallet:**  
+
+```bash
 cast send \
-    $CONTRACT_ADDRESS \
-    "set(uint256)()" 7889 \
-    --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+    --wallet 0x1234567890abcdef1234567890abcdef12345678 \
+    0xRecipientAddress \
+    --value 0.1ether \
+    --rpc-url http://127.0.0.1:8545
 ```
 
-**Pegar o último valor**
+✅ **This securely signs and sends the transaction using the stored wallet.**  
+
+---
+
+### **📌 Signing a Message with a Stored Wallet**  
+
+📌 **To sign a message for authentication:**  
 
 ```bash
-CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
-cast call \
-    $CONTRACT_ADDRESS \
-    "get()(uint256)"
+cast wallet sign --wallet 0x1234567890abcdef1234567890abcdef12345678 "This is a signed message"
 ```
 
-### Passo 4: Reiniciar o Anvil e carregar o estado salvo
+✅ **Example output:**  
 
-Depois de fazer o deploy e as interações, vamos encerrar o **Anvil**. Isso salvará o estado atual no arquivo **estado.json**. Para garantir que o estado persista após o reinício, carregue o estado salvo ao reiniciar o **Anvil**:
+```
+Signature: 0x...
+```
+
+📌 **This signature can be verified in smart contracts or dApps.**  
+
+---
+
+### **📌 Verifying a Signature**  
+
+📌 **To check if a signature is valid:**  
 
 ```bash
-anvil --load-state ./estado.json
+cast wallet verify "This is a signed message" 0xGeneratedSignature
 ```
 
-Agora, você pode interagir com o contrato novamente e validar que o último estado foi mantido (7889):
-
-**Pegar o último valor**
-
-```bash
-CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
-cast call \
-    $CONTRACT_ADDRESS \
-    "get()(uint256)"
-```
-
+✅ **This confirms whether the signature was created by the correct wallet.**  
 
 ---
 
-## 6. Conclusão
+## **5. Best Security Practices**  
 
-Hoje, aprendemos como fazer deploy localmente usando o **Anvil**, salvar e carregar o estado da blockchain, e usar logs para monitorar transações e contratos. Também vimos como rodar testes com **Forge**, manter o estado da blockchain ativo e interagir com contratos usando o **Cast**.
+🚨 **Avoid These Common Mistakes:**  
+❌ **Do not store private keys in plain text files.**  
+❌ **Do not copy private keys manually into scripts.**  
+❌ **Do not share private keys in public repositories.**  
 
----
+✅ **Best Practices:**  
+🔹 **Use `cast wallet` to manage keys securely.**  
+🔹 **Store private keys in encrypted keystores instead of plain text.**  
+🔹 **Always use `--wallet` instead of `--private-key` in transactions.**  
 
-## Recapitulação
-
-- **Flags de estado do Anvil**: Vimos como usar `--dump-state`, `--load-state` e outras opções para salvar e restaurar o estado da blockchain.
-- **Prática de deploy**: Fizemos deploy de um contrato, interagimos com ele, reiniciamos o Anvil e garantimos que o estado persistiu.
-
----
-
-## Lição de casa
-
-1. Faça o deploy de um contrato no **Anvil**, salve o estado da blockchain e verifique a persistência do estado após reiniciar o **Anvil**.
-2. Explore os logs do **Anvil** para monitorar as transações e chamadas de contrato.
+✅ **Following these practices helps prevent unauthorized access and key leaks.**  
 
 ---
 
-## Próxima aula
+## **6. Conclusion**  
 
-Na próxima aula, vamos aprofundar ainda mais em como usar o **Anvil** para testar e simular diferentes redes, incluindo forks de redes reais. Até lá, continue praticando e nos vemos na próxima aula! 👋
+📌 **Today we learned:**  
+✔ **How to create, import, and export wallets using Cast Wallet.**  
+✔ **How to sign transactions securely without exposing private keys.**  
+✔ **How to sign and verify messages with Cast Wallet.**  
+✔ **Best security practices for managing private keys.**  
+
+✅ **Now you can securely manage and use private keys with Foundry!**  
+
+---
+
+## **7. Summary**  
+
+📌 **Today's key takeaways:**  
+1. **Use `cast wallet new --save` to generate a new wallet securely.**  
+2. **Use `cast wallet list` to view stored wallets.**  
+3. **Use `cast send --wallet` to sign transactions without exposing keys.**  
+4. **Follow best security practices to protect private keys.**  
+
+---
+
+## **8. Homework**  
+
+✏ **Practice Exercises:**  
+1. **Create a new wallet using Cast Wallet and list it.**  
+2. **Import an existing private key and sign a message with it.**  
+3. **Send a transaction using `cast send --wallet` instead of `--private-key`.**  
+4. **Try verifying a signed message using `cast wallet verify`.**  
+
+📌 **Experiment with secure key storage and transactions!**  
+
+---
+
+## **9. Next Lesson**  
+
+📅 **In the next lesson, we will integrate Foundry with ScaffoldETH2 to build decentralized applications efficiently.**  
+
+🚀 **See you there!**  

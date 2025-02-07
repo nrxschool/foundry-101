@@ -1,137 +1,200 @@
-# Aula 2: Guardando Chaves com Cast Wallet
+# **Lesson 2: Storing Keys with Cast Wallet**  
 
-## Abertura
+## **1. Introduction**  
 
-Nesta aula, vamos aprender a gerenciar chaves privadas de maneira segura usando o **Cast Wallet**. O Cast permite importar, criar e utilizar carteiras, facilitando o gerenciamento de transações e deploys com segurança. Vamos também ver como proteger nossas chaves privadas com keystores, usando o formato criptografado JSON, que é amplamente utilizado no ecossistema Ethereum.
+👋 Welcome to **Module 6, Lesson 2** of the **Foundry 101** course!  
 
-### Programa da aula:
+In this lesson, we will explore how to **securely store and manage private keys** using **Cast Wallet**. This prevents exposing private keys in scripts or command-line interactions.  
 
-1. Importação de chave privada via Cast Wallet.
-2. Usando chaves para deploys e transações.
-3. Protegendo chaves com **keystores**.
-4. Boas práticas de segurança no gerenciamento de chaves.
+📌 **What we will cover today:**  
+1️⃣ Why use Cast Wallet to store private keys?  
+2️⃣ Creating and managing wallets with Cast Wallet.  
+3️⃣ Signing transactions without exposing private keys.  
+4️⃣ Best security practices for handling private keys.  
+
+✅ **By the end of this lesson, you will know how to securely manage and use private keys in Foundry!**  
 
 ---
 
-## 1. Importação de Chave Privada via Cast Wallet
+## **2. Why Store Keys with Cast Wallet?**  
 
-O primeiro passo para usar uma chave privada em scripts e deploys é importá-la. Usaremos o comando `cast wallet import` para importar a chave privada e protegê-la com uma senha.
+📌 **Advantages of using Cast Wallet:**  
+✅ **Prevents exposing private keys** in scripts and commands.  
+✅ **Enables signing transactions without manually copying keys.**  
+✅ **Easily integrates with Foundry scripts and tools.**  
 
-### Importando uma chave:
+📌 **Instead of storing your private key in plaintext, Cast Wallet encrypts it securely.**  
 
-1. **Crie um keystore protegido com senha**:
+---
 
-O comando abaixo solicitará sua chave privada e pedirá uma senha para protegê-la. A chave será criptografada e armazenada de forma segura no arquivo keystore.
+## **3. Creating and Managing Wallets**  
+
+### **📌 Generating a New Wallet**  
+
+📌 **Run the following command to create and save a new wallet:**  
 
 ```bash
-cast wallet import --interactive
+cast wallet new --save
 ```
 
-Ao executar este comando, você será solicitado a inserir a chave privada e uma senha. O keystore será gerado e armazenado no diretório padrão `~/.foundry/keystores`.
+✅ **Example output:**  
 
-2. **Exemplo de saída ao importar uma chave privada**:
+```
+New wallet generated!
+Address: 0x1234567890abcdef1234567890abcdef12345678
+Keystore: ~/.foundry/keystore
+```
+
+📌 **The encrypted wallet file is stored at `~/.foundry/keystore`.**  
+
+---
+
+### **📌 Listing Stored Wallets**  
+
+📌 **To see all stored wallets, run:**  
 
 ```bash
-Enter your private key: ****************
-Enter your password: ****************
-Keystore successfully created at: ~/.foundry/keystores/my-wallet
+cast wallet list
 ```
+
+✅ **This displays all private keys securely stored by Cast Wallet.**  
 
 ---
 
-## 2. Usando Chaves para Deploys e Transações
+### **📌 Importing an Existing Private Key**  
 
-Depois de importar a chave privada, podemos usá-la para realizar deploys e enviar transações na blockchain. Ao invés de expor a chave diretamente, usamos o arquivo **keystore** com sua senha para desbloquear a chave durante a execução.
-
-### Deploy com Cast usando um keystore:
-
-Suponha que você tenha um contrato chamado `Lock.sol`. Podemos utilizar o comando `cast` para realizar o deploy desse contrato com a chave protegida.
+📌 **If you already have a private key, import it into Cast Wallet:**  
 
 ```bash
-forge script script/Deploy.s.sol --broadcast --rpc-url <RPC_URL> --account <NOME_DA_CONTA>
+cast wallet import 0xYourPrivateKey
 ```
 
-O Cast automaticamente usará a chave que foi importada no keystore e solicitará a senha para desbloqueá-la. Isso garante que a chave privada nunca fique exposta diretamente.
+✅ **The private key will be securely stored in the keystore.**  
 
 ---
 
-## 3. Protegendo Chaves com **Keystores**
+### **📌 Exporting a Stored Private Key**  
 
-Agora, vamos entender o que é um **keystore** e como ele protege sua chave privada.
-
-### O que é um **Keystore**?
-
-O **keystore** é um arquivo JSON que armazena a chave privada criptografada e protegida com uma senha. Este arquivo garante que a chave privada não seja exposta em texto plano, tornando o uso de chaves mais seguro.
-
-Aqui está um exemplo de um keystore armazenado no seu sistema:
+📌 **To retrieve a stored private key:**  
 
 ```bash
-drwxr-xr-x  5 olivmath  staff   160B Oct 15 00:27 .
-drwxr-xr-x  8 olivmath  staff   256B Sep 16 18:19 ..
--rw-r--r--  1 olivmath  staff   436B Sep 16 18:20 main
--rw-r--r--  1 olivmath  staff   436B Oct 15 00:27 my-net
--rw-r--r--  1 olivmath  staff   436B Oct  8 17:22 nova
+cast wallet export 0xYourWalletAddress
 ```
 
-### Explicação do conteúdo do Keystore:
+✅ **You will be prompted for a password before the private key is revealed.**  
 
-```json
-{
-  "crypto": {
-    "cipher": "aes-128-ctr",
-    "cipherparams": { "iv": "0996e371ce75e28afacfa7d24f4df127" },
-    "ciphertext": "33f3dc39b98f3996cdd869bb6cec90e1d18605de0c73844e81b949b380f2f696",
-    "kdf": "scrypt",
-    "kdfparams": {
-      "dklen": 32,
-      "n": 8192,
-      "p": 1,
-      "r": 8,
-      "salt": "777f5c801d9810dff19a8cda8da05decf5b6c6e081843d636459eff4faff5d6d"
-    },
-    "mac": "789a9310dd9250c570497f9f16200cbebf0be992880215525fb59e112898d63f"
-  },
-  "id": "a12c3d32-fb8d-493b-adaf-6d3cebd2555e",
-  "version": 3
-}
+🚨 **Never expose or share your private key!**  
+
+---
+
+## **4. Signing Transactions with Cast Wallet**  
+
+### **📌 Sending ETH Using a Stored Wallet**  
+
+📌 **Instead of providing a private key manually, use Cast Wallet:**  
+
+```bash
+cast send \
+    --wallet 0x1234567890abcdef1234567890abcdef12345678 \
+    0xRecipientAddress \
+    --value 0.1ether \
+    --rpc-url http://127.0.0.1:8545
 ```
 
-### Campos Explicados:
-
-- **crypto**: Contém todos os parâmetros criptográficos necessários para proteger e recuperar a chave privada.
-  - **cipher**: O algoritmo usado para criptografar a chave (neste caso, `aes-128-ctr`).
-  - **cipherparams**: Parâmetros adicionais, como o **IV** usado na criptografia.
-  - **ciphertext**: A chave privada criptografada.
-  - **kdf**: A função de derivação de chave usada (aqui, `scrypt`).
-  - **kdfparams**: Parâmetros como **salt**, **n**, **p**, e **r** para derivar a chave de criptografia a partir da senha.
-  - **mac**: Código de autenticação da mensagem, usado para garantir a integridade do keystore.
-
-Ao usar um **keystore**, a chave privada é criptografada e protegida, oferecendo uma camada adicional de segurança. Para descriptografar e usar a chave, será necessário fornecer a senha usada durante a criação do keystore.
+✅ **This securely signs and sends the transaction using the stored wallet.**  
 
 ---
 
-## 4. Boas Práticas de Segurança no Gerenciamento de Chaves
+### **📌 Signing a Message with a Stored Wallet**  
 
-- **Use carteiras separadas para desenvolvimento e produção**: Nunca use sua carteira principal com fundos reais em desenvolvimento.
-- **Proteja seu keystore**: Nunca compartilhe o arquivo keystore ou a senha.
-- **Tenha cuidado com exposição de chaves**: Se você expuser uma chave privada online, considere-a comprometida e transfira os fundos imediatamente.
-- **Usar carteiras de hardware**: Para maior segurança, carteiras de hardware como Ledger e Trezor podem ser usadas para assinar transações diretamente sem expor a chave privada.
+📌 **To sign a message for authentication:**  
 
----
+```bash
+cast wallet sign --wallet 0x1234567890abcdef1234567890abcdef12345678 "This is a signed message"
+```
 
-## Conclusão
+✅ **Example output:**  
 
-Nesta aula, aprendemos como importar e proteger chaves privadas usando **Cast Wallet**, além de como usar **keystores** para maior segurança. Também vimos como usar essas chaves para realizar deploys e enviar transações na blockchain. A segurança no gerenciamento de chaves é fundamental para evitar perdas de fundos, então sempre siga as melhores práticas.
+```
+Signature: 0xabcdef123456...
+```
 
----
-
-## Lição de casa
-
-1. Importe uma chave privada usando `cast wallet import --interactive` e proteja-a com uma senha.
-2. Utilize o keystore gerado para fazer o deploy de um contrato simples na rede local usando `forge script`.
+📌 **This signature can be verified in smart contracts or dApps.**  
 
 ---
 
-## Próxima Aula
+### **📌 Verifying a Signature**  
 
-Na próxima aula, vamos integrar o **ScaffoldETH2** com o **Foundry** para construir uma interface frontend interativa para nossos contratos. Até lá!
+📌 **To check if a signature is valid:**  
+
+```bash
+cast wallet verify "This is a signed message" 0xabcdef123456...
+```
+
+✅ **Returns `true` if the signature is valid.**  
+
+📌 **Example output:**  
+
+```
+Valid: true
+```
+
+✅ **This is useful for implementing signed authentication in DApps.**  
+
+---
+
+## **5. Best Security Practices**  
+
+🚨 **Avoid These Common Mistakes:**  
+❌ **Do not store private keys in plain text files.**  
+❌ **Do not copy private keys manually into scripts.**  
+❌ **Do not share private keys in public repositories.**  
+
+✅ **Best Practices:**  
+🔹 **Use `cast wallet` to manage keys securely.**  
+🔹 **Store private keys in encrypted keystores instead of plain text.**  
+🔹 **Always use `--wallet` instead of `--private-key` in transactions.**  
+
+✅ **Following these practices helps prevent unauthorized access and key leaks.**  
+
+---
+
+## **6. Conclusion**  
+
+📌 **Today we learned:**  
+✔ **How to create, import, and export wallets using Cast Wallet.**  
+✔ **How to sign transactions securely without exposing private keys.**  
+✔ **How to sign and verify messages with Cast Wallet.**  
+✔ **Best security practices for managing private keys.**  
+
+✅ **Now you can securely manage and use private keys with Foundry!**  
+
+---
+
+## **7. Summary**  
+
+📌 **Today's key takeaways:**  
+1. **Use `cast wallet new --save` to generate a new wallet securely.**  
+2. **Use `cast wallet list` to view stored wallets.**  
+3. **Use `cast send --wallet` to sign transactions without exposing keys.**  
+4. **Follow best security practices to protect private keys.**  
+
+---
+
+## **8. Homework**  
+
+✏ **Practice Exercises:**  
+1. **Create a new wallet using Cast Wallet and list it.**  
+2. **Import an existing private key and sign a message with it.**  
+3. **Send a transaction using `cast send --wallet` instead of `--private-key`.**  
+4. **Try verifying a signed message using `cast wallet verify`.**  
+
+📌 **Experiment with secure key storage and transactions!**  
+
+---
+
+## **9. Next Lesson**  
+
+📅 **In the next lesson, we will integrate ScaffoldETH2 with Forge to build decentralized applications efficiently.**  
+
+🚀 **See you there!**  

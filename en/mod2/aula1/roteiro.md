@@ -1,182 +1,189 @@
-# Aula 1: **CLI, Criando Projeto, Configuração e Executando Projeto**
+# **Lesson 1: CLI and Running a Local Blockchain with Anvil**  
 
-## **1. Abertura**
+## **1. Introduction**  
 
-Olá! Seja bem-vindo à nossa aula do curso **Foundry 101**. Hoje vamos mergulhar nas bases práticas de como usar o Forge e configurar seu ambiente de desenvolvimento com o Foundry. Esta é uma aula cheia de prática, onde criaremos e configuraremos um projeto do zero.
+👋 Welcome to **Module 2, Lesson 1** of the **Foundry 101** course!  
 
-Vamos seguir a seguinte programação:
+In this lesson, we will explore **Anvil**, Foundry’s built-in local blockchain, and learn how to use the **Cast CLI** to interact with it.  
 
-1. Principais comandos da CLI
-2. Criar novo projeto
-3. Configurações úteis
-4. Executar projeto
+📌 **What we will cover today:**  
+1️⃣ What is Anvil, and why use it?  
+2️⃣ Running a local blockchain with Anvil.  
+3️⃣ Using Cast to interact with the blockchain.  
+4️⃣ Querying account balances, transactions, and blocks.  
 
-Então, prepare-se, porque hoje é a hora de colocar a mão na massa! Vamos começar entendendo os principais comandos da CLI do Forge.
-
-## Principais comandos da CLI `forge`
-
-Vamos começar conhecendo os principais comandos da **CLI do Forge**. A linha de comando (CLI) é onde você vai interagir diretamente com o Forge e realizar ações como criar, compilar, testar e fazer deploy de contratos.
-
-Aqui estão os comandos mais importantes:
-
-- **`forge init`**: Inicia um novo projeto.
-- **`forge build`**: Compila os contratos no seu projeto.
-- **`forge test`**: Roda os testes unitários para os contratos.
-- **`forge install`**: Instala dependências externas (como bibliotecas).
-- **`forge create`**: Faz o deploy de um contrato diretamente na blockchain.
-- **`forge script`**: Executa scripts personalizados, como scripts de deploy.
+✅ **By the end of this lesson, you will know how to set up and interact with a local blockchain using Anvil!**  
 
 ---
 
-## Criando um novo projeto
+## **2. What is Anvil?**  
 
-Agora que já conhecemos os comandos principais da CLI, vamos criar um **novo projeto** para colocar tudo isso em prática.
+📌 **Anvil is a fast and lightweight local blockchain for Ethereum development, included in Foundry.**  
 
-### 1. Criando um projeto chamado **Counter**.
+🚀 **Why use Anvil?**  
+✅ **Fast** – Starts in milliseconds.  
+✅ **Lightweight** – No need for external dependencies like Ganache or Hardhat.  
+✅ **Feature-rich** – Supports forking, impersonation, and custom RPC calls.  
 
-No terminal, digite:
+📌 **Anvil is similar to Ganache but optimized for Foundry.**  
+
+---
+
+## **3. Running a Local Blockchain with Anvil**  
+
+📌 **To start Anvil, run:**  
+
+```bash
+anvil
+```
+
+✅ **Expected output:**  
 
 ```
-forge init counter
+Available Accounts
+==================
+(0) 0xF39F... (10000 ETH)
+(1) 0x7099... (10000 ETH)
+...
 ```
 
-Isso vai criar a estrutura básica do projeto, com pastas como `src/` para seus contratos, `test/` para seus testes, e o arquivo `foundry.toml`, que contém as configurações do projeto.
+📌 **Each address is pre-funded with 10,000 ETH (test ETH).**  
 
-- Vamos estudar sobre a **estrutura básica do projeto** na próxima aula.
+---
 
-### 2. Entender o projeto e o contrato **Counter**
+### **📌 Customizing Anvil**  
 
-O forge vai criar um contrato simples para o nosso projeto chamdo Counter.
+You can customize Anvil by using flags:  
 
-### 3. Compilando o projeto
+- **Set a specific port:**  
+  ```bash
+  anvil --port 8546
+  ```
+- **Set a custom chain ID:**  
+  ```bash
+  anvil --chain-id 1337
+  ```
+- **Disable mining interval (instant transactions):**  
+  ```bash
+  anvil --no-mining
+  ```
 
-Depois de escrevermos nossos contratos, o comando **`forge build`** vai compilar os contratos:
+✅ **Customize Anvil according to your development needs!**  
 
+---
+
+## **4. Interacting with Anvil Using Cast**  
+
+📌 **Cast is a CLI tool for querying blockchain data and sending transactions.**  
+
+### **📌 Checking the Latest Block Number**  
+
+```bash
+cast block-number --rpc-url http://127.0.0.1:8545
 ```
-forge build
+
+✅ **Returns the latest block number in the chain.**  
+
+---
+
+### **📌 Checking an Account’s Balance**  
+
+```bash
+cast balance 0xF39F... --rpc-url http://127.0.0.1:8545
+```
+
+✅ **Returns the balance of the specified address.**  
+
+📌 **To convert from Wei to ETH:**  
+
+```bash
+cast balance 0xF39F... --ether --rpc-url http://127.0.0.1:8545
 ```
 
 ---
 
-## Configurações úteis do projeto
+### **📌 Sending a Transaction**  
 
-Agora que o projeto está criado, vamos dar uma olhada nas **configurações úteis** que podemos ajustar no arquivo `foundry.toml`.
-
-Abrindo o arquivo `foundry.toml`, você verá configurações importantes como:
-
-- **Versão do Solidity**: Aqui você define qual versão do Solidity será usada no projeto.
-
-Por exemplo, para definir a versão do Solidity, podemos ajustar da seguinte forma:
-
-```toml
-[profile.default]
-solc_version = '0.8.24'
+```bash
+cast send --private-key 0xYourPrivateKey 0xRecipientAddress --value 1ether --rpc-url http://127.0.0.1:8545
 ```
+
+✅ **Sends 1 ETH from your account to another.**  
+
+📌 **To check the transaction status:**  
+
+```bash
+cast tx 0xTransactionHash --rpc-url http://127.0.0.1:8545
+```
+
+✅ **Returns transaction details, including gas used and sender/receiver addresses.**  
 
 ---
 
-## Executando Projeto
+## **5. Querying Blockchain Data with Cast**  
 
-Agora que criamos e compilamos nosso contrato, vamos fazer o **deploy** usando o comando **`forge create`**, que facilita a implantação do contrato diretamente na blockchain simulada pelo Anvil ou até em redes reais.
+📌 **Check details of a block:**  
 
-### 1 Rodar a blockchain local
-
-Primeiro, vamos iniciar o **Anvil**, que simula uma blockchain local minerando blocos a cada 2 segundos:
-
-```
-anvil -b 2
+```bash
+cast block latest --rpc-url http://127.0.0.1:8545
 ```
 
-Veja que o `anvil` fornece algumas chaves com saldo em ETH para usarmos no ambiente de teste, vamos usar essa:
+✅ **Returns block details, including timestamp, transactions, and miner.**  
 
-```
-0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-```
+📌 **Check a specific storage slot of a contract:**  
 
-### 2 Deploy do contrato
-
-Agora, com o Anvil rodando, podemos usar o **`forge create`** para fazer o deploy do nosso contrato. Certifique-se de que o contrato foi compilado e rode o seguinte comando:
-
-```
-forge create \
-    src/Counter.sol:Counter \
-    --rpc-url http://127.0.0.1:8545 \
-    --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+```bash
+cast storage 0xContractAddress 0 --rpc-url http://127.0.0.1:8545
 ```
 
-Esse comando vai:
+✅ **Returns the stored value in a contract’s storage slot.**  
 
-- Especificar o contrato que queremos implantar (`src/Counter.sol:Counter`).
-- Usar a URL da blockchain local criada pelo Anvil (`http://127.0.0.1:8545`).
-- Usar sua chave privada para assinar a transação. (`0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`)
+📌 **Decode transaction calldata to understand function calls:**  
 
-Se tudo estiver correto, o contrato será implantado e o endereço do deploy será exibido no terminal.
-
-### 3 Interagir com o contrato
-
-Agora, vamos interagir com o contrato usando o **Cast**.
-
-**Primeiro vamos LER da blockchain qual o valor atual de `number`**
-
-```
-cast call \
-    0x5FbDB2315678afecb367f032d93F642f64180aa3 \
-    "number()(uint256)" \
-    --rpc-url http://127.0.0.1:8545
+```bash
+cast calldata-decode "transfer(address,uint256)" 0xa9059cbb...
 ```
 
-**Agora vamos ESCREVER na blockchain usando a fução `setNumber` e LER o valor alterado**
-
-```
-cast send \
-    0x5FbDB2315678afecb367f032d93F642f64180aa3 \
-    "setNumber(uint256)()" 42 \
-    --rpc-url http://127.0.0.1:8545 \
-    --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-```
-
-```
-cast call \
-    0x5FbDB2315678afecb367f032d93F642f64180aa3 \
-    "number()(uint256)" \
-    --rpc-url http://127.0.0.1:8545
-```
-
-E pronto! Conseguimos fazer o deploy do contrato e interagir com ele usando as ferramentas do Foundry.
+✅ **Useful for analyzing contract interactions.**  
 
 ---
 
-## **6. Conclusão**
+## **6. Conclusion**  
 
-Nesta aula, vimos como trabalhar com os **principais comandos da CLI do Forge**, incluindo o comando **`forge create`** para deploy de contratos. Criamos um projeto do zero, ajustamos o arquivo `foundry.toml` para otimização, e fizemos um **deploy completo** usando o **Anvil** e interagindo com o contrato através do **Cast**.
+📌 **Today we learned:**  
+✔ **What Anvil is and why it’s useful for local development.**  
+✔ **How to start and configure Anvil.**  
+✔ **How to use Cast to query blockchain data.**  
+✔ **How to send transactions and interact with contracts using Cast.**  
 
-Essa prática te deu uma base sólida para desenvolver, compilar e implantar seus contratos de forma eficiente.
-
----
-
-## **7. Recapitulação**
-
-1. **CLI do Forge**: Exploramos comandos como `forge init`, `forge build`, e `forge create` para o deploy.
-2. **Criando projeto**: Iniciamos um novo projeto e criamos um contrato simples.
-3. **Configurações úteis**: Ajustamos o `foundry.toml` para otimizar o projeto.
-4. **Deploy completo**: Usamos o `forge create` para fazer o deploy no Anvil e interagimos com o contrato via Cast.
+✅ **Now you can run a local blockchain and interact with it efficiently!**  
 
 ---
 
-## **8. Lição de casa**
+## **7. Summary**  
 
-Sua lição de casa para hoje é:
-
-1. Criar um novo projeto com o Forge.
-2. Criar um contrato simples, que salve outras informações e interagir com ele.
-3. Ajustar o `foundry.toml` para usar versões antigas do solidity.
-4. Fazer o deploy do contrato no Anvil usando o comando **`forge create`**.
-5. Interagir com o contrato via **Cast** para definir e ler valores.
+📌 **Today's key takeaways:**  
+1. **`anvil` starts a local blockchain for development.**  
+2. **`cast block-number` gets the latest block number.**  
+3. **`cast balance` checks an account’s balance.**  
+4. **`cast send` sends ETH between accounts.**  
+5. **`cast storage` and `cast calldata-decode` help analyze contracts.**  
 
 ---
 
-## **9. Próxima aula**
+## **8. Homework**  
 
-(🔜 Antecipação da próxima aula)
+✏ **Practice Exercises:**  
+1. **Start Anvil and create a new transaction.**  
+2. **Use Cast to check the balance before and after the transaction.**  
+3. **Analyze a transaction’s calldata using `cast calldata-decode`.**  
 
-Na próxima aula, vamos aprender **explorar a estrutura básica de um projeto**, **como instalar dependências** com `forge` e **como criar um Token ERC20**. Não perca! Até lá, continue praticando e nos vemos na próxima aula! 👋
+📌 **Try different Cast commands and explore blockchain data!**  
+
+---
+
+## **9. Next Lesson**  
+
+📅 **In the next lesson, we will deploy smart contracts locally using Anvil and Foundry.**  
+
+🚀 **See you there!**  

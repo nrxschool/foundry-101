@@ -1,69 +1,277 @@
-# Aula 2: **História do EVM Tooling**
+# **Lesson 2: Foundry Project Structure**  
 
-## 1. Abertura
+## **1. Introduction**  
 
-Olá! Bem-vindo à primeira aula do curso Foundry 101. Hoje, vamos falar sobre a **História do EVM Tooling**, abordando as ferramentas que ajudaram a moldar o desenvolvimento de contratos inteligentes no Ethereum. Dividimos essa aula em quatro tópicos principais:
+👋 Welcome to **Module 1, Lesson 2** of the **Foundry 101** course!  
 
-### Programação:
+Now that you have installed Foundry and written your first smart contract, let's explore the **structure of a Foundry project** and understand how to organize contracts, scripts, and tests.  
 
-1. Introdução à EVM,
-2. As primeiras ferramentas,
-3. O impacto do Remix,
-4. A era dos frameworks e o avanço com o Foundry.
+📌 **What we will cover today:**  
+1️⃣ Understanding the Foundry project structure.  
+2️⃣ The role of each directory and file.  
+3️⃣ Managing dependencies with Foundry.  
+4️⃣ Customizing the `foundry.toml` configuration file.  
+
+✅ **By the end of this lesson, you will have a well-organized Foundry project and understand how to manage dependencies.**  
 
 ---
 
-## 2. Introdução à EVM
+## **2. Foundry Project Structure**  
 
-- [Docs Oficial](https://ethereum.org/pt-br/developers/docs/evm/#the-ethereum-state-transition-function)
+📌 **When you create a new Foundry project using `forge init`, it generates the following structure:**  
 
-Primeiro, precisamos entender o que é a **Ethereum Virtual Machine** (EVM). A EVM é o ambiente onde todos os contratos inteligentes no Ethereum são executados. Ela funciona como uma máquina virtual descentralizada que processa transações e executa contratos.
+```
+my-foundry-project/
+├── src/              # Smart contracts
+│   ├── Counter.sol   # Example contract
+├── script/           # Deployment scripts
+│   ├── Deploy.s.sol  # Example script
+├── test/             # Solidity tests
+│   ├── Counter.t.sol # Example test
+├── foundry.toml      # Configuration file
+├── lib/              # External dependencies
+└── out/              # Compiled contract artifacts (auto-generated)
+```
 
-Como a EVM é uma máquina virtual teoricamente qualquer blockchain pode implementar ela. Quando uma blockchain é EVM-compatible ela deve suportar smartcontracts em solidity e qualquer linguagem que compila para solidity.
+✅ **Each folder has a specific function, which we will now explore in detail.**  
 
-Sem a EVM, não seria possível criar contratos inteligentes ou DApps. E é justamente por isso que as ferramentas de desenvolvimento são tão importantes: elas facilitam o processo de interação e deploy desses contratos na EVM.
+---
 
-## 3. As Primeiras Ferramentas (2014-2017)
+## **3. Understanding Each Directory**  
 
-No início, as opções eram bem limitadas. O **Mist**, em 2014, foi uma das primeiras tentativas de criar um navegador para dApps e uma interface de desenvolvimento.  
-Logo após, em 2015, surgiu o **Geth**, um nó Ethereum que permitia rodar um cliente e interagir com a blockchain usando uma CLI.
+### **📌 `src/` - Smart Contracts**  
 
-Outro marco importante foi a criação da linguagem **Solidity**, também em 2015, que possibilitou o desenvolvimento dos primeiros contratos inteligentes. No entanto, nessa fase inicial, havia uma grande dificuldade: os desenvolvedores precisavam escrever muitos scripts manuais para realizar tarefas básicas, como testar e implantar contratos. Era um começo promissor, mas ainda muito rudimentar.
+This folder contains all the **Solidity smart contracts** that make up your project.  
 
-## 4. Remix e a Revolução do IDE Web (2016-2018)
+📌 **Example contract in `src/Counter.sol`:**  
 
-Então, em 2016, surge o **Remix**, que trouxe uma revolução no desenvolvimento de contratos inteligentes. Com o Remix, ficou muito simples para os desenvolvedores escreverem, testarem e implantarem contratos inteligentes diretamente do navegador, sem precisar de ferramentas externas complexas.
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
 
-O Remix tornou o processo de desenvolvimento mais acessível, mas ele tinha limitações, especialmente em projetos maiores e na integração com outras ferramentas. Mesmo assim, ele marcou o início de uma nova era de IDEs voltados para a Ethereum.
+contract Counter {
+    uint256 public count;
 
-## 5. Hardhat, Truffle e o Avanço com o Foundry (2018-presente)
+    function increment() public {
+        count += 1;
+    }
+}
+```
 
-Com o crescimento do ecossistema, frameworks mais completos como **Truffle** e **Hardhat** foram lançados. O **Truffle**, em 2018, foi um dos primeiros a oferecer um ciclo de desenvolvimento completo, com ferramentas como o **Ganache** para simulação de uma blockchain local. Já o **Hardhat**, lançado em 2020, trouxe mais modularidade, permitindo a criação de plugins e uma experiência de debugging avançada. Além disso temos as alternativas em Python que são **Brownie** e o mais recente **ApeWorx**.
+✅ **This is where you write the core logic of your DApp.**  
 
-Finalmente, temos o **Foundry**, lançado em 2021, que oferece uma abordagem mais rápida e eficiente, com menos dependência de JavaScript e maior integração com o EVM, sendo uma ferramenta moderna e robusta para o desenvolvimento de contratos inteligentes. Vamos explorá-lo mais a fundo nas próximas aulas.
+---
 
-- [Hardhat](https://hardhat.org)
-- [Truffle](https://archive.trufflesuite.com)
-- [Brownie](https://github.com/eth-brownie)
-- [ApeWorx](https://apeworx.io)
-- [Foundry](https://getfoundry.sh)
+### **📌 `script/` - Deployment Scripts**  
 
-## 6. Conclusão
+This folder contains **Solidity scripts** for deploying smart contracts. Unlike Hardhat, Foundry allows **writing deployment scripts in Solidity instead of JavaScript**.  
 
-Hoje vimos como o tooling do EVM evoluiu desde as primeiras ferramentas como Mist e Geth até chegarmos ao Foundry. Cada nova ferramenta resolveu desafios específicos, tornando o desenvolvimento mais eficiente e acessível.
-Qual dessas ferramentas você já utilizou? Qual foi sua experiência? Na próxima aula, vamos falar especificamente sobre o **Foundry** e como ele se diferencia das outras opções.
+📌 **Example script in `script/Deploy.s.sol`:**  
 
-## 7. Recapitulação
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
 
-1. Entendemos o que é a EVM,
-2. Vimos as primeiras ferramentas como Mist e Geth,
-3. Discutimos o impacto do Remix como um IDE Web,
-4. Exploramos como frameworks como Truffle, Hardhat, e Foundry mudaram o jogo para os desenvolvedores.
+import "forge-std/Script.sol";
+import "../src/Counter.sol";
 
-## Lição de casa
+contract DeployCounter is Script {
+    function run() external {
+        vm.startBroadcast();
+        new Counter();
+        vm.stopBroadcast();
+    }
+}
+```
 
-Quero que você vá na documentação do Foundry e dê um lida por cima, vamos passar por vários daqueles pontos que estão lá e se você ler com antecedência vai conseguir absorver mais.
+📌 **To execute the script and deploy the contract:**  
 
-## 8. Próxima aula
+```bash
+forge script script/Deploy.s.sol --broadcast --rpc-url http://127.0.0.1:8545
+```
 
-Na próxima aula, vamos focar na **Ecossistema do Foundry**, entender suas origens, seus pontos fortes e seu ecosistema. Nos vemos lá!
+✅ **This will deploy the contract to a local or test network.**  
+
+---
+
+### **📌 `test/` - Solidity Tests**  
+
+This folder contains **unit tests written in Solidity**.  
+
+📌 **Example test in `test/Counter.t.sol`:**  
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "forge-std/Test.sol";
+import "../src/Counter.sol";
+
+contract CounterTest is Test {
+    Counter counter;
+
+    function setUp() public {
+        counter = new Counter();
+    }
+
+    function testIncrement() public {
+        counter.increment();
+        assertEq(counter.count(), 1);
+    }
+}
+```
+
+📌 **To run tests:**  
+
+```bash
+forge test
+```
+
+✅ **The `test/` folder is where you verify your contract logic.**  
+
+---
+
+### **📌 `lib/` - External Dependencies**  
+
+📌 **Used to store external Solidity libraries, such as OpenZeppelin.**  
+
+To **install** OpenZeppelin contracts:  
+
+```bash
+forge install OpenZeppelin/openzeppelin-contracts
+```
+
+This will create:  
+
+```
+lib/
+└── openzeppelin-contracts/
+```
+
+📌 **To import OpenZeppelin contracts into your Solidity files:**  
+
+```solidity
+import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+```
+
+✅ **All external dependencies are managed in the `lib/` folder.**  
+
+---
+
+### **📌 `out/` - Compiled Artifacts**  
+
+📌 **This folder is automatically generated after compilation and contains the ABI and bytecode of contracts.**  
+
+To compile your contracts and generate this folder, run:  
+
+```bash
+forge build
+```
+
+✅ **This folder is useful when integrating with frontend applications.**  
+
+---
+
+## **4. Managing Dependencies in Foundry**  
+
+📌 **To install external libraries:**  
+
+```bash
+forge install <github-repo>
+```
+
+✅ **Example:** Install OpenZeppelin:  
+
+```bash
+forge install OpenZeppelin/openzeppelin-contracts
+```
+
+📌 **To update dependencies:**  
+
+```bash
+forge update
+```
+
+📌 **To remove a dependency:**  
+
+```bash
+rm -rf lib/<dependency-name>
+```
+
+✅ **Foundry makes dependency management easy with its built-in package manager.**  
+
+---
+
+## **5. Customizing `foundry.toml`**  
+
+📌 **The `foundry.toml` file is the configuration file for your project.**  
+
+📌 **Example `foundry.toml`:**  
+
+```toml
+[profile.default]
+solc_version = "0.8.24"
+optimizer = true
+optimizer_runs = 200
+libs = ["lib"]
+remappings = [
+    "@openzeppelin/=lib/openzeppelin-contracts/"
+]
+```
+
+📌 **Key configurations:**  
+✅ **`solc_version`** → Solidity compiler version.  
+✅ **`optimizer`** → Enables gas optimization.  
+✅ **`optimizer_runs`** → Controls optimization level.  
+✅ **`libs`** → Defines the folder where dependencies are stored.  
+✅ **`remappings`** → Allows importing dependencies using aliases.  
+
+📌 **To apply configuration changes, recompile the project:**  
+
+```bash
+forge build
+```
+
+✅ **Customizing `foundry.toml` allows you to optimize gas usage and manage libraries efficiently.**  
+
+---
+
+## **6. Conclusion**  
+
+📌 **Today we learned:**  
+✔ **How a Foundry project is structured.**  
+✔ **The role of each directory and file.**  
+✔ **How to install and manage dependencies.**  
+✔ **How to configure the `foundry.toml` file.**  
+
+✅ **Now you understand how to structure your projects properly in Foundry!**  
+
+---
+
+## **7. Summary**  
+
+📌 **Today's key takeaways:**  
+1. **The `src/` folder contains smart contracts.**  
+2. **The `script/` folder stores Solidity deployment scripts.**  
+3. **The `test/` folder contains Solidity tests.**  
+4. **The `lib/` folder manages external dependencies.**  
+5. **The `foundry.toml` file allows project customization.**  
+
+---
+
+## **8. Homework**  
+
+✏ **Practice Exercises:**  
+1. **Modify the `Counter` contract** to allow setting a custom initial value.  
+2. **Write a new test** to verify this feature.  
+3. **Configure the optimizer settings in `foundry.toml` and analyze gas savings.**  
+
+📌 **Experiment with different configurations and compare results!**  
+
+---
+
+## **9. Next Lesson**  
+
+📅 **In the next lesson, we will explore how to write advanced tests in Foundry and use debugging tools like Anvil and Cast.**  
+
+🚀 **See you there!**  

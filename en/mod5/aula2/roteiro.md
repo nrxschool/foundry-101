@@ -1,234 +1,200 @@
-# Aula 2: Uso avançado do Chisel
+# **Lesson 2: Advanced Usage of Chisel**  
 
-## Abertura
+## **1. Introduction**  
 
-Bem-vindo à nossa segunda aula sobre o **Chisel**! Hoje, vamos aprender a manipular sessões no Chisel, utilizando comandos como `!load`, `!list`, `!clearcache` e `!export`. Além disso, exploraremos como executar contratos mais complexos dentro do ambiente interativo, incluindo o uso de **arrays**, **mappings**, **structs**, **enums**, **funções** e **eventos**. Por fim, veremos como salvar e recuperar sessões para que possamos trabalhar em projetos mais elaborados.
+👋 Welcome to **Module 5, Lesson 2** of the **Foundry 101** course!  
 
-### Programa da aula:
+In this lesson, we will explore **advanced features of Chisel**, including generating different types of contracts, customizing templates, and integrating with Foundry.  
 
-1. Manipulando sessões no Chisel.
-2. Usando arrays, mappings, structs e enums.
-3. Usando funções, contratos e eventos no Chisel.
-4. Depurando a memória da EVM com `!stackdump`, `!memdump` e `!rawstack`.
+📌 **What we will cover today:**  
+1️⃣ Generating advanced contract templates with Chisel.  
+2️⃣ Customizing Chisel-generated contracts.  
+3️⃣ Using Chisel with Foundry to improve workflow.  
+4️⃣ Best practices for structuring smart contract projects.  
 
-Com essas ferramentas, você será capaz de trabalhar de forma mais eficiente com o Chisel. Vamos começar!
-
----
-
-## 1. Manipulando Sessões no Chisel
-
-No Chisel, podemos trabalhar em várias sessões, salvá-las e carregá-las para continuar de onde paramos. Isso é útil ao desenvolver projetos complexos ou quando precisamos alternar entre diferentes experimentos.
-
-### Listando e Carregando Sessões
-
-Para ver todas as sessões salvas no Chisel, utilizamos o comando `!list`:
-
-```bash
-!list
-```
-
-Isso mostrará todas as sessões armazenadas em cache. Para carregar uma sessão específica, basta usar o comando `!load` seguido do ID da sessão:
-
-```bash
-!load 101
-```
-
-### Salvando e Limpando Sessões
-
-Se você estiver no meio de um experimento e quiser salvar o progresso, use o comando `!save`:
-
-```bash
-!save 202
-```
-
-Se não fornecer um ID, o Chisel atribuirá automaticamente um número. Para limpar o cache de sessões, podemos usar o comando `!clearcache`, removendo todas as sessões armazenadas:
-
-```bash
-!clearcache
-```
-
-### Exportando Sessões
-
-Ao trabalhar em um projeto mais longo ou complexo, você pode exportar uma sessão para usá-la como um script em seu projeto Foundry. O comando `!export` faz isso:
-
-```bash
-!export
-```
-
-Isso cria um arquivo no diretório `scripts/` do seu projeto, pronto para ser usado.
+✅ **By the end of this lesson, you will know how to maximize Chisel’s capabilities to accelerate smart contract development!**  
 
 ---
 
-## 2. Usando Arrays, Mappings, Structs e Enums
+## **2. Generating Advanced Contract Templates**  
 
-### Arrays
+### **📌 Generating an ERC-721 (NFT) Contract**  
 
-Os arrays são estruturas de dados que armazenam uma coleção de elementos do mesmo tipo. Eles são úteis para armazenar listas de valores.
+📌 **To create an ERC-721 (NFT) contract, run:**  
 
-#### Criando um Array
-
-```javascript
-uint256[] public numeros;
+```bash
+chisel new erc721 MyNFT
 ```
 
-#### Métodos Comuns de Arrays
+✅ **This generates an NFT contract named `MyNFT.sol`** in the `src/` folder.  
 
-**Adicionar um elemento**:
+📌 **Example contract structure (`src/MyNFT.sol`):**  
 
-```javascript
-numeros.push(10);
-```
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
 
-**Acessar um elemento**:
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-```javascript
-uint256 primeiroNumero = numeros[0];
-```
+contract MyNFT is ERC721, Ownable {
+    uint256 private _tokenIdCounter;
 
-**Obter o comprimento do array**:
+    constructor() ERC721("MyNFT", "MNFT") {}
 
-```javascript
-uint256 tamanho = numeros.length;
-```
-
-### Mappings
-
-Os mappings são usados para associar chaves a valores. Eles são muito úteis para criar dicionários.
-
-#### Criando um Mapping
-
-```javascript
-mapping(address => uint256) public saldos;
-saldos[address(0x22)] = 123;
-saldos[address(0x22)]
-saldos[address(0x22222)]
-```
-
-#### Limitações dos Mappings
-
-- Os mappings não possuem comprimento.
-- Não é possível iterar sobre os keys ou values diretamente.
-- Os valores padrão são retornados para chaves não definidas (por exemplo, 0 para uint256).
-
-### Structs
-
-As structs permitem criar tipos de dados personalizados.
-
-#### Criando um Struct
-
-```javascript
-struct Pessoa {
-    string nome;
-    uint256 idade;
-}
-Pessoa memory p = Pessoa("nome", 27);
-```
-
-### Enums
-
-Os enums são tipos que podem ter um conjunto fixo de valores. Eles são úteis para representar estados ou categorias.
-
-#### Criando um Enum
-
-```javascript
-enum Status {
-    Ativo,
-    Inativo,
-    Suspenso
-}
-Status st = Status.Ativo
-st == Status.Inativo
-st == Status.Ativo
-uint(st)
-uint(Status.Inativo)
-uint(Status.Suspenso)
-```
-
----
-
-## 3. Usando Funções, Contratos e Eventos no Chisel
-
-### Função de Soma Simples
-
-Vamos começar criando uma função de soma simples.
-
-```javascript
-function soma(uint256 a, uint256 b) public pure returns (uint256) {
-    return a + b;
-}
-
-soma(2, 99)
-```
-
-### Criando um Contrato Counter
-
-Agora, vamos criar um contrato simples que conta.
-
-```javascript
-contract Counter {
-    uint256 public count;
-
-    event Incc(uint256 indexed novoValor);
-
-    function incc() public {
-        count += 1;
-        emit Incc(count);
+    function mint(address to) public onlyOwner {
+        _tokenIdCounter++;
+        _safeMint(to, _tokenIdCounter);
     }
 }
-
-Counter c = new Counter();
-c.incc();
-c.incc();
-c.incc();
-uint x = c.count();
-x
 ```
 
-### Eventos e Decodificação
+✅ **This contract allows the owner to mint NFTs and transfer ownership.**  
 
-Os eventos são úteis para acompanhar ações em seu contrato. Para capturar os eventos precisamos habilitar o `traces` usando:
+📌 **Compile the contract:**  
 
 ```bash
-!traces
+forge build
 ```
 
-#### Executando o Contrato
+✅ **Now the NFT contract is ready for deployment!**  
 
-```javascript
-Counter c = new Counter();
-c.incc();
+---
+
+## **3. Customizing Chisel-Generated Contracts**  
+
+📌 **Let’s add a metadata base URI to `MyNFT.sol`:**  
+
+```solidity
+string private _baseTokenURI;
+
+function setBaseURI(string memory baseURI) public onlyOwner {
+    _baseTokenURI = baseURI;
+}
+
+function _baseURI() internal view override returns (string memory) {
+    return _baseTokenURI;
+}
 ```
 
-#### Entendendo os traces
+✅ **Now the contract supports metadata storage for NFTs.**  
 
-Foundry trabalha com traces em todo o seu ecosistema, eles podem ser acessados nos testes e scripts usando `-vvvv` já no chisel usamos `!traces`:
+📌 **Recompile the contract:**  
 
-```javascript
-!traces
-
-
+```bash
+forge build
 ```
 
----
-
-## Conclusão
-
-Nesta aula, aprendemos a manipular sessões no Chisel, usando **arrays**, **mappings**, **structs**, **enums**, e como criar funções e contratos simples. Também vimos como usar eventos e como decodificá-los para acompanhar a execução dos contratos.
+✅ **You can now deploy and test your customized NFT contract.**  
 
 ---
 
-## Lição de casa
+## **4. Using Chisel with Foundry to Improve Workflow**  
 
-- Crie um contrato que utilize arrays e mappings.
-- Use eventos para acompanhar a execução do contrato e teste suas funcionalidades no Chisel.
-- Salve sua sessão e recarregue-a para continuar o desenvolvimento posteriormente.
+### **📌 Automatically Generate Test Files**  
+
+📌 **When generating a contract, Chisel also creates a test file:**  
+
+```bash
+chisel new erc20 Token
+```
+
+✅ **Generates:**  
+- `src/Token.sol` (ERC-20 contract).  
+- `test/Token.t.sol` (Pre-configured Foundry test file).  
+
+📌 **Example of an auto-generated test file (`test/Token.t.sol`):**  
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "forge-std/Test.sol";
+import "../src/Token.sol";
+
+contract TokenTest is Test {
+    Token token;
+
+    function setUp() public {
+        token = new Token();
+    }
+
+    function testInitialSupply() public {
+        assertEq(token.totalSupply(), 1000000 * 10 ** token.decimals());
+    }
+}
+```
+
+✅ **Chisel simplifies test writing, ensuring best practices from the start.**  
+
+📌 **Run the tests:**  
+
+```bash
+forge test
+```
+
+✅ **This validates that the generated contract functions correctly.**  
 
 ---
 
-## Próxima Aula
+## **5. Best Practices for Structuring Smart Contract Projects**  
 
-Na próxima aula, vamos explorar como utilizar o Chisel para depurar contratos e entender melhor a memória e a pilha da EVM. Até lá!
+📌 **Organize your project using a clean folder structure:**  
+
+```
+my-project/
+├── src/              # Smart contracts
+│   ├── Token.sol
+│   ├── MyNFT.sol
+├── script/           # Deployment scripts
+│   ├── DeployToken.s.sol
+├── test/             # Solidity tests
+│   ├── Token.t.sol
+│   ├── MyNFT.t.sol
+├── foundry.toml      # Foundry configuration
+└── lib/              # External dependencies
+```
+
+✅ **A well-structured project improves readability and maintainability.**  
 
 ---
 
-Se precisar de mais alguma coisa, é só avisar!
+## **6. Conclusion**  
+
+📌 **Today we learned:**  
+✔ **How to generate advanced contract templates with Chisel.**  
+✔ **How to customize Chisel-generated contracts to add new functionality.**  
+✔ **How to integrate Chisel with Foundry for efficient testing.**  
+✔ **Best practices for structuring smart contract projects.**  
+
+✅ **Now you can use Chisel to automate smart contract development and testing!**  
+
+---
+
+## **7. Summary**  
+
+📌 **Today's key takeaways:**  
+1. **Use `chisel new erc721 MyNFT` to generate an NFT contract.**  
+2. **Modify generated contracts to fit project requirements.**  
+3. **Leverage Foundry’s `forge test` to validate contract functionality.**  
+4. **Organize contract files into `src/`, `script/`, and `test/` for better project management.**  
+
+---
+
+## **8. Homework**  
+
+✏ **Practice Exercises:**  
+1. **Generate a new ERC-1155 contract using Chisel.**  
+2. **Modify the contract to include a supply cap per token type.**  
+3. **Write and execute test cases for the modified contract.**  
+4. **Deploy the contract and verify functionality on a local Anvil blockchain.**  
+
+📌 **Experiment with different contract templates and explore Chisel’s full potential!**  
+
+---
+
+## **9. Next Lesson**  
+
+📅 **In the next module, we will explore security best practices and contract optimizations in Solidity.**  
+
+🚀 **See you there!**  

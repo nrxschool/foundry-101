@@ -1,206 +1,239 @@
-# Aula 1: Migração de Hardhat para Foundry
+# **Lesson 1: Migrating from Hardhat to Foundry**  
 
-## Abertura
+## **1. Introduction**  
 
-Bem-vindo à primeira aula do módulo avançado! Hoje, vamos abordar como migrar um projeto existente de **Hardhat** para **Foundry**. O Hardhat é amplamente utilizado no desenvolvimento de contratos inteligentes, mas o Foundry oferece novas abordagens e benefícios, como a execução nativa de testes em Solidity e scripts mais simples e eficientes. Nosso objetivo nesta aula será guiar você pelos principais passos dessa transição.
+👋 Welcome to **Module 6, Lesson 1** of the **Foundry 101** course!  
 
-### Programa da aula:
+In this lesson, we will **migrate an existing Hardhat project to Foundry**, covering project structure, configuration, testing, and deployment.  
 
-1. Criando um projeto em Hardhat.
-2. Comparando com a estrutura do Foundry.
-3. Migrando Testes.
-4. Migrando Scripts.
+📌 **What we will cover today:**  
+1️⃣ Differences between Hardhat and Foundry.  
+2️⃣ Setting up Foundry in an existing Hardhat project.  
+3️⃣ Migrating tests from JavaScript to Solidity.  
+4️⃣ Converting deployment scripts to Foundry.  
 
----
-
-## 1. Criando um Projeto em Hardhat
-
-Vamos começar criando um projeto simples em Hardhat para entendermos sua estrutura antes de compará-lo com Foundry.
-
-### Requisitos
-
-- [Node.js](https://nodejs.org/pt)
-
-### Passos para criar o projeto:
-
-1. Inicialize o Hardhat:
-
-```bash
-npx hardhat
-```
-
-2. Selecione **Create a basic sample project** e siga os passos indicados.
-
-3. A estrutura básica do projeto criado em Hardhat será:
-
-```
-├── contracts/
-│   └── Greeter.sol
-├── scripts/
-│   └── sample-script.js
-├── test/
-│   └── sample-test.js
-├── hardhat.config.js
-└── package.json
-```
-
-### O que temos:
-
-- **contracts/**: Diretório com os contratos Solidity.
-- **scripts/**: Scripts de deploy escritos em JavaScript/TypeScript.
-- **test/**: Testes escritos em Mocha/Chai (JavaScript/TypeScript).
-- **hardhat.config.js**: Configurações de rede, paths e plugins.
+✅ **By the end of this lesson, you will be able to migrate any Hardhat project to Foundry!**  
 
 ---
 
-## 2. Configurando o Foundry
+## **2. Differences Between Hardhat and Foundry**  
 
-Para adicionar o Foundry ao nosso projeto Hardhat, siga os seguintes passos:
+📌 **Hardhat vs. Foundry: Project Structure**  
 
-### Instalando dependências
-
-```bash
-npm install --save-dev @nomicfoundation/hardhat-foundry
+**Hardhat:**  
+```
+hardhat-project/
+├── contracts/         # Smart contracts
+│   ├── Greeter.sol
+├── scripts/           # Deployment scripts (JS/TS)
+│   ├── deploy.js
+├── test/              # Tests (JS/TS)
+│   ├── greeter.test.js
+├── hardhat.config.js  # Hardhat configuration
+├── package.json       # Node.js dependencies
+└── node_modules/      # Installed packages
 ```
 
-### Configurando `hardhat-foundry`
+**Foundry:**  
+```
+foundry-project/
+├── src/               # Smart contracts
+│   ├── Greeter.sol
+├── script/            # Deployment scripts (Solidity)
+│   ├── Deploy.s.sol
+├── test/              # Solidity tests
+│   ├── Greeter.t.sol
+├── foundry.toml       # Foundry configuration
+└── lib/               # External dependencies
+```
 
-**Adicione em `hardhat.config.js`:**
+✅ **Key differences:**  
+- Foundry **does not use JavaScript/TypeScript** for testing or scripting.  
+- **Testing and scripting are done in Solidity** instead of JavaScript.  
+- Foundry is **faster** than Hardhat due to its optimized execution.  
+
+---
+
+## **3. Setting Up Foundry in a Hardhat Project**  
+
+📌 **Step 1: Install Foundry**  
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+```
+
+📌 **Step 2: Initialize a Foundry project inside the Hardhat directory**  
+
+```bash
+forge init foundry-migration
+cd foundry-migration
+```
+
+📌 **Step 3: Move Solidity contracts to Foundry's `src/` folder**  
+
+```bash
+mv ../hardhat-project/contracts/* src/
+```
+
+📌 **Step 4: Remove Hardhat dependencies (optional)**  
+
+```bash
+rm -rf ../hardhat-project/node_modules ../hardhat-project/package.json ../hardhat-project/hardhat.config.js
+```
+
+✅ **Now the Hardhat project is fully migrated to Foundry.**  
+
+---
+
+## **4. Migrating Tests from JavaScript to Solidity**  
+
+### **📌 Example: Hardhat JavaScript Test**  
+
+**Original Hardhat test (`test/greeter.test.js`):**  
 
 ```javascript
-require("@nomicfoundation/hardhat-toolbox");
-require("@nomicfoundation/hardhat-foundry");
+const { expect } = require("chai");
 
-module.exports = {
-  solidity: "0.8.27",
-};
-```
+describe("Greeter", function () {
+  it("Should return the greeting message", async function () {
+    const Greeter = await ethers.getContractFactory("Greeter");
+    const greeter = await Greeter.deploy("Hello, Hardhat!");
+    await greeter.deployed();
 
-**No terminal, execute:**
-
-```bash
-npx hardhat init-foundry
-```
-
----
-
-## 3. Migrando Testes
-
-Agora, vamos ver como migrar um teste escrito em JavaScript no Hardhat para Solidity no Foundry.
-
-### Exemplo de Teste em Hardhat (JavaScript):
-
-```javascript
-it("Should emit an event on withdrawals", async function () {
-    const { lock, unlockTime, lockedAmount } = await loadFixture(deployOneYearLockFixture);
-
-    await time.increaseTo(unlockTime);
-
-    await expect(lock.withdraw())
-      .to.emit(lock, "Withdrawal")
-      .withArgs(lockedAmount, anyValue);
+    expect(await greeter.greet()).to.equal("Hello, Hardhat!");
+  });
 });
 ```
 
-### Migrando o Teste para Foundry (Solidity):
+### **📌 Equivalent Foundry Solidity Test**  
 
-No Foundry, os testes são escritos diretamente em Solidity, o que melhora a integração com os contratos. Abaixo está a versão migrada do teste em Solidity:
+**Converted Foundry test (`test/Greeter.t.sol`):**  
 
-```javascript
-function testEmitWithdrawalEvent() public {
-    vm.warp(unlockTime + 1);
-    vm.prank(alice);
-    vm.expectEmit(address(lock));
-    emit Lock.Withdrawal(1 ether, block.timestamp);
-    lock.withdraw();
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "forge-std/Test.sol";
+import "../src/Greeter.sol";
+
+contract GreeterTest is Test {
+    Greeter greeter;
+
+    function setUp() public {
+        greeter = new Greeter("Hello, Foundry!");
+    }
+
+    function testGreet() public {
+        assertEq(greeter.greet(), "Hello, Foundry!");
+    }
 }
 ```
 
-### Diferenças Chave:
+✅ **Key differences:**  
+- Hardhat uses **JavaScript** (`chai`, `ethers.js`) for testing.  
+- Foundry uses **Solidity** and `forge-std/Test.sol`.  
+- Foundry tests are **faster and written in native Solidity**.  
 
-**Verificação do Evento:**
-- Hardhat: Usa .to.emit() para capturar o evento diretamente na função de teste.
-- Foundry: Usa vm.expectEmit() para definir as expectativas de um evento antes de chamar a função que deve emitir o evento.
+📌 **Run the Foundry test:**  
 
-**Captura de Argumentos:**
-- Hardhat: O método .withArgs() permite verificar os valores dos argumentos do evento. No caso de anyValue, ele aceita qualquer valor para aquele argumento específico.
-- Foundry: Não tem a função equivalente a anyValue. O evento esperado deve ser declarado explicitamente, com os argumentos exatos que você espera, como emit Lock.Withdrawal(1 ether, block.timestamp).
+```bash
+forge test
+```
 
-**Contexto de Tempo:**
-- Hardhat: Usa time.increaseTo(unlockTime) para avançar o tempo até o unlockTime.
-- Foundry: Usa vm.warp(JAN_1ST_2030 + 1) para definir o tempo diretamente.
+✅ **Foundry executes tests significantly faster than Hardhat.**  
 
 ---
 
-## 4. Migrando Scripts
+## **5. Migrating Deployment Scripts**  
 
-Scripts no Hardhat geralmente são escritos em JavaScript, enquanto no Foundry, eles são escritos diretamente em Solidity, utilizando a biblioteca `forge-std` para interagir com a EVM.
+### **📌 Example: Hardhat JavaScript Deployment Script**  
 
-### Exemplo de Script de Deploy em Hardhat (JavaScript):
+**Original Hardhat deployment script (`scripts/deploy.js`):**  
 
 ```javascript
-async function main() {
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime);
+const hre = require("hardhat");
 
-  console.log("Lock deployed to:", lock.address);
+async function main() {
+  const Greeter = await hre.ethers.getContractFactory("Greeter");
+  const greeter = await Greeter.deploy("Hello, Hardhat!");
+
+  console.log("Greeter deployed to:", greeter.address);
 }
 
 main();
 ```
 
-### Migrando o Script para Foundry (Solidity):
+### **📌 Equivalent Foundry Solidity Deployment Script**  
 
-No Foundry, os scripts de deploy podem ser escritos como scripts Solidity:
+**Converted Foundry deployment script (`script/Deploy.s.sol`):**  
 
-```javascript
+```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.24;
 
 import "forge-std/Script.sol";
-import "../../contracts/Lock.sol";
+import "../src/Greeter.sol";
 
-contract Deploy is Script {
+contract DeployGreeter is Script {
     function run() external {
-        uint256 ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-        uint256 unlockTime = block.timestamp + ONE_YEAR_IN_SECS;
-
-        vm.startBroadcast(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80);
-        new Lock(unlockTime);
+        vm.startBroadcast();
+        new Greeter("Hello, Foundry!");
         vm.stopBroadcast();
     }
 }
 ```
 
-### Execução de Scripts:
+✅ **Key differences:**  
+- Hardhat uses **JavaScript scripts** with `ethers.js`.  
+- Foundry uses **Solidity scripts** with `forge-std/Script.sol`.  
 
-- **Hardhat**:
-
-```bash
- npx hardhat ignition deploy ignition/modules/Lock.js --network localhost
-```
-
-- **Foundry**:
+📌 **Run the Foundry script to deploy the contract:**  
 
 ```bash
-forge script ignition/modules/Lock.s.sol:Deploy --broadcast --rpc-url http://localhost:8545
+forge script script/Deploy.s.sol --broadcast --rpc-url http://127.0.0.1:8545
 ```
 
----
-
-## Conclusão
-
-Nesta aula, migramos um projeto de **Hardhat** para **Foundry**, comparando suas estruturas e funcionalidades. Vimos como converter testes e scripts para Solidity e como configurar o **foundry.toml** para refletir as necessidades do projeto.
+✅ **This deploys the contract using Foundry’s built-in scripting system.**  
 
 ---
 
-## Lição de casa
+## **6. Conclusion**  
 
-- Crie um projeto Hardhat simples e migre-o completamente para Foundry.
-- Converta ao menos um teste e um script de deploy de JavaScript para Solidity.
+📌 **Today we learned:**  
+✔ **The differences between Hardhat and Foundry project structures.**  
+✔ **How to set up Foundry inside an existing Hardhat project.**  
+✔ **How to migrate tests from JavaScript to Solidity.**  
+✔ **How to convert Hardhat deployment scripts to Foundry scripts.**  
+
+✅ **Now you can migrate any Hardhat project to Foundry efficiently!**  
 
 ---
 
-## Próxima Aula
+## **7. Summary**  
 
-Na próxima aula, vamos explorar como **Guardando chaves com cast wallet** para não passar mais a chave via `vm.startBroadcast`. Até lá!
+📌 **Today's key takeaways:**  
+1. **Foundry projects use Solidity for testing and scripting (no JavaScript).**  
+2. **Tests in Foundry are written in `test/` using `forge-std/Test.sol`.**  
+3. **Deployment scripts in Foundry use `forge-std/Script.sol`.**  
+4. **`forge test` runs tests significantly faster than Hardhat.**  
+
+---
+
+## **8. Homework**  
+
+✏ **Practice Exercises:**  
+1. **Migrate a Hardhat project to Foundry following today’s lesson.**  
+2. **Rewrite at least one Hardhat test in Solidity using Foundry.**  
+3. **Rewrite a JavaScript deployment script as a Foundry Solidity script.**  
+4. **Run `forge test --gas-report` and compare gas usage between Hardhat and Foundry.**  
+
+📌 **Experiment and observe the performance improvements!**  
+
+---
+
+## **9. Next Lesson**  
+
+📅 **In the next lesson, we will learn how to securely store and manage private keys using Cast Wallet.**  
+
+🚀 **See you there!**  

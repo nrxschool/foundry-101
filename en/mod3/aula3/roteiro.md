@@ -1,151 +1,235 @@
-# Aula 3: Forks Locais com Anvil
+# **Lesson 3: Integrating Foundry with ScaffoldETH2**  
 
-## 1. Abertura
+## **1. Introduction**  
 
+👋 Welcome to **Module 3, Lesson 3** of the **Foundry 101** course!  
 
-Olá! Seja bem-vindo à **quarta aula do Módulo 3** do curso **Foundry 101**! Hoje, vamos explorar uma das funcionalidades mais poderosas do **Anvil**: o **Fork de Redes Locais**. Vamos aprender como podemos "copiar" o estado de uma rede real, como a mainnet ou uma testnet, e usar localmente para testar contratos com dados reais.
+In this lesson, we will explore how to **integrate Foundry with ScaffoldETH2**, a framework that simplifies the development of decentralized applications (**DApps**) by providing a **pre-configured frontend and smart contract environment**.  
 
-Os tópicos que vamos cobrir hoje são:
+📌 **What we will cover today:**  
+1️⃣ What is ScaffoldETH2, and why use it?  
+2️⃣ Installing and setting up ScaffoldETH2 with Foundry.  
+3️⃣ Deploying a Foundry contract and connecting it to a frontend.  
+4️⃣ Interacting with the contract through the UI.  
 
-1. O que é um **fork local** e por que usá-lo.
-2. Como configurar e rodar um fork de uma rede real no **Anvil**.
-3. Executar interações com contratos já existentes em um fork.
-4. Testar novas implementações no fork de uma rede.
-
-Essa funcionalidade é uma das mais úteis para desenvolvedores que querem simular o comportamento de seus contratos em uma rede real sem gastar gás. Vamos começar!
-
----
-
-## 2. O que é um Fork Local e Por que Usá-lo
-
-### O que é um fork?
-
-Um **fork local** é uma cópia exata de uma blockchain real (como a mainnet Ethereum, Goerli, ou Sepolia), com todos os contratos, transações e estados de conta daquela rede. Com o **Anvil**, você pode rodar essa cópia localmente em seu computador e testar contratos ou interações sem a necessidade de pagar taxas de gás.
-
-### Por que usar forks locais?
-
-1. **Simular a Mainnet/Testnet localmente**: Ao fazer um fork da mainnet ou testnet, você tem acesso ao estado atual de todos os contratos da rede. Isso permite simular interações reais, como testar transações complexas ou interagir com contratos populares (por exemplo, Uniswap, Aave).
-2. **Testar alterações sem custos**: Ao testar um contrato ou uma interação em um fork, você não paga taxas de gás reais, o que torna o desenvolvimento e depuração muito mais rápido e barato.
-3. **Depuração avançada**: O **fork** permite que você pause, volte no tempo e inspecione estados anteriores da blockchain enquanto realiza testes.
+✅ **By the end of this lesson, you will have a full DApp setup using Foundry and ScaffoldETH2!**  
 
 ---
 
-## 3. Como Configurar e Rodar um Fork no Anvil
+## **2. What is ScaffoldETH2?**  
 
-### Passo 1: Rodar um Fork de uma Rede Real
+📌 **ScaffoldETH2 is a framework for rapidly developing Ethereum DApps with a built-in frontend.**  
 
-Para fazer um fork local de uma rede real, você precisa de um **RPC URL** de um provedor de blockchain (como Infura, Alchemy, ou Ankr). Vamos usar a Mainnet **Ethereum** como exemplo.
+🚀 **Why use ScaffoldETH2?**  
+✅ **Pre-configured frontend** → Includes React, Next.js, and wagmi hooks.  
+✅ **Built-in smart contract UI** → Instantly interact with contracts.  
+✅ **Works with Foundry, Hardhat, and other frameworks.**  
 
-1. Suba o Anvil apontando para o RPC da Ethereum com o seguinte comando:
-
-```bash
-anvil --fork-url https://eth-mainnet.g.alchemy.com/v2/<API_KEY>
-```
-
-Esse comando cria uma cópia exata do estado atual da rede Ethereum e a executa localmente no **Anvil**.
-
-**`--fork-url`**: Define a URL do RPC da rede que será forkeada.
-
-Você pode rodar esse comando para qualquer rede suportada, como **Mainnet**, **Sepolia** ou **Optimism**, mudando o URL do RPC.
-
-### Passo 2: Definir um Bloco Específico (Opcional)
-
-Se você quiser forkar a rede a partir de um bloco específico, pode adicionar a flag `--fork-block-number`:
-
-```bash
-anvil --fork-url https://eth-mainnet.g.alchemy.com/v2/<API_KEY> --fork-block-number 1234567
-```
-
-Isso é útil se você estiver testando uma transação ou evento que ocorreu em um bloco específico e quer garantir que o estado da rede reflita aquele momento exato.
+📌 **ScaffoldETH2 makes it easier to test and iterate on smart contracts.**  
 
 ---
 
-## 4. Interagindo com Contratos Existentes em um Fork
+## **3. Installing and Setting Up ScaffoldETH2**  
 
-Agora que temos o **fork** rodando, podemos interagir com os contratos que já existem na rede. Isso é uma maneira prática de testar interações com contratos reais.
-
-### Passo 1: Usar Cast para Chamar Funções de Contratos
-
-Suponha que você queira interagir com o contrato do **Uniswap V2** na Ethereum testnet. Você pode usar o **Cast** para chamar funções no contrato diretamente.
-
-1. Identifique o endereço do contrato **Uniswap V2** na rede Ethereum.
-2. Use o comando **Cast** para chamar uma função do contrato:
+📌 **Step 1: Clone the ScaffoldETH2 repository**  
 
 ```bash
-cast call 0xUniswapV2ContractAddress "getReserves()"
+git clone https://github.com/scaffold-eth/scaffold-eth-2.git
+cd scaffold-eth-2
 ```
 
-Esse comando chama a função `getReserves()` de um par de tokens no contrato Uniswap V2 e retorna o estado das reservas atuais.
-
-### Passo 2: Modificar Estados no Fork com Transações Simuladas
-
-Você também pode simular transações que modificam o estado da blockchain. Vamos supor que você queira testar uma **swap** no contrato Uniswap sem pagar gás real.
-
-1. Use **Cast** para enviar uma transação simulada:
+📌 **Step 2: Install dependencies**  
 
 ```bash
-cast send 0xUniswapV2ContractAddress "swap(uint amount0Out, uint amount1Out, address to, bytes calldata data)" 100 0 0xYourAddress "0x"
+pnpm install
 ```
 
-Aqui, estamos simulando uma troca de tokens no Uniswap.
+📌 **Step 3: Remove Hardhat (since we are using Foundry)**  
+
+```bash
+rm -rf packages/hardhat
+```
+
+📌 **Step 4: Modify `package.json` to use Foundry**  
+
+Find the `"contracts"` script and replace it with:  
+
+```json
+"contracts": "cd packages/foundry && forge build"
+```
+
+✅ **Now ScaffoldETH2 is configured to use Foundry instead of Hardhat.**  
 
 ---
 
-## 5. Testando Novas Implementações no Fork
+## **4. Deploying a Foundry Contract in ScaffoldETH2**  
 
-Uma das funcionalidades mais interessantes de um fork é a capacidade de **implementar novos contratos** ou **testar atualizações** em contratos existentes.
+📌 **Step 1: Create the contract in Foundry**  
 
-### Passo 1: Deploy de um Novo Contrato em um Fork
-
-Vamos fazer o deploy de um contrato ERC20 simples na rede Ethereum, usando o fork local:
-
-1. Primeiro, suba o **Anvil** com o fork da rede Ethereum.
-2. Em seguida, crie um script de deploy para o contrato:
+Inside `packages/foundry/src/`, create `Counter.sol`:  
 
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {ERC20} from "solmate/tokens/ERC20.sol";
+contract Counter {
+    uint256 public count;
 
-contract MyToken is ERC20 {
-    constructor(uint256 initialSupply) ERC20("My Token", "MTK", 18) {
-        _mint(msg.sender, initialSupply);
+    function increment() public {
+        count += 1;
     }
 }
 ```
 
-3. Execute o deploy usando o **Forge** no ambiente forkeado:
+📌 **Step 2: Compile the contract**  
 
 ```bash
-forge script script/DeployToken.s.sol --fork-url http://127.0.0.1:8545 --broadcast
+forge build
 ```
 
-Agora, o contrato está implantado no seu fork local da Ethreum, e você pode interagir com ele como faria normalmente.
+📌 **Step 3: Start Anvil**  
+
+```bash
+anvil
+```
+
+📌 **Step 4: Deploy the contract using Foundry scripts**  
+
+Create a new file `packages/foundry/script/DeployCounter.s.sol`:  
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "forge-std/Script.sol";
+import "../src/Counter.sol";
+
+contract DeployCounter is Script {
+    function run() external {
+        vm.startBroadcast();
+        new Counter();
+        vm.stopBroadcast();
+    }
+}
+```
+
+📌 **Deploy the contract:**  
+
+```bash
+forge script script/DeployCounter.s.sol --broadcast --rpc-url http://127.0.0.1:8545
+```
+
+✅ **Copy the deployed contract address for use in the frontend.**  
 
 ---
 
-## 6. Conclusão
+## **5. Connecting the Contract to the Frontend**  
 
-Hoje, exploramos como fazer forks locais de redes reais usando o **Anvil**, como interagir com contratos já existentes e testar novas implementações. Essa técnica permite testar interações complexas em um ambiente realista sem pagar taxas de gás, oferecendo um ambiente de desenvolvimento mais eficiente e seguro.
+📌 **Step 1: Add the contract to ScaffoldETH2’s config**  
+
+Open `packages/nextjs/scaffold.config.ts` and add:  
+
+```typescript
+const contracts = {
+  Counter: {
+    address: "0x5FbDB2315678afecb367f032d93F642f64180aa3", // Replace with actual address
+    abi: require("../foundry/out/Counter.sol/Counter.json").abi,
+  },
+};
+export default contracts;
+```
+
+📌 **Step 2: Create a frontend component to interact with the contract**  
+
+Inside `packages/nextjs/components/Counter.tsx`, add:  
+
+```tsx
+import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+
+const Counter = () => {
+  const { data: count } = useScaffoldContractRead({
+    contractName: "Counter",
+    functionName: "count",
+  });
+
+  const { writeAsync: increment } = useScaffoldContractWrite({
+    contractName: "Counter",
+    functionName: "increment",
+  });
+
+  return (
+    <div>
+      <h2>Counter: {count?.toString()}</h2>
+      <button onClick={() => increment()}>Increment</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+📌 **Step 3: Add the component to the main page**  
+
+Modify `packages/nextjs/pages/index.tsx` and add:  
+
+```tsx
+import Counter from "~~/components/Counter";
+
+export default function Home() {
+  return (
+    <div>
+      <h1>My Foundry DApp</h1>
+      <Counter />
+    </div>
+  );
+}
+```
+
+📌 **Step 4: Start the frontend**  
+
+```bash
+pnpm dev
+```
+
+✅ **Open `http://localhost:3000` to see the DApp with an interactive Counter!**  
 
 ---
 
-## Recapitulação
+## **6. Conclusion**  
 
-- **Forks Locais**: Copiamos o estado da rede Goerli para um ambiente local e interagimos com contratos reais.
-- **Interação com Contratos**: Usamos o **Cast** para chamar funções e enviar transações simuladas.
-- **Deploy de Novos Contratos**: Fizemos o deploy de um contrato ERC20 no fork e testamos suas interações.
+📌 **Today we learned:**  
+✔ **How to install and configure ScaffoldETH2 with Foundry.**  
+✔ **How to deploy a Foundry contract and integrate it with a frontend.**  
+✔ **How to use wagmi hooks to interact with a contract in React.**  
+✔ **How to run a local DApp with ScaffoldETH2 and Anvil.**  
 
----
-
-## Lição de Casa
-
-1. Faça o fork de uma rede real (como Sepolia ou Mainnet) e interaja com um contrato existente.
-2. Implante um novo contrato no fork e teste sua interação com outros contratos da rede.
+✅ **Now you can build full-stack DApps using Foundry and ScaffoldETH2!**  
 
 ---
 
-## Próxima Aula
+## **7. Summary**  
 
-Na próxima aula, vamos continuar explorando como interagir com contratos na blockchain, usando **Cast** e tudo o que aprendemos até agora. Até lá, continue praticando e nos vemos na próxima aula! 👋
+📌 **Today's key takeaways:**  
+1. **ScaffoldETH2 provides a pre-configured frontend for smart contracts.**  
+2. **Modify `package.json` to use Foundry instead of Hardhat.**  
+3. **Deploy contracts using Foundry scripts (`forge script`).**  
+4. **Use wagmi hooks in React to interact with the contract.**  
+
+---
+
+## **8. Homework**  
+
+✏ **Practice Exercises:**  
+1. **Modify the `Counter` contract to allow decrementing and update the UI.**  
+2. **Deploy another contract and add it to ScaffoldETH2’s config.**  
+3. **Customize the frontend layout to match your project’s design.**  
+
+📌 **Experiment with different contract interactions and UI components!**  
+
+---
+
+## **9. Next Lesson**  
+
+📅 **In the next lesson, we will learn how to interact with contracts using Cast.**  
+
+🚀 **See you there!**  

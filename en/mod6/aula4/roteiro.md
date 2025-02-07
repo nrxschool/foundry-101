@@ -1,223 +1,272 @@
-# Aula 4: Cheetcodes e Lib Vm
+# **Lesson 4: Gas Optimization in Solidity**  
 
-## Abertura
+## **1. Introduction**  
 
-Nesta aula, vamos abordar um dos aspectos mais poderosos do **Foundry**, a **lib Vm** e os **cheatcodes**. Essas ferramentas permitem manipular o comportamento da EVM durante os testes e facilitar a simulação de diferentes cenários, como revert calls, emissões de eventos e gerenciamento de contas. Vamos explorar como utilizar essas ferramentas para construir testes mais robustos e detalhados.
+👋 Welcome to **Module 6, Lesson 4** of the **Foundry 101** course!  
 
-### Programa da aula:
+Gas optimization is essential for making smart contracts **more efficient and cost-effective**. Writing gas-efficient Solidity code helps reduce transaction fees and improve scalability.  
 
-1. O que são cheatcodes.
-2. Assertions: `expectRevert`, `expectEmit`, `expectCall`.
-3. Controle do ambiente: `prank`, `startPrank`, `deal`, `label`.
+📌 **What we will cover today:**  
+1️⃣ Understanding gas costs in Solidity.  
+2️⃣ Best practices for writing gas-efficient contracts.  
+3️⃣ Measuring gas usage with Foundry.  
+4️⃣ Comparing optimized vs. non-optimized implementations.  
 
----
-
-## 1. O que são Cheatcodes
-
-Cheatcodes são funções especiais disponíveis no Foundry, acessíveis pela **lib Vm**. Elas permitem manipular o estado da Ethereum Virtual Machine (EVM) em tempo de execução, tornando os testes mais flexíveis e poderosos.
-
-Com cheatcodes, você pode:
-
-- Simular transações de diferentes contas.
-- Forçar alterações no estado da blockchain.
-- Ignorar limitações que normalmente precisariam de pré-configurações complexas.
-
-A lib Vm é incluída em testes através do seguinte import:
-
-```javascript
-import { Vm } from "forge-std/Vm.sol";
-```
+✅ **By the end of this lesson, you will know how to optimize smart contracts for minimal gas usage!**  
 
 ---
 
-## 2. Assertions: `expectRevert`, `expectEmit`, `expectCall`
+## **2. Understanding Gas Costs in Solidity**  
 
-### `expectRevert`
+📌 **Gas is the computational cost required to execute smart contract operations.**  
 
-O cheatcode `expectRevert` permite que você simule e verifique quando uma função está destinada a falhar com um revert. Isso é útil para garantir que certas condições em contratos, como validações e permissões, estão sendo aplicadas corretamente.
+✅ **Key factors affecting gas usage:**  
+- **Storage operations** → Writing to storage is the most expensive operation.  
+- **Loops and iterations** → Repeated operations increase gas costs.  
+- **Function visibility** → External vs. internal functions impact efficiency.  
+- **Variable types** → Choosing the right data types reduces gas consumption.  
 
-```javascript
-contract Reversible {
+📌 **Every Solidity operation has a predefined gas cost.**  
 
-    error Unauthorized();
-    error YouNotOwner(address account);
+Example:  
+- **Writing to storage** → 20,000 gas per write.  
+- **Reading from storage** → 2,100 gas per read.  
+- **Calling an external contract** → 700 gas.  
 
-    function revertString() public {
-        revert("Unauthorized");
-    }
-    function revertError() public {
-        revert Unauthorized();
-    }
-    function revertErrorArgs() public {
-        revert YouNotOwner(msg.sender);
-    }
-}
+✅ **Optimizing smart contracts helps save ETH on transaction fees.**  
 
-Reversible r = new Reversible();
+---
 
-vm.expectRevert("Unauthorized");
-r.revertString();
+## **3. Best Practices for Gas Optimization**  
 
-vm.expectRevert(Reversible.Unauthorized.selector);
-r.revertError();
+### **1️⃣ Use `calldata` Instead of `memory` for Function Parameters**  
 
+📌 **Avoid unnecessary memory allocations.**  
 
-bytes memory signature = abi.encodeWithSelector(Reversible.YouNotOwner.selector, address(this));
-vm.expectRevert(signature);
-r.revertErrorArgs();
-```
+❌ **Less efficient (`memory` uses more gas):**  
 
-Neste exemplo, o teste espera que a chamada à função `restrictedFunction()` falhe com a mensagem `"Unauthorized"`.
-
-### `expectEmit`
-
-O cheatcode `expectEmit` permite testar se eventos estão sendo emitidos conforme esperado. Isso é importante para garantir que as interações com o contrato estão sendo rastreadas corretamente através dos logs de eventos.
-
-```javascript
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
-
-import {Test} from "forge-std/Test.sol";
-
-event Point(uint256 indexed x, uint256 indexed y, uint256 indexed z);
-event Vector(uint256 indexed module);
-event Called();
-
-contract Cartesian {
-    function makePoint(uint256 x, uint256 y, uint256 z) public {
-        emit Point(x, y, z);
-    }
-
-    function makeVector(uint256 x, uint256 y, uint256 z) public {
-        uint256 m = x ** 2 + y ** 2 + z ** 2;
-        emit Vector(m);
-    }
-
-    function call() public {
-        emit Called();
-    }
-}
-
-contract CartesianB {
-    function makeVector(uint256 x, uint256 y, uint256 z) public {
-        uint256 m = x ** 2 + y ** 2 + z ** 2;
-        emit Vector(m);
-    }
-}
-
-contract CartesianTest is Test {
-    Cartesian cartesian;
-    CartesianB b;
-
-    function setUp() public {
-        cartesian = new Cartesian();
-        b = new CartesianB();
-    }
-
-    function testEmitEventSimple() public {
-        vm.expectEmit();
-        emit Called();
-
-        cartesian.call();
-    }
-
-    function testEmitEventTopics() public {
-        vm.expectEmit(true, false, false, false);
-        emit Point(1, 0, 0);
-
-        cartesian.makePoint(1, 2, 3);
-    }
-
-    function testFailEmitEventEmmiter() public {
-        vm.expectEmit(true, false, false, false, address(cartesian));
-        emit Vector(14);
-
-        b.makeVector(1, 2, 3);
-   }
+```solidity
+function setName(string memory _name) public {
+    name = _name;
 }
 ```
 
-Os parâmetros indicam quais campos do evento estão sendo verificados.
+✅ **More efficient (`calldata` saves gas):**  
 
-### `expectCall`
-
-O cheatcode `expectCall` permite testar se uma função externa está sendo chamada corretamente, verificando tanto o endereço do contrato quanto os argumentos da chamada.
-
-```javascript
-function testTransferCall() public {
-    vm.prank(alice);
-    vm.expectCall(
-        address(token),
-        abi.encodeCall(token.transfer, (bob, 10))
-    );
-    token.transfer(bob, 10);
+```solidity
+function setName(string calldata _name) public {
+    name = _name;
 }
 ```
 
----
-
-## 3. Controle do Ambiente: `prank`, `startPrank`, `deal`, `label`
-
-### `prank`
-
-O cheatcode `prank` simula uma transação sendo enviada de um endereço diferente do padrão `msg.sender`. Isso é útil para testar cenários onde diferentes usuários interagem com o contrato.
-
-```javascript
-vm.prank(address(0xbeef));
-contract.someFunction();
-```
-
-Aqui, `someFunction()` será chamada como se o `msg.sender` fosse `0xBEEF`.
-
-### `startPrank` e `stopPrank`
-
-Diferente do `prank`, que afeta apenas a próxima transação, `startPrank` altera o `msg.sender` para todas as transações subsequentes até que `stopPrank` seja chamado.
-
-```javascript
-vm.startPrank(address(0xbeef));
-contract.someFunction();
-contract.anotherFunction();
-vm.stopPrank();
-```
-
-Isso permite simular múltiplas interações a partir do mesmo endereço.
-
-### `deal`
-
-O cheatcode `deal` permite ajustar o saldo de um endereço diretamente. Isso é útil para configurar cenários de testes onde as contas precisam de um saldo específico.
-
-```javascript
-vm.deal(address(0xBEEF), 10 ether);
-```
-
-Isso define o saldo de `0xBEEF` como `10 ether`.
-
-### `label`
-
-O cheatcode `label` permite atribuir nomes aos endereços, o que facilita a leitura dos logs de teste. Útil para identificar rapidamente diferentes contas nos resultados dos testes.
-
-```javascript
-vm.label(address(0xbeef), "Bob");
-```
-
-A partir de agora, o endereço `0xBEEF` será exibido como `"Bob"` nos logs de teste.
+📌 **`calldata` is cheaper because it avoids memory allocation.**  
 
 ---
 
-## Conclusão
+### **2️⃣ Minimize Storage Writes**  
 
-Nesta aula, vimos como usar os **cheatcodes** e a **lib Vm** para manipular o ambiente de execução e realizar testes mais precisos. Exploramos o uso de asserts como `expectRevert` e `expectEmit` para garantir a integridade das funções e eventos, e como `prank`, `deal` e `label` podem simular interações e estados diversos. Essas ferramentas são essenciais para criar testes mais eficientes e detalhados.
+📌 **Each write to `storage` is expensive. Minimize storage updates whenever possible.**  
+
+❌ **Less efficient (multiple storage writes):**  
+
+```solidity
+function increment() public {
+    count += 1;
+    count += 1;
+}
+```
+
+✅ **More efficient (only one storage write):**  
+
+```solidity
+function increment() public {
+    uint256 newCount = count + 2;
+    count = newCount;
+}
+```
+
+✅ **Always prefer memory or stack variables over `storage` when possible.**  
 
 ---
 
-## Lição de casa
+### **3️⃣ Use `unchecked` for Arithmetic When Safe**  
 
-1. Use o `expectRevert` para verificar se uma função está falhando como esperado ao passar um valor inválido.
-2. Use o `prank` para simular múltiplas contas interagindo com seu contrato.
-3. Defina um saldo específico para uma conta e simule uma transação usando `deal`.
+📌 **Since Solidity 0.8+, arithmetic overflow checks consume gas. Use `unchecked` to skip them when safe.**  
+
+❌ **Less efficient (adds overflow checks):**  
+
+```solidity
+function increment() public {
+    count += 1; // Includes overflow check
+}
+```
+
+✅ **More efficient (`unchecked` removes the check):**  
+
+```solidity
+function increment() public {
+    unchecked {
+        count += 1;
+    }
+}
+```
+
+📌 **Only use `unchecked` when you are certain overflows won’t happen.**  
 
 ---
 
-## Próxima Aula
+### **4️⃣ Use `uint256` Instead of Smaller Integers**  
 
-Na próxima aula, vamos explorar como testar contratos Solidity usando o compilador **Vyper** no **Foundry**. Até lá!
+📌 **Solidity’s EVM operates on 256-bit words, so using `uint8`, `uint16`, etc., can introduce extra gas costs due to padding.**  
+
+❌ **Less efficient (`uint8` adds complexity):**  
+
+```solidity
+uint8 a = 255;
+uint8 b = 100;
+```
+
+✅ **More efficient (`uint256` avoids extra operations):**  
+
+```solidity
+uint256 a = 255;
+uint256 b = 100;
+```
+
+✅ **Use `uint256` unless you need to pack variables for storage efficiency.**  
+
+---
+
+### **5️⃣ Packing Storage Variables**  
+
+📌 **Solidity stores variables in 32-byte slots. Packing multiple smaller variables into a single slot saves gas.**  
+
+❌ **Less efficient (two separate storage slots):**  
+
+```solidity
+contract Example {
+    uint128 a;
+    uint128 b;
+}
+```
+
+✅ **More efficient (packed into a single storage slot):**  
+
+```solidity
+contract Example {
+    uint128 a;
+    uint128 b;
+}
+```
+
+✅ **Smaller types should be declared together to fit into the same slot.**  
+
+---
+
+## **4. Measuring Gas Usage with Foundry**  
+
+📌 **To measure gas usage, run:**  
+
+```bash
+forge test --gas-report
+```
+
+✅ **Example output:**  
+
+```
+| Function     | Min   | Avg   | Max   | Calls |
+|-------------|-------|-------|-------|-------|
+| increment   | 21,000| 23,000| 25,000| 10    |
+| decrement   | 19,000| 20,500| 22,000| 5     |
+```
+
+📌 **What this tells us:**  
+✅ **Min, Avg, and Max gas** used for each function.  
+✅ **Number of function calls** during testing.  
+
+✅ **This helps identify expensive functions that need optimization.**  
+
+---
+
+### **📌 Running a Gas Snapshot for Comparisons**  
+
+📌 **To compare gas usage before and after optimizations:**  
+
+```bash
+forge snapshot
+```
+
+✅ **This records gas usage and allows you to compare improvements.**  
+
+---
+
+## **5. Comparing Optimized vs. Non-Optimized Implementations**  
+
+📌 **Example: Optimizing an ERC-20 Transfer Function**  
+
+❌ **Less efficient (multiple storage writes):**  
+
+```solidity
+function transfer(address to, uint256 amount) public {
+    balanceOf[msg.sender] -= amount;
+    balanceOf[to] += amount;
+}
+```
+
+✅ **More efficient (only one storage write per balance update):**  
+
+```solidity
+function transfer(address to, uint256 amount) public {
+    uint256 senderBalance = balanceOf[msg.sender];
+    require(senderBalance >= amount, "Insufficient balance");
+    unchecked {
+        balanceOf[msg.sender] = senderBalance - amount;
+    }
+    balanceOf[to] += amount;
+}
+```
+
+✅ **Optimized code minimizes storage updates and reduces gas costs.**  
+
+---
+
+## **6. Conclusion**  
+
+📌 **Today we learned:**  
+✔ **How Solidity operations impact gas costs.**  
+✔ **Best practices for writing gas-efficient contracts.**  
+✔ **How to measure gas usage with Foundry’s `forge test --gas-report`.**  
+✔ **How to optimize storage, loops, and arithmetic operations.**  
+
+✅ **Now you can optimize Solidity contracts for minimal gas usage!**  
+
+---
+
+## **7. Summary**  
+
+📌 **Today's key takeaways:**  
+1. **Use `calldata` instead of `memory` for function parameters.**  
+2. **Minimize storage writes by using memory variables first.**  
+3. **Use `unchecked` for arithmetic when overflow checks aren’t needed.**  
+4. **Pack smaller storage variables together to reduce slot usage.**  
+5. **Measure gas usage with `forge test --gas-report` and compare optimizations with `forge snapshot`.**  
+
+---
+
+## **8. Homework**  
+
+✏ **Practice Exercises:**  
+1. **Optimize a Solidity function using `unchecked` and measure gas savings.**  
+2. **Refactor an existing contract to reduce storage writes.**  
+3. **Run `forge test --gas-report` before and after optimizations.**  
+4. **Analyze the difference in gas usage using `forge snapshot`.**  
+
+📌 **Try different optimizations and analyze the results!**  
+
+---
+
+## **9. Next Lesson**  
+
+📅 **In the next lesson, we will explore security best practices for Solidity smart contracts.**  
+
+🚀 **See you there!**  

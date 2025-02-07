@@ -1,178 +1,149 @@
-# Aula 1: Introdução ao Chisel
+# **Lesson 1: Introduction to Chisel**  
 
-## Abertura
+## **1. Introduction**  
 
-Bem-vindo à nossa primeira aula sobre **Chisel**, o REPL para Solidity da suíte Foundry. Nesta aula, vamos apresentar o Chisel e explorar seu ambiente interativo, que permite testar rapidamente trechos de código em Solidity. Com o Chisel, você pode iterar sobre suas ideias sem a necessidade de rodar testes completos. Vamos entender os principais comandos, como `!help`, `!source`, `!save`, e `!clear`, além de ver exemplos práticos de uso.
+👋 Welcome to **Module 5, Lesson 1** of the **Foundry 101** course!  
 
-### Programa da aula:
+In this lesson, we will explore **Chisel**, a powerful tool for rapidly generating Solidity boilerplate code and scaffolding smart contracts.  
 
-1. O que é o Chisel e como funciona.
-2. Principais comandos do Chisel.
-3. Testando códigos simples no Chisel.
-4. Exportando e integrando com Foundry.
+📌 **What we will cover today:**  
+1️⃣ What is Chisel, and why use it?  
+2️⃣ Installing and setting up Chisel.  
+3️⃣ Generating smart contract templates.  
+4️⃣ Customizing Chisel-generated contracts.  
 
-Chisel facilita o desenvolvimento ágil de contratos Solidity. Vamos começar!
+✅ **By the end of this lesson, you will know how to use Chisel to speed up Solidity development!**  
 
 ---
 
-## 1. O que é o Chisel e como funciona
+## **2. What Is Chisel and Why Use It?**  
 
-O **Chisel** é uma ferramenta que funciona como um REPL (Read-Eval-Print Loop) para **Solidity**, permitindo:
+📌 **Chisel is a code generator for Solidity, designed to quickly scaffold contract structures and test files.**  
 
-- Testar rapidamente pequenos trechos de código.
-- Obter feedback imediato e ajustar erros ou melhorias.
-- Testar expressões, variáveis e operações sem a necessidade de configurar um projeto completo.
+🚀 **Why use Chisel?**  
+✅ **Saves time** – No need to manually create standard contract files.  
+✅ **Follows best practices** – Generates optimized, secure contract templates.  
+✅ **Integrated with Foundry** – Works seamlessly with `forge` and `cast`.  
 
-### Vantagens do REPL
+📌 **Chisel is useful for setting up smart contracts, test cases, and deployment scripts in seconds.**  
 
-Ao contrário de um fluxo tradicional de deploy e teste, no Chisel você pode:
+---
 
-- **Executar snippets** sem precisar de um contrato completo.
-- Receber feedback imediato sobre **funcionalidade e erros**.
-- Iterar rapidamente ao longo do desenvolvimento, ajustando e testando o código em tempo real.
+## **3. Installing and Setting Up Chisel**  
 
-### Iniciando o Chisel
+### **📌 Installing Chisel**  
 
-Para iniciar o Chisel, basta rodar o comando:
+📌 **To install Chisel, run:**  
 
 ```bash
-chisel
+cargo install chisel
 ```
 
-Uma vez aberto, você poderá digitar expressões ou blocos de código Solidity e receber uma resposta imediata. O Chisel permite rodar tanto em redes locais quanto em forks de redes reais, oferecendo flexibilidade no desenvolvimento.
+✅ **Chisel requires Rust’s package manager (`cargo`) to install.**  
 
----
-
-## 2. Principais Comandos do Chisel
-
-O Chisel possui uma série de comandos úteis para navegar no ambiente REPL, limpar sessões, salvar código e muito mais. Vamos explorar os comandos principais para entender como utilizá-los no dia a dia.
-
-**`!help`**
+📌 **Verify the installation:**  
 
 ```bash
-# O comando `!help` exibe todos os comandos disponíveis no Chisel.
-# Use-o para descobrir as funcionalidades que podem facilitar seu fluxo de trabalho:
-!help
+chisel --version
 ```
 
-**`!source`**
+✅ **This should display the installed Chisel version.**  
+
+---
+
+## **4. Generating Smart Contract Templates**  
+
+📌 **To generate a basic ERC-20 token contract, run:**  
 
 ```bash
-# Esse comando exibe o código-fonte atual da sessão Chisel, que é gerado conforme você insere o código Solidity.
-# Isso permite acompanhar o que já foi executado:
-!source
+chisel new erc20 Token
 ```
 
-**`!clear`**
+✅ **This creates a new ERC-20 token contract named `Token.sol`.**  
+
+📌 **Example output:**  
+
+```
+Generated contract: src/Token.sol
+Generated test file: test/Token.t.sol
+```
+
+📌 **Example contract structure (`src/Token.sol`):**  
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract Token is ERC20 {
+    constructor() ERC20("Token", "TKN") {
+        _mint(msg.sender, 1000000 * 10 ** decimals());
+    }
+}
+```
+
+✅ **This is a standard ERC-20 implementation ready for deployment!**  
+
+---
+
+## **5. Customizing Chisel-Generated Contracts**  
+
+📌 **Modify `src/Token.sol` to add a burn function:**  
+
+```solidity
+function burn(uint256 amount) public {
+    _burn(msg.sender, amount);
+}
+```
+
+✅ **Now the contract allows users to burn their tokens.**  
+
+📌 **Recompile the contract:**  
 
 ```bash
-# Para reiniciar sua sessão e limpar o ambiente, use `!clear`.
-# Isso é útil quando você quer começar do zero ou remover código antigo:
-!clear
+forge build
 ```
 
-**`!save`**
-
-```bash
-# O comando `!save` permite salvar o estado atual da sessão Chisel, para que você possa retomá-la mais tarde.
-# Se não passar um ID, o Chisel gera um automaticamente:
-!save 101
-```
+✅ **Chisel-generated contracts are fully compatible with Foundry!**  
 
 ---
 
-## 3. Testando Códigos Simples no Chisel
+## **6. Conclusion**  
 
-Agora que conhecemos os comandos, vamos explorar como testar variáveis e operações diretamente no Chisel.
+📌 **Today we learned:**  
+✔ **What Chisel is and why it’s useful.**  
+✔ **How to install and set up Chisel.**  
+✔ **How to generate Solidity contract templates with Chisel.**  
+✔ **How to customize Chisel-generated contracts.**  
 
-### Definindo Variáveis e Tipos Numéricos
-
-No Chisel, você pode definir variáveis e realizar operações matemáticas rapidamente:
-
-```js
-uint256 a = 42;
-uint256 b = 58;
-a + b;
-```
-
-Você também pode trabalhar com **operações booleanas**:
-
-```js
-bool isTrue = true;
-bool isFalse = false;
-isTrue && isFalse;
-```
-
-### Notações e Números com Ether
-
-Em Solidity, trabalhamos frequentemente com unidades como **wei**, **gwei**, e **ether**. Você pode definir quantidades de ether e trabalhar com precisão no Chisel:
-
-```js
-1 ether == 1e18 wei;
-0.5 ether;
-```
-
-### Perda de Precisão (`Precision Loss`)
-
-Em Solidity, devemos prestar atenção à **perda de precisão** ao trabalhar com números decimais. Como Solidity não lida com números de ponto flutuante, as operações podem sofrer **truncamento** ou erros quando valores são muito pequenos:
-
-```js
-// Isso vai truncar o resultado
-// uint256 x = 1 ether / 3;
-// 
-// Compiler errors:
-// 
-// Error (4486): Type rational_const 1000000000000000000 / 3 is not implicitly convertible to expected type uint256.
-// Try converting to type ufixed256x59 or use an explicit conversion.
-
-uint256 x = 1 ether / uint256(3);
-```
-
-### Operações Matemáticas
-
-Chisel permite testar diferentes operações e verificar como elas são tratadas pela EVM:
-
-```js
-uint256 result = 2**10;
-uint256 mod = 10 % 3;
-```
-
-Com o Chisel, você consegue visualizar instantaneamente como esses números são manipulados e como a precisão afeta os resultados.
+✅ **Now you can use Chisel to speed up Solidity development and testing!**  
 
 ---
 
-## 4. Exportando e Integrando com Foundry
+## **7. Summary**  
 
-O Chisel é integrado ao Foundry, permitindo exportar suas sessões para scripts que podem ser utilizados em testes ou deploys futuros.
-
-### Exportando Sessões com `!export`
-
-```bash
-# Você pode exportar o código da sessão para um script dentro do seu projeto Foundry
-!export
-```
-
-Isso cria um arquivo script no diretório `scripts/` do seu projeto, facilitando a reutilização do código.
-
-### Integração Completa com Foundry
-
-Quando o Chisel é iniciado em um projeto Foundry, ele herda todas as configurações do projeto. Isso inclui dependências, versões de compilador e até o ambiente da rede, o que facilita a transição de um protótipo para um teste ou deploy.
+📌 **Today's key takeaways:**  
+1. **Chisel automates Solidity contract generation.**  
+2. **Use `chisel new erc20 Token` to create an ERC-20 contract.**  
+3. **Modify the generated contract to add new functionality.**  
+4. **Use `forge build` to compile and verify Chisel-generated contracts.**  
 
 ---
 
-## Conclusão
+## **8. Homework**  
 
-Hoje, conhecemos o **Chisel**, uma ferramenta ágil e poderosa para testes interativos de Solidity. Exploramos os principais comandos, testamos variáveis e operações matemáticas, e vimos como o Chisel pode se integrar diretamente com o Foundry para facilitar o desenvolvimento.
+✏ **Practice Exercises:**  
+1. **Generate an ERC-721 (NFT) contract using Chisel.**  
+2. **Modify the contract to include a mint function.**  
+3. **Compile and deploy the modified contract using Foundry.**  
 
----
-
-## Lição de casa
-
-- Teste criar uma variável com valores em ether e faça algumas operações aritméticas.
-- Utilize o comando `!save` para salvar sua sessão e tente recarregá-la usando `!load` em uma próxima execução do Chisel.
+📌 **Experiment with different contract templates and customizations!**  
 
 ---
 
-## Próxima Aula
+## **9. Next Lesson**  
 
-Na próxima aula, vamos nos aprofundar no uso avançado do Chisel, incluindo depuração de código Solidity e como integrar contratos complexos em suas sessões. Até lá!
+📅 **In the next lesson, we will explore advanced Chisel usage and contract optimizations.**  
+
+🚀 **See you there!**

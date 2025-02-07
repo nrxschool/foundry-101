@@ -1,113 +1,254 @@
-Aqui está o roteiro da **Aula 5: Debug de Smart Contracts no Foundry** atualizado, corrigido e pronto para uso:
+# **Lesson 5: Gas Optimization in Foundry**  
+
+## **1. Introduction**  
+
+👋 Welcome to **Module 2, Lesson 5** of the **Foundry 101** course!  
+
+Gas optimization is crucial for **reducing transaction costs** and improving the **efficiency of smart contracts**. Foundry provides powerful tools to analyze gas usage and optimize Solidity code.  
+
+📌 **What we will cover today:**  
+1️⃣ Why gas optimization is important.  
+2️⃣ Measuring gas consumption in Foundry.  
+3️⃣ Best practices for optimizing Solidity code.  
+4️⃣ Using Foundry’s gas reports to improve efficiency.  
+
+✅ **By the end of this lesson, you will know how to analyze and optimize gas usage in your smart contracts!**  
 
 ---
 
-# Aula 5: Debug de Smart Contracts no Foundry
+## **2. Why Is Gas Optimization Important?**  
 
-## 1. Abertura
+📌 **Gas optimization helps to:**  
+✅ **Reduce transaction fees** – Users pay less for interacting with your contracts.  
+✅ **Increase efficiency** – More operations can be executed with less gas.  
+✅ **Improve scalability** – Optimized contracts consume fewer blockchain resources.  
 
-Olá, seja bem-vindo à **quinta aula do curso Foundry 101**! Hoje vamos explorar um recurso extremamente poderoso: o **debug de smart contracts**. O debug é essencial para entender o comportamento do seu contrato na EVM (Ethereum Virtual Machine) e identificar falhas que podem não ser visíveis apenas ao rodar os testes.
-
-Nesta aula, vamos cobrir os seguintes tópicos:
-
-1. Entender o que são **opcodes**, a **stack** e a **memória da EVM**.
-2. Como acessar o debugger com **scripts** e **tests** no Foundry.
-
-Vamos direto ao ponto e começar com o acesso ao debugger.
+✅ **In Foundry, we can measure gas usage and find optimization opportunities easily.**  
 
 ---
 
-## Entendendo Opcodes, Stack e Memória da EVM
+## **3. Measuring Gas Consumption in Foundry**  
 
-A Ethereum Virtual Machine (EVM) executa contratos inteligentes usando **opcodes**, que são instruções de baixo nível que a EVM entende. Cada linha do código Solidity que você escreve é compilada em uma sequência de opcodes.
+### **📌 Running Tests with Gas Reports**  
 
-### O que são Opcodes?
-
-- **Opcodes** são as instruções da máquina EVM. Cada opcode realiza uma ação específica, como **PUSH**, **MSTORE** ou **CALL**.
-- Quando você depura um contrato, o **debugger** exibe os opcodes que estão sendo executados no topo da tela.
-
-Exemplo de **opcodes** comuns:
-
-- **PUSH**: Coloca um valor na stack.
-- **MSTORE**: Armazena um valor na memória.
-- **CALL**: Realiza uma chamada a outro contrato.
-
-### Stack e Memória da EVM
-
-- **Stack**: A EVM opera em um modelo de stack, onde os valores são empilhados e consumidos por instruções subsequentes. A stack tem um tamanho limitado, e é fundamental entender como ela funciona para depurar contratos.
-- **Memória**: A memória da EVM é usada para armazenar dados temporários durante a execução de uma transação. Diferente do armazenamento (storage), a memória é volátil e é liberada após a execução do contrato.
-
-Vamos ver um exemplo básico de stack e memória. Pra isso crie um contrato de Contador
-Agora, rodamos um teste para definir e recuperar o valor:
+📌 **To measure gas usage, run:**  
 
 ```bash
-forge debug ./src/Counter --sig "set(uint256)" 8
+forge test --gas-report
 ```
+
+✅ **Example output:**  
+
+```
+| Function     | Min   | Avg   | Max   | Calls |
+|-------------|-------|-------|-------|-------|
+| increment   | 21,000| 23,000| 25,000| 10    |
+| decrement   | 19,000| 20,500| 22,000| 5     |
+```
+
+📌 **What this tells us:**  
+✅ **Min, Avg, and Max gas** used for each function.  
+✅ **Number of function calls** during testing.  
+
+✅ **This helps identify expensive functions that need optimization.**  
 
 ---
 
-## Acessando o Debugger com Scripts e Tests
+## **4. Best Practices for Gas Optimization**  
 
-No Foundry, você pode acessar o **debugger** tanto para **scripts** quanto para **tests**. Esse recurso ajuda a rastrear a execução de cada parte do contrato diretamente na **EVM**, fornecendo insights detalhados sobre como o contrato se comporta durante a execução.
+### **1️⃣ Use `calldata` Instead of `memory` for Function Parameters**  
 
-### Testando com `--debug`
+📌 **Avoid unnecessary memory allocations.**  
 
-Vamos começar depurando um teste. Para isso, podemos usar o comando `forge test` com a flag `--debug`, especificando a função que queremos depurar:
+❌ **Less efficient (`memory` uses more gas):**  
+
+```solidity
+function setName(string memory _name) public {
+    name = _name;
+}
+```
+
+✅ **More efficient (`calldata` saves gas):**  
+
+```solidity
+function setName(string calldata _name) public {
+    name = _name;
+}
+```
+
+📌 **`calldata` is cheaper because it avoids memory allocation.**  
+
+---
+
+### **2️⃣ Use `uint256` Instead of Smaller Integers**  
+
+📌 **Solidity’s EVM operates on 256-bit words, so using `uint8`, `uint16`, etc., can introduce extra gas costs due to padding.**  
+
+❌ **Less efficient (`uint8` adds complexity):**  
+
+```solidity
+uint8 a = 255;
+uint8 b = 100;
+```
+
+✅ **More efficient (`uint256` avoids extra operations):**  
+
+```solidity
+uint256 a = 255;
+uint256 b = 100;
+```
+
+✅ **Use `uint256` unless packing variables into storage.**  
+
+---
+
+### **3️⃣ Use `unchecked` for Arithmetic When Safe**  
+
+📌 **Since Solidity 0.8+, arithmetic overflow checks consume gas. Use `unchecked` to skip them when safe.**  
+
+❌ **Less efficient (adds overflow checks):**  
+
+```solidity
+function increment() public {
+    count += 1; // Includes overflow check
+}
+```
+
+✅ **More efficient (`unchecked` removes the check):**  
+
+```solidity
+function increment() public {
+    unchecked {
+        count += 1;
+    }
+}
+```
+
+📌 **Only use `unchecked` when you are certain overflows won’t happen.**  
+
+---
+
+### **4️⃣ Minimize Storage Writes**  
+
+📌 **Each write to `storage` is expensive. Minimize storage updates whenever possible.**  
+
+❌ **Less efficient (multiple storage writes):**  
+
+```solidity
+function increment() public {
+    count += 1;
+    count += 1;
+}
+```
+
+✅ **More efficient (only one storage write):**  
+
+```solidity
+function increment() public {
+    uint256 newCount = count + 2;
+    count = newCount;
+}
+```
+
+✅ **Always prefer memory or stack variables over `storage` when possible.**  
+
+---
+
+### **5️⃣ Packing Storage Variables**  
+
+📌 **Solidity stores variables in 32-byte slots. Packing multiple smaller variables into a single slot saves gas.**  
+
+❌ **Less efficient (two separate storage slots):**  
+
+```solidity
+contract Example {
+    uint128 a;
+    uint128 b;
+}
+```
+
+✅ **More efficient (packed into a single storage slot):**  
+
+```solidity
+contract Example {
+    uint128 a;
+    uint128 b;
+}
+```
+
+✅ **Smaller types should be declared together to fit into the same slot.**  
+
+---
+
+## **5. Using Foundry’s Gas Reports to Improve Efficiency**  
+
+### **📌 Running a Gas Snapshot for Comparisons**  
+
+📌 **To compare gas usage before and after optimizations:**  
 
 ```bash
-forge test --debug "testInitialAliceBalance()"
+forge snapshot
 ```
 
-Este comando abre o debugger e carrega o teste específico para depuração. Se houver vários testes com o mesmo nome em diferentes contratos, podemos usar os filtros `--match-path` ou `--match-contract` para depurar o teste correto.
-
-### Rodando scripts com `--debug`
-
-Da mesma forma, podemos depurar um script. Vamos rodar o seguinte comando para debugar o **script de deploy**:
-
-```bash
-forge script script/Simples.s.sol:Deploy --debug
-```
-
-Isso abre o script no debugger, permitindo navegar pela execução, linha por linha.
-
-### Debug mode
-
-Também podemos executar uma função específica do contrato com o `forge debug`:
-
-```bash
-forge debug ./src/Counter.sol --sig "incc()"
-```
-
-Nesse caso, passamos o nome da função que queremos debugar com `--sig`, e caso a função receba algum parâmetro, usamos:
-
-```bash
-forge debug ./src/Counter.sol --sig "set(uint256)" 7
-```
-
-Agora que já sabemos como acessar o debugger, vamos entender alguns conceitos importantes sobre o que acontece dentro da EVM durante a execução de contratos.
+✅ **This records gas usage and allows you to compare improvements.**  
 
 ---
 
-## Conclusão
+### **📌 Configuring Gas Reports in `foundry.toml`**  
 
-Hoje, exploramos o poderoso recurso de **debugging no Foundry**. Vimos como acessar o debugger com **scripts** e **tests**, entendemos os conceitos de **opcodes**, **stack** e **memória**.
+📌 **Enable gas reports by adding this to `foundry.toml`:**  
+
+```toml
+[profile.default]
+gas_reports = ["*"]
+```
+
+📌 **To analyze specific contracts:**  
+
+```toml
+gas_reports = ["Counter"]
+```
+
+✅ **This ensures every test run includes gas analysis.**  
 
 ---
 
-## Recapitulação
+## **6. Conclusion**  
 
-- **Entendendo opcodes e memória**: Vimos como a EVM executa contratos com opcodes e armazena dados na stack e memória.
-- **Acessando o debugger**: Usamos comandos para debugar scripts e tests.
+📌 **Today we learned:**  
+✔ **How to measure gas consumption using `forge test --gas-report`.**  
+✔ **Best practices for writing gas-efficient Solidity code.**  
+✔ **How to optimize storage, function parameters, and arithmetic.**  
+✔ **How to use Foundry’s gas reports to track improvements.**  
 
----
-
-## Lição de casa
-
-1. Crie um contrato mais complexo e tente depurá-lo, observando o comportamento dos opcodes.
-2. Experimente alocar diferentes tipos de dados na memória e use o debugger para entender como a EVM gerencia essas alocações.
+✅ **Now you can analyze and optimize your contracts for better efficiency!**  
 
 ---
 
-## Próxima aula
+## **7. Summary**  
 
-Na próxima aula, vamos nos aprofundar em **boas práticas de otimização de gas**, usando o que aprendemos sobre opcodes e memória para melhorar a eficiência dos seus contratos. Até lá, continue praticando, e nos vemos na próxima aula! 👋
+📌 **Today's key takeaways:**  
+1. **Use `calldata` instead of `memory` for function parameters.**  
+2. **Prefer `uint256` over smaller integers unless optimizing storage.**  
+3. **Use `unchecked` for arithmetic when overflow checks aren’t needed.**  
+4. **Minimize storage writes by using memory variables first.**  
+5. **Pack smaller storage variables together to reduce slot usage.**  
+
+---
+
+## **8. Homework**  
+
+✏ **Practice Exercises:**  
+1. **Modify the `Counter` contract** to use `unchecked` and measure gas savings.  
+2. **Compare storage costs before and after packing variables together.**  
+3. **Use `forge snapshot` to track gas optimization improvements.**  
+
+📌 **Try different optimizations and analyze the results!**  
+
+---
+
+## **9. Next Lesson**  
+
+📅 **In the next lesson, we will explore meta-transactions and gasless interactions in Solidity.**  
+
+🚀 **See you there!**  

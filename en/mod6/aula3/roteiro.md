@@ -1,119 +1,235 @@
-# Aula 3: Integração ScaffoldETH2 com Forge
+# **Lesson 3: Integrating ScaffoldETH2 with Forge**  
 
-## Abertura
+## **1. Introduction**  
 
-Nesta aula, vamos explorar a **integração do ScaffoldETH2 com o Forge**. Esta combinação permite construir dApps full-stack com facilidade, usando uma base robusta para o desenvolvimento e testes de contratos inteligentes. Abordaremos desde a **ABI**, essencial para a comunicação entre o frontend e os contratos, até o funcionamento prático do **ScaffoldETH2** e sua integração com o Forge.
+👋 Welcome to **Module 6, Lesson 3** of the **Foundry 101** course!  
 
-### Programa da aula:
+In this lesson, we will learn how to **integrate Foundry (Forge) with ScaffoldETH2**, a framework that simplifies the development of decentralized applications (**DApps**) by providing a **pre-configured frontend and smart contract environment**.  
 
-1. O que é ABI e sua importância para o frontend.
-2. O que é o ScaffoldETH2.
-3. O que é o FWT (Framework que une Foundry e ScaffoldETH2).
-4. Exemplo prático.
+📌 **What we will cover today:**  
+1️⃣ What is ScaffoldETH2, and why use it?  
+2️⃣ Installing and setting up ScaffoldETH2 with Forge.  
+3️⃣ Deploying a Forge contract and connecting it to a frontend.  
+4️⃣ Interacting with the contract through the UI.  
 
----
-
-## 1. O que é ABI e sua importância para o frontend
-
-**ABI** (Application Binary Interface) é um conceito crucial no desenvolvimento de contratos inteligentes e frontend. Ela define como o frontend (ou qualquer cliente externo) pode interagir com um contrato inteligente. Basicamente, a ABI mapeia as funções do contrato e os tipos de dados que serão usados nas interações.
-
-Sem a ABI, o frontend não consegue se comunicar com o contrato, tornando-a a ponte entre os contratos inteligentes (backend) e a interface que os usuários interagem.
-
-### Exemplo de uma ABI:
-
-```json
-[
-  {
-    "inputs": [],
-    "name": "storeData",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-]
-```
-
-Neste exemplo, a ABI descreve uma função chamada `storeData` que não recebe parâmetros, não retorna nada e altera o estado do contrato.
+✅ **By the end of this lesson, you will have a full DApp setup using Foundry and ScaffoldETH2!**  
 
 ---
 
-## 2. O que é o ScaffoldETH2
+## **2. What Is ScaffoldETH2?**  
 
-**ScaffoldETH2** é uma plataforma que facilita a construção de dApps na Ethereum, fornecendo uma infraestrutura base para o desenvolvimento de frontends conectados a contratos inteligentes. Ele foi projetado para ser um ponto de partida para desenvolvedores que desejam integrar facilmente seu frontend com contratos Solidity ou Vyper.
+📌 **ScaffoldETH2 is a framework for rapidly developing Ethereum DApps with a built-in frontend.**  
 
-Ele inclui:
+🚀 **Why use ScaffoldETH2?**  
+✅ **Pre-configured frontend** → Includes React, Next.js, and wagmi hooks.  
+✅ **Built-in smart contract UI** → Instantly interact with contracts.  
+✅ **Works with Foundry, Hardhat, and other frameworks.**  
 
-- **Templates** pré-configurados para dApps.
-- Suporte para **desenvolvimento full-stack**.
-- Ferramentas integradas para facilitar o desenvolvimento e testes.
-
-Com o ScaffoldETH2, você pode rapidamente prototipar contratos e conectá-los ao frontend para testes e deploy.
-
----
-
-## 3. O que é o FWT (Framework que une Foundry e ScaffoldETH2)
-
-O **FWT** (Framework de Workflows Testing) é uma integração que conecta o **Foundry** e o **ScaffoldETH2**, unindo o poder dos testes automatizados e flexíveis do Foundry com a base de desenvolvimento full-stack do ScaffoldETH2.
-
-### Benefícios do FWT:
-
-- Testes completos de ponta a ponta (do contrato inteligente até o frontend).
-- Integração simples entre desenvolvimento de contratos e dApp.
-- Facilita a visualização e interação com contratos inteligentes.
+📌 **ScaffoldETH2 makes it easier to test and iterate on smart contracts.**  
 
 ---
 
-## 4. Exemplo prático: ScaffoldETH2 + Forge
+## **3. Installing and Setting Up ScaffoldETH2**  
 
-Neste exemplo, vamos criar um projeto básico usando o ScaffoldETH2 e integrá-lo com o Forge para compilar e testar contratos.
-
-### Passo 1: Instalar o ScaffoldETH2
+📌 **Step 1: Clone the ScaffoldETH2 repository**  
 
 ```bash
-git clone https://github.com/olivmath/fwt.git
+git clone https://github.com/scaffold-eth/scaffold-eth-2.git
+cd scaffold-eth-2
 ```
 
-### Passo 2: Criar o contrato no Forge
+📌 **Step 2: Install dependencies**  
 
-Crie um contrato simples usando o Forge dentro do projeto ScaffoldETH2.
+```bash
+pnpm install
+```
+
+📌 **Step 3: Remove Hardhat (since we are using Forge)**  
+
+```bash
+rm -rf packages/hardhat
+```
+
+📌 **Step 4: Modify `package.json` to use Forge**  
+
+Find the `"contracts"` script and replace it with:  
+
+```json
+"contracts": "cd packages/foundry && forge build"
+```
+
+✅ **Now ScaffoldETH2 is configured to use Foundry instead of Hardhat.**  
+
+---
+
+## **4. Deploying a Forge Contract in ScaffoldETH2**  
+
+📌 **Step 1: Create the contract in Foundry**  
+
+Inside `packages/foundry/src/`, create `Counter.sol`:  
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.24;
 
-contract SimpleStorage {
-    uint256 public data;
+contract Counter {
+    uint256 public count;
 
-    function storeData(uint256 _data) public {
-        data = _data;
+    function increment() public {
+        count += 1;
     }
 }
 ```
 
-### Passo 3: Executar o dApp
+📌 **Step 2: Compile the contract**  
 
 ```bash
-yarn dev
+forge build
 ```
 
-Abra o browser e veja o frontend interagir diretamente com o contrato que você acabou de criar e testar.
+📌 **Step 3: Start Anvil**  
+
+```bash
+anvil
+```
+
+📌 **Step 4: Deploy the contract using Foundry scripts**  
+
+Create a new file `packages/foundry/script/DeployCounter.s.sol`:  
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "forge-std/Script.sol";
+import "../src/Counter.sol";
+
+contract DeployCounter is Script {
+    function run() external {
+        vm.startBroadcast();
+        new Counter();
+        vm.stopBroadcast();
+    }
+}
+```
+
+📌 **Deploy the contract:**  
+
+```bash
+forge script script/DeployCounter.s.sol --broadcast --rpc-url http://127.0.0.1:8545
+```
+
+✅ **Copy the deployed contract address for use in the frontend.**  
 
 ---
 
-## Conclusão
+## **5. Connecting the Contract to the Frontend**  
 
-Nesta aula, vimos como o ScaffoldETH2 e o Forge podem ser integrados para criar um ambiente de desenvolvimento full-stack para contratos inteligentes. A **ABI** atua como a ponte entre o contrato e o frontend, enquanto o **FWT** facilita o fluxo de trabalho entre testes e deploy. Finalizamos com um exemplo prático para consolidar os conceitos.
+📌 **Step 1: Add the contract to ScaffoldETH2’s config**  
+
+Open `packages/nextjs/scaffold.config.ts` and add:  
+
+```typescript
+const contracts = {
+  Counter: {
+    address: "0x5FbDB2315678afecb367f032d93F642f64180aa3", // Replace with actual address
+    abi: require("../foundry/out/Counter.sol/Counter.json").abi,
+  },
+};
+export default contracts;
+```
+
+📌 **Step 2: Create a frontend component to interact with the contract**  
+
+Inside `packages/nextjs/components/Counter.tsx`, add:  
+
+```tsx
+import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+
+const Counter = () => {
+  const { data: count } = useScaffoldContractRead({
+    contractName: "Counter",
+    functionName: "count",
+  });
+
+  const { writeAsync: increment } = useScaffoldContractWrite({
+    contractName: "Counter",
+    functionName: "increment",
+  });
+
+  return (
+    <div>
+      <h2>Counter: {count?.toString()}</h2>
+      <button onClick={() => increment()}>Increment</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+📌 **Step 3: Add the component to the main page**  
+
+Modify `packages/nextjs/pages/index.tsx` and add:  
+
+```tsx
+import Counter from "~~/components/Counter";
+
+export default function Home() {
+  return (
+    <div>
+      <h1>My Foundry DApp</h1>
+      <Counter />
+    </div>
+  );
+}
+```
+
+📌 **Step 4: Start the frontend**  
+
+```bash
+pnpm dev
+```
+
+✅ **Open `http://localhost:3000` to see the DApp with an interactive Counter!**  
 
 ---
 
-## Lição de Casa
+## **6. Conclusion**  
 
-1. Explore o ScaffoldETH2 e crie um contrato inteligente simples com ele.
-2. Use o Forge para compilar e testar esse contrato.
-3. Conecte-o ao frontend e veja o resultado.
+📌 **Today we learned:**  
+✔ **How to install and configure ScaffoldETH2 with Foundry.**  
+✔ **How to deploy a Forge contract and integrate it with a frontend.**  
+✔ **How to use wagmi hooks to interact with a contract in React.**  
+✔ **How to run a local DApp with ScaffoldETH2 and Anvil.**  
+
+✅ **Now you can build full-stack DApps using Foundry and ScaffoldETH2!**  
 
 ---
 
-## Próxima Aula
+## **7. Summary**  
 
-Na próxima aula, vamos abordar o suporte ao **Vyper** no Forge. Até lá!
+📌 **Today's key takeaways:**  
+1. **ScaffoldETH2 provides a pre-configured frontend for smart contracts.**  
+2. **Modify `package.json` to use Foundry instead of Hardhat.**  
+3. **Deploy contracts using Foundry scripts (`forge script`).**  
+4. **Use wagmi hooks in React to interact with the contract.**  
+
+---
+
+## **8. Homework**  
+
+✏ **Practice Exercises:**  
+1. **Modify the `Counter` contract to allow decrementing and update the UI.**  
+2. **Deploy another contract and add it to ScaffoldETH2’s config.**  
+3. **Customize the frontend layout to match your project’s design.**  
+
+📌 **Experiment with different contract interactions and UI components!**  
+
+---
+
+## **9. Next Lesson**  
+
+📅 **In the next lesson, we will explore gas optimization in Solidity.**  
+
+🚀 **See you there!**  

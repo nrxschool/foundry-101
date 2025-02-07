@@ -1,366 +1,201 @@
-# Roteiro da Aula 3: Testes e Coverage no Foundry
+# **Lesson 3: Local Forks with Anvil**  
 
-## 1. Abertura
+## **1. Introduction**  
 
-Olá! Bem-vindo à nossa terceira aula do curso **Foundry 101**. Hoje vamos nos aprofundar em um dos aspectos mais importantes do desenvolvimento de contratos inteligentes: os **testes**.
+👋 Welcome to **Module 2, Lesson 3** of the **Foundry 101** course!  
 
-Sem testes, o risco de introduzirmos falhas críticas em contratos que não podem ser modificados é muito alto. O Foundry nos oferece uma série de ferramentas para garantir que nossos contratos estão funcionando como esperado.
+In this lesson, we will learn how to **fork the Ethereum mainnet or testnets** locally using **Anvil**. This allows us to test our contracts **against real blockchain data** without deploying them on the mainnet.  
 
-Nesta aula, vamos explorar:
+📌 **What we will cover today:**  
+1️⃣ What is a blockchain fork, and why use it?  
+2️⃣ Creating a local fork with Anvil.  
+3️⃣ Using Cast to interact with real contracts in a fork.  
+4️⃣ Testing smart contracts in a forked environment.  
 
-1. Como funcionam os testes no Foundry
-2. Configurando Teste com `Test.sol`
-3. Escrever testes avançados
-4. Como fazer cobertura de testes com Foundry
-
-Vamos começar com o básico sobre como os testes funcionam no Foundry.
+✅ **By the end of this lesson, you will know how to create a local fork and test transactions against real blockchain data!**  
 
 ---
 
-## 2. Como funcionam os testes no Foundry
+## **2. What Is a Blockchain Fork?**  
 
-No Foundry, os testes são escritos em arquivos **`.t.sol`**, que são contratos Solidity, mas focados exclusivamente em testar outros contratos. Isso é uma grande vantagem, pois podemos escrever testes no mesmo ambiente que os contratos são desenvolvidos, utilizando o poder do Solidity.
+A **fork** is a copy of the blockchain at a specific point in time.  
 
-Os arquivos `.t.sol` ficam na pasta **`test/`** do seu projeto e são automaticamente detectados quando você roda o comando `forge test`. O Foundry também oferece uma biblioteca chamada **forge-std**, que fornece ferramentas poderosas para facilitar a criação de testes.
+📌 **Why fork the blockchain?**  
+✅ **Test transactions with real contract data** without spending real ETH.  
+✅ **Simulate interactions with DeFi protocols** like Uniswap, Aave, or Compound.  
+✅ **Debug and analyze smart contracts** before deploying to mainnet.  
 
-Vamos falar de três bibliotecas principais:
+✅ **Anvil allows you to fork the blockchain locally using real Ethereum state.**  
 
-### Test
+---
 
-Essa biblioteca é o coração dos testes no Foundry. Ela oferece diversas funções para facilitar a criação de testes.
+## **3. Creating a Local Fork with Anvil**  
 
-O contrato `Test.sol` é a base para todos os testes, e nele podemos definir variáveis, usar funções de manipulação da EVM e várias ferramentas úteis.
+📌 **To fork Ethereum Mainnet, run:**  
 
-```javascript
-import { Test } from "forge-std/Test.sol";
+```bash
+anvil --fork-url https://mainnet.infura.io/v3/YOUR_INFURA_API_KEY
 ```
 
-### Vm
+✅ **This forks the Ethereum blockchain using Infura as an RPC provider.**  
 
-O `Vm` permite que você interaja diretamente com a **máquina virtual Ethereum (EVM)** nos testes.
+📌 **To fork Sepolia (testnet), use:**  
 
-Isso significa que você pode manipular o tempo, as contas, os saldos e até controlar a execução de transações durante os testes.
-
-```javascript
-import { Vm } from "forge-std/Vm.sol";
+```bash
+anvil --fork-url https://sepolia.infura.io/v3/YOUR_INFURA_API_KEY
 ```
 
-### StdAssertions\*
+✅ **Now Anvil simulates the real blockchain locally.**  
 
-A biblioteca `StdAssertions` oferece funções de asserção que permitem verificar se os valores nos testes estão corretos.
+---
 
-Funções como **`assertEq()`**, **`assertGt()`** e **`assertLt()`** são usadas para comparar valores e garantir que o comportamento do contrato é o esperado.
+## **4. Using Cast to Interact with Real Contracts**  
 
-```javascript
-import { StdAssertions } from "forge-std/StdAssertions.sol";
+📌 **Get the latest block number of the forked chain:**  
+
+```bash
+cast block-number --rpc-url http://127.0.0.1:8545
 ```
 
-### Exemplo simples:
+✅ **This should return the latest block from the Ethereum network.**  
 
-Vamos começar com um exemplo básico de como funciona um teste no Foundry. Crie um arquivo `Token.t.sol`:
+📌 **Check the balance of a real Ethereum address:**  
 
-```javascript
+```bash
+cast balance 0x742d35Cc6634C0532925a3b844Bc454e4438f44e --rpc-url http://127.0.0.1:8545
+```
+
+✅ **This shows the balance of an Ethereum whale address.**  
+
+---
+
+### **📌 Impersonating an Account**  
+
+We can impersonate a real Ethereum address and send transactions **without having the private key**.  
+
+📌 **Example: Sending ETH as an impersonated address**  
+
+```bash
+cast send --rpc-url http://127.0.0.1:8545 --from 0x742d35Cc6634C0532925a3b844Bc454e4438f44e --value 1ether 0xRecipientAddress
+```
+
+✅ **This sends 1 ETH from the impersonated account without needing its private key.**  
+
+📌 **Enable account impersonation in a Foundry test:**  
+
+```solidity
+vm.prank(0x742d35Cc6634C0532925a3b844Bc454e4438f44e);
+contractInstance.someFunction();
+```
+
+✅ **This allows us to test functions as if they were executed by a real Ethereum address.**  
+
+---
+
+## **5. Testing Smart Contracts in a Forked Environment**  
+
+### **📌 Example: Testing a Real ERC-20 Token**  
+
+📌 **Check the balance of a real DAI holder:**  
+
+```bash
+cast call 0x6B175474E89094C44Da98b954EedeAC495271d0F "balanceOf(address)(uint256)" 0x742d35Cc6634C0532925a3b844Bc454e4438f44e --rpc-url http://127.0.0.1:8545
+```
+
+✅ **This queries the DAI balance of a real Ethereum whale address.**  
+
+---
+
+### **📌 Example: Sending ERC-20 Tokens in a Fork**  
+
+📌 **Send 100 DAI from a whale account to another address:**  
+
+```bash
+cast send 0x6B175474E89094C44Da98b954EedeAC495271d0F "transfer(address,uint256)" 0xRecipientAddress 100000000000000000000 --from 0x742d35Cc6634C0532925a3b844Bc454e4438f44e --rpc-url http://127.0.0.1:8545
+```
+
+✅ **This transfers 100 DAI using impersonation.**  
+
+---
+
+### **📌 Writing a Foundry Test for a Forked Environment**  
+
+📌 **Example: Testing Uniswap Swap on a Fork**  
+
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Test} from "forge-std/Test.sol";
+import "forge-std/Test.sol";
+import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
-contract TokenTest is Test {
-    Token token;
-
-    function setUp() public {
-        token = new Token(1_000_000);
-    }
-
-    function testInitialSupply() public {
-        assertEq(token.totalSupply(), 1_000_000 * 1e18);
-    }
-}
-```
-
-Agora execute:
-
-```shell
-$ forge t
-[⠊] Compiling...
-No files changed, compilation skipped
-
-Ran 1 test for test/Token.t.sol:TokenTest
-[PASS] testInitialSupply() (gas: 14286)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 4.69ms (1.33ms CPU time)
-
-Ran 1 test suite in 142.20ms (4.69ms CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)
-
-```
-
-### Explicação:
-
-- **`setUp()`**: Inicializamos o contrato **Token** para que ele esteja disponível em cada teste.
-- **`testInitialSupply()`**: Todo teste deve começar com `test`. Nesse teste verificamos se o `totalSupply` inicial está correto. Usamos a função **`assertEq()`** para garantir que o valor seja igual ao esperado.
-
----
-
-## 3. Configurando Teste com `Test.sol`
-
-Como vimos no exemplo anterior, os testes no Foundry herdam de **`Test.sol`**, que nos dá acesso a várias funções úteis para escrever testes de maneira eficiente.
-
-### O que `setUp()` faz?
-
-A função **`setUp()`** é chamada automaticamente antes de cada teste individual ser executado. Isso significa que qualquer configuração inicial — como a implantação de contratos ou a definição de variáveis — deve ser feita aqui.
-
-No nosso exemplo, usamos **`setUp()`** para criar o contrato **Token** antes de cada teste:
-
-```javascript
-function setUp() public {
-    token = new Token(1_000_000);
-}
-```
-
-Isso garante que, em cada teste, temos um contrato novo e totalmente funcional.
-
-### Usando a `Vm` para simular cenários
-
-A biblioteca **Vm** nos dá controle total sobre o ambiente de teste. Podemos alterar o tempo, modificar o saldo de contas, fazer forks de redes, entre outros.
-
-Exemplo de manipulação de tempo:
-
-```javascript
-// Simulando uma chamada de do usuário 0x00000000000000000000000000000000000000ff
-vm.prank(address(0xff));
-
-// Simulando o avanço de 1000 blocos no teste
-vm.roll(1000);
-```
-
-### Funções de comparação (assertions)
-
-No Foundry, as asserções são fundamentais para validar o comportamento dos contratos. Vamos explorar algumas delas:
-
-- **`assertNotEq(a, b)`**: Verifica se `a` != `b`.
-- **`assertEq(a, b)`**: Verifica se `a` == `b`.
-- **`assertGt(a, b)`**: Verifica se `a` > `b`.
-- **`assertLt(a, b)`**: Verifica se `a` < `b`.
-- **`assertLe(a, b)`**: Verifica se `a` <= `b`.
-- **`assertGe(a, b)`**: Verifica se `a` >= `b`.
-
-Vamos adicionar mais algumas comparações ao nosso teste anterior para explorar essas asserções:
-
-```javascript
-function testInitialSupply() public {
-    // totalSupply == 1_000_000
-    assertEq(token.totalSupply(), 1_000_000 * 1e18);
-    // totalSupply <= 1_000_000
-    assertLe(token.totalSupply(), 1_000_000 * 1e18);
-    // totalSupply > 0
-    assertGt(token.totalSupply(), 0);
-    // totalSupply != 0
-    assertNotEq(token.totalSupply(), 0);
-}
-```
-
----
-
-## 4. Escrevendo Testes Avançados
-
-Agora que entendemos os conceitos básicos, vamos aprofundar e escrever testes mais avançados para o nosso contrato **Token**.
-
-Vamos incluir transferências de tokens e cenários de falha.
-
-### Criando usuários
-
-Vamos criar 2 usuários, alice e bob para os testes ficarem mais legiveis
-
-```javascript
-contract TokenTest is Test {
-    address alice = address(0xaaa);
-    address bob = address(0xbbb);
-    Token token;
+contract ForkTest is Test {
+    address uniswapRouter = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
+    address dai = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+    address weth = 0xC02aaa39b223FE8D0A0E5C4F27eaD9083C756Cc2;
 
     function setUp() public {
-
-        vm.prank(alice);
-        token = new Token(1_000_000);
+        vm.createSelectFork("https://mainnet.infura.io/v3/YOUR_INFURA_API_KEY");
     }
 
-    // codigo...
+    function testSwapEthForDai() public {
+        vm.prank(0x742d35Cc6634C0532925a3b844Bc454e4438f44e); // Impersonate an address
+
+        IUniswapV2Router02 router = IUniswapV2Router02(uniswapRouter);new address[](2);
+        path[0] = weth;
+        path[1] = dai;
+
+        router.swapExactETHForTokens{value: 1 ether}(0, path, address(this), block.timestamp + 15);
+    }
 }
 ```
 
-### Criando Labels
+📌 **To run this test:**  
 
-Agora vamos adicionar labels para facilitar a leitura do tracing quando houver erro no teste
-
-```javascript
-function setUp() public {
-    vm.label(alice, "ALICE");
-    vm.label(bob, "BOB");
-
-    // codigo...
-}
+```bash
+forge test --fork-url https://mainnet.infura.io/v3/YOUR_INFURA_API_KEY
 ```
 
-### Fazendo deploy com `alice`
-
-Agora vamos usar alice como o `msg.sender` para fazer deploy do nosso contrato
-
-```javascript
-function setUp() public {
-    // codigo...
-
-    vm.prank(alice);
-    token = new Token(1_000_000);
-}
-```
-
-### Testando saldo de `alice`
-
-Vamos testar o saldo de `alice` e ver como funcionam as labels. Pra isso vamos escrever o teste errado para ver o tracing no terminal.
-
-```javascript
-function testInitialAliceBalance() public {
-    assertEq(token.balanceOf(alice), 1_000_001 * 1e18);
-}
-```
-
-Executando o teste
-
-```
-$ forge t --mt Alice -vvv
-[⠊] Compiling...
-No files changed, compilation skipped
-...
-    ├─ [2522] Token::balanceOf(ALICE: [0x0000000000000000000000000000000000000aaa]) [staticcall] 👈👈👈
-...
-```
-
-Isso facilita muito a leitura dos testes quando temos erros. Agora corriga o teste!
-
-### Testando a transferencia
-
-```javascript
-function testTransfer() public {
-    vm.prank(alice);
-    token.transfer(bob, 100 * 1e18);
-
-    assertEq(token.balanceOf(bob), amount);
-}
-
-function testTransferFail() public {
-    vm.prank(alice);
-    vm.expectRevert();
-    token.transfer(bob, 2_000_000 * 1e18);
-}
-```
-
-### O que está acontecendo:
-
-- **`testTransfer()`**: Verifica o saldo de `bob` após uma transferência de tokens.
-- **`testTransferFail()`**: Verifica se ao enviar mais tokens do que seu saldo a chamada `token.transfer` falha.
-
-Esses exemplos nos ajudam a cobrir cenários positivos e negativos, garantindo que o contrato se comporte de maneira robusta.
+✅ **This executes a Uniswap swap using a forked mainnet state.**  
 
 ---
 
-## 5. Cobertura de Testes e Como Aumentar a Cobertura
+## **6. Conclusion**  
 
-### Cobertura de Testes
+📌 **Today we learned:**  
+✔ **What a blockchain fork is and why it’s useful.**  
+✔ **How to create a local fork with Anvil.**  
+✔ **How to interact with real Ethereum contracts using Cast.**  
+✔ **How to test smart contracts using forked data.**  
 
-Cobertura de testes é uma métrica que nos diz quantas linhas ou funções do código foram testadas. No Foundry, podemos gerar relatórios de cobertura de maneira simples usando o comando:
-
-```shell
-$ forge coverage
-forge coverage
-
-[⠊] Compiling...
-[⠒] Compiling 26 files with Solc 0.8.24
-[⠘] Solc 0.8.24 finished in 2.63s
-Compiler run successful with warnings:
-Analysing contracts...
-Running tests...
-
-Ran 4 tests for test/Token.t.sol:TokenTest
-[PASS] testInitialAliceBalance() (gas: 13647)
-[PASS] testInitialSupply() (gas: 16115)
-[PASS] testTransfer() (gas: 45584)
-[PASS] testTransferFail() (gas: 16397)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 7.30ms (1.40ms CPU time)
-
-Ran 1 test suite in 141.72ms (7.30ms CPU time): 4 tests passed, 0 failed, 0 skipped (4 total tests)
-| File          | % Lines      | % Statements | % Branches    | % Funcs      |
-|---------------|--------------|--------------|---------------|--------------|
-| src/Token.sol | 33.33% (1/3) | 33.33% (1/3) | 100.00% (0/0) | 33.33% (1/3) |
-| Total         | 33.33% (1/3) | 33.33% (1/3) | 100.00% (0/0) | 33.33% (1/3) |
-```
-
-Isso gera um relatório que mostra quais partes do contrato foram cobertas pelos testes e quais não foram. veja que temos 3 funções e apenas 1 foi testado.
-
-### Aumentando a cobertura
-
-Vamos escrever 1 teste para as outras funções do contrato `Token` e rodar o `forge coverage` novamente.
-
-```javascript
-function testName() public {
-    assertEq(token.name(), "My Token");
-}
-
-function testSymbol() public {
-    assertEq(token.symbol(), "TOKEN");
-}
-```
-
-Executando `forge coverage`:
-
-```shell
-➜  counter git:(main) ✗ forge coverage
-
-[⠊] Compiling...
-[⠑] Compiling 26 files with Solc 0.8.24
-[⠃] Solc 0.8.24 finished in 2.70s
-Compiler run successful with warnings:
-Analysing contracts...
-Running tests...
-
-Ran 6 tests for test/Token.t.sol:TokenTest
-[PASS] testInitialAliceBalance() (gas: 13647)
-[PASS] testInitialSupply() (gas: 16115)
-[PASS] testName() (gas: 10559)
-[PASS] testSymbol() (gas: 10669)
-[PASS] testTransfer() (gas: 45584)
-[PASS] testTransferFail() (gas: 16397)
-Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 15.46ms (10.87ms CPU time)
-
-Ran 1 test suite in 151.58ms (15.46ms CPU time): 6 tests passed, 0 failed, 0 skipped (6 total tests)
-| File          | % Lines       | % Statements  | % Branches    | % Funcs       |
-|---------------|---------------|---------------|---------------|---------------|
-| src/Token.sol | 100.00% (3/3) | 100.00% (3/3) | 100.00% (0/0) | 100.00% (3/3) |
-| Total         | 100.00% (3/3) | 100.00% (3/3) | 100.00% (0/0) | 100.00% (3/3) |
-```
-
-Agora nosso contrato está 100% coberto (3/3). Lembrando que isso não é uma garantia de segurança nem de qualidade!
+✅ **Now you can simulate mainnet interactions without spending real ETH!**  
 
 ---
 
-## 6. Conclusão
+## **7. Summary**  
 
-Hoje aprendemos como funcionam os testes no Foundry e exploramos ferramentas importantes como **Test**, **Vm** e **StdAssertions**. Vimos como configurar testes com **`setUp()`**, escrever testes com diferentes níveis de complexidade, e garantir que estamos cobrindo todas as partes importantes do nosso contrato. Também falamos sobre como aumentar a cobertura de testes, algo crucial para garantir a robustez dos contratos.
-
----
-
-## 7. Recapitulação
-
-- **Como funcionam os testes no Foundry**: Usamos `.t.sol` para escrever testes diretamente no ambiente Solidity.
-- **Configurando Teste com `Test.sol`**: Exploramos o uso de **`setUp()`** para configurar o ambiente de teste e o uso de **Vm** para manipular a EVM.
-- **Escrever testes avançados**: Criamos testes para transferências de tokens e cenários de falha.
-- **Como fazer cobertura de testes com Foundry**: Geramos relatórios de cobertura e adicionamos novos testes para aumentar a cobertura.
+📌 **Today's key takeaways:**  
+1. **Use `anvil --fork-url` to create a forked blockchain.**  
+2. **Use `cast balance`, `cast call`, and `cast send` to interact with real contracts.**  
+3. **Impersonate accounts using `vm.prank()` in Foundry tests.**  
+4. **Write and execute smart contract tests using forked mainnet data.**  
 
 ---
 
-## 8. Lição de casa
+## **8. Homework**  
 
-1. Escreva testes para o contrato **Token**: teste os cenários de `approve` e `transferFrom` entre várias contas.
+✏ **Practice Exercises:**  
+1. **Fork the Ethereum blockchain locally using Anvil.**  
+2. **Query the balance of a real Ethereum whale address.**  
+3. **Impersonate an account and execute a transaction.**  
+4. **Write a Foundry test that interacts with Uniswap or Aave on a forked network.**  
+
+📌 **Experiment and analyze real contract interactions!**  
 
 ---
 
-## 9. Próxima aula
+## **9. Next Lesson**  
 
-Na próxima aula, vamos aprender a criar **scripts de deploy** e automatizar o deploy dos seus contratos na rede principal. Até lá, continue praticando seus testes e nos vemos na próxima aula! 👋
+📅 **In the next lesson, we will explore debugging smart contracts using Foundry and Anvil.**  
+
+🚀 **See you there!**  
