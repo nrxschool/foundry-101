@@ -1,37 +1,39 @@
-# Aula 1: CLI e Executando Blockchain com Anvil
+# **Clase 1: CLI y Ejecutando Blockchain con Anvil**  
 
-## 1. Abertura
+## **1. Apertura**  
 
-Olá, seja bem-vindo à **primeira aula do Módulo 3** do nosso curso **Foundry 101**! Hoje, vamos aprender sobre o **Anvil**, a ferramenta de blockchain local do Foundry. O **Anvil** é essencial para simular ambientes de teste e para o desenvolvimento de contratos inteligentes em um ambiente controlado. Vamos abordar como rodar o Anvil, seu CLI, como conectar com **MetaMask**, e outras configurações úteis.
+¡Hola! Bienvenido a la **primera clase del Módulo 3** de nuestro curso **Foundry 101**. Hoy aprenderemos sobre **Anvil**, la herramienta de blockchain local de Foundry. **Anvil** es esencial para simular entornos de prueba y desarrollar contratos inteligentes en un entorno controlado.  
 
-Os tópicos que vamos cobrir são:
+📌 **Lo que veremos hoy:**  
+1. **Cómo funciona Anvil** y su propósito.  
+2. **Exploración de la CLI** y sus comandos principales.  
+3. **Configuración de MetaMask** para conectarse a Anvil.  
+4. **Otras configuraciones útiles para el desarrollo.**  
 
-1. O básico sobre como o **Anvil** funciona.
-2. Mostrando o **CLI** e seus principais comandos.
-3. Como configurar o **MetaMask** para se conectar ao **Anvil**.
-4. Outras configurações úteis que facilitam o desenvolvimento.
-
-Vamos começar!
+¡Comencemos! 🚀  
 
 ---
 
-## O básico sobre o Anvil e como rodar
+## **2. Introducción a Anvil y su Ejecución**  
 
-O **Anvil** é um nó local que simula uma blockchain completa no seu computador. Ele vem junto com o **Foundry** e é extremamente útil para testar contratos inteligentes de maneira rápida, sem a necessidade de se conectar a uma rede pública. O **Anvil** permite:
+### **¿Qué es Anvil?**  
 
-- Criar várias contas para desenvolvimento.
-- Rodar contratos localmente.
-- Testar deploys e interações de contratos.
+**Anvil** es un nodo local que simula una blockchain completa en tu computadora. Viene incluido con **Foundry** y es extremadamente útil para probar contratos inteligentes sin necesidad de conectarse a una red pública.  
 
-### Como rodar o Anvil
+📌 **Beneficios de usar Anvil:**  
+✅ **Cuentas de desarrollo preconfiguradas** para pruebas.  
+✅ **Despliegue de contratos inteligentes** sin costos de gas real.  
+✅ **Pruebas rápidas y controladas** en un entorno seguro.  
 
-Para rodar o Anvil, é muito simples. Basta rodar o comando:
+### **Cómo ejecutar Anvil**  
+
+Para iniciar Anvil, simplemente ejecuta el siguiente comando en la terminal:  
 
 ```bash
 anvil
 ```
 
-Quando você executa esse comando, o **Anvil** gera automaticamente 10 contas com chaves privadas e ETH disponível para cada uma delas. Essas contas podem ser usadas para deploys e testes.
+📌 **Salida esperada:**  
 
 ```bash
 Available Accounts
@@ -42,123 +44,154 @@ Available Accounts
 ...
 ```
 
-O **Anvil** começa a rodar por padrão no **localhost:8545**, o que significa que você pode interagir com ele usando ferramentas como **MetaMask** ou **Remix**.
+Anvil asigna **10 cuentas con saldo en ETH** para pruebas. Se ejecuta por defecto en **localhost:8545**, lo que permite interactuar con herramientas como **MetaMask**, **Remix** o **Cast**.  
 
 ---
 
-## 3. Mostrando o CLI do Anvil
+## **3. Exploración de la CLI de Anvil**  
 
-Agora que o **Anvil** está rodando, vamos explorar o **CLI**. O CLI permite customizar a execução do Anvil com várias opções.
+Ahora que Anvil está ejecutándose, exploremos sus opciones de configuración más útiles.  
 
-### Comandos Úteis no CLI
+### **Comandos útiles de Anvil**  
 
-- **Contas**: Você pode especificar quantas contas deseja gerar usando a flag `--accounts`:
+📌 **Modificar el número de cuentas generadas:**  
 
 ```bash
-# Isso criará 15 contas em vez das 10 padrão.
+# Crea 15 cuentas en lugar de las 10 predeterminadas.
 anvil --accounts 15
 ```
 
-- **Balance inicial**: Pode também configurar o saldo inicial das contas:
+📌 **Modificar el saldo inicial de cada cuenta:**  
 
 ```bash
-# Aqui, cada conta será criada com 500 ETH.
+# Cada cuenta será creada con 500 ETH.
 anvil --balance 500
 ```
 
-- **Mining personalizado**: O **Anvil** gera um novo bloco assim que uma transação é enviada. Mas, você pode mudar isso para intervalos fixos de mineração usando:
+📌 **Configurar la minería automática:**  
 
 ```bash
-# Isso gerará um novo bloco a cada 10 segundos.
+# Genera un nuevo bloque cada 10 segundos.
 anvil --block-time 10
 ```
 
----
-
-## Conectando o MetaMask ao Anvil
-
-Agora, vamos conectar o **MetaMask** ao **Anvil** para que possamos interagir com a blockchain local.
-
-### Passos para conectar o MetaMask ao Anvil\*
-
-1. **Abrir o MetaMask** e clicar na opção para adicionar uma rede.
-2. No campo de **Nova Rede**, adicione os seguintes valores:
-   - **Nome da Rede**: Anvil Local
-   - **Nova URL RPC**: `http://127.0.0.1:8545`
-   - **ID da Rede**: `31337` (padrão do Anvil)
-   - **Moeda**: ETH
-3. Clique em **Salvar**.
-
-Agora o **MetaMask** está conectado à sua blockchain local rodando no Anvil.
-
-### Importando Contas do Anvil para o MetaMask
-
-O Anvil gera automaticamente chaves privadas para suas contas de desenvolvimento. Para importar uma dessas contas no MetaMask, basta:
-
-1. Copiar a chave privada de uma das contas geradas pelo Anvil.
-2. No MetaMask, clicar em **Importar Conta** e colar a chave privada.
-3. Pronto! Agora você pode usar essa conta para testar deploys e interações diretamente com contratos no Anvil.
-
----
-
-## Outras Configurações Úteis
-
-### Forking de uma Rede Real
-
-Uma das funcionalidades mais poderosas do **Anvil** é a capacidade de fazer **fork** de uma rede real. Isso significa que você pode pegar o estado atual de uma rede como Ethereum, testnet Sepolia, etc., e simular localmente. Para isso, basta rodar o comando:
+📌 **Ejecutar Anvil en un Chain ID específico:**  
 
 ```bash
-anvil --fork-url <RPC_URL>
+# Especifica un Chain ID personalizado.
+anvil --chain-id 1337
 ```
 
-### Configurar o Mining Manual
+---
 
-Se você quiser ter mais controle sobre quando os blocos são minerados, pode usar o modo "manual" de mineração. Isso é útil para testar contratos onde o timing das transações importa.
+## **4. Conectar MetaMask a Anvil**  
+
+### **Pasos para conectar MetaMask a Anvil:**  
+
+1. Abre **MetaMask** y ve a la configuración de redes.  
+2. Agrega una nueva red con los siguientes valores:  
+   - **Nombre de la red**: Anvil Local  
+   - **Nueva URL RPC**: `http://127.0.0.1:8545`  
+   - **ID de Red**: `31337` (predeterminado de Anvil)  
+   - **Moneda**: ETH  
+3. Guarda los cambios y cambia a la red **Anvil Local**.  
+
+✅ **¡Listo! Ahora puedes interactuar con contratos en tu blockchain local.**  
+
+### **Importar Cuentas de Anvil en MetaMask**  
+
+1. Copia una clave privada de las cuentas generadas por Anvil.  
+2. En MetaMask, selecciona **Importar cuenta** y pega la clave privada.  
+3. Ahora puedes usar esta cuenta para desplegar y probar contratos en Anvil.  
+
+---
+
+## **5. Configuraciones Avanzadas en Anvil**  
+
+### **Hacer Fork de una Red Real**  
+
+Anvil permite **forkear** una red real, es decir, replicar su estado en un entorno local.  
+
+📌 **Ejemplo de fork de la Mainnet de Ethereum:**  
+
+```bash
+anvil --fork-url https://eth-mainnet.g.alchemy.com/v2/<API_KEY>
+```
+
+📌 **Ejemplo de fork de Sepolia:**  
+
+```bash
+anvil --fork-url https://eth-sepolia.g.alchemy.com/v2/<API_KEY>
+```
+
+Esto carga el estado actual de la red en tu máquina, permitiéndote probar interacciones con contratos reales sin gastar gas.  
+
+### **Modo de Minería Manual**  
+
+Si necesitas más control sobre cuándo se minan los bloques, puedes activar la **minería manual**:  
 
 ```bash
 anvil --no-mining
 ```
 
-Nesse caso, você precisaria rodar o comando `anvil_mine` manualmente para gerar novos blocos.
+Para generar un bloque manualmente, usa:  
 
 ```bash
 RPC="http://127.0.0.1:8545"
 cast rpc anvil_mine --rpc-url $RPC
 ```
 
-Você pode personalizar o limite de gas dos blocos e o Chain ID:
+### **Ajustar el Límite de Gas**  
+
+Si estás probando contratos que requieren más gas, puedes configurar un límite más alto:  
 
 ```bash
-anvil --gas-limit 12000000 --chain-id 1337
+anvil --gas-limit 12000000
 ```
 
-Esses parâmetros são úteis ao testar contratos que exigem mais gas ou quando você precisa usar um **chain ID** específico.
+✅ **Estas opciones avanzadas te permiten personalizar Anvil según tus necesidades.**  
 
 ---
 
-## 6. Conclusão
+## **6. Conclusión**  
 
-Hoje aprendemos o básico sobre o **Anvil** e como ele pode ser usado para rodar uma blockchain local para testes. Exploramos o **CLI**, aprendemos a conectar o **MetaMask** ao **Anvil** e vimos algumas das configurações mais úteis, como **forking** de redes reais e ajuste de mineração. Esse conhecimento será essencial nas próximas aulas, onde iremos avançar para deploys e interações mais complexas com contratos.
+Hoy hemos aprendido sobre **Anvil**, su CLI y cómo configurarlo para mejorar nuestro flujo de desarrollo con **Foundry**.  
 
----
+📌 **Resumen de la clase:**  
+✔ **Ejecutamos Anvil y exploramos sus cuentas de prueba.**  
+✔ **Aprendimos a modificar configuraciones con la CLI.**  
+✔ **Conectamos MetaMask a Anvil e importamos cuentas.**  
+✔ **Exploramos funciones avanzadas como forks y minería manual.**  
 
-## Recapitulação
-
-- **Rodando o Anvil**: Como iniciar o nó local e configurar o ambiente de desenvolvimento.
-- **CLI do Anvil**: Exploramos opções para gerar contas, modificar o tempo de mineração, e ajustar balances.
-- **Conectar MetaMask**: Conectamos o MetaMask à rede local do Anvil.
-- **Configurações avançadas**: Vimos como forkar redes reais e ajustar parâmetros como o gas limit e chain ID.
-
----
-
-## Lição de casa
-
-1. Rodar o **Anvil** no seu ambiente de desenvolvimento e gerar contas.
-2. Conectar o **MetaMask** ao **Anvil** e importar uma conta gerada.
-3. Explore o CLI do **Anvil** e altere alguns parâmetros, como o balance inicial e o número de contas geradas.
+✅ **Ahora tienes una blockchain local totalmente configurada para pruebas y desarrollo.**  
 
 ---
 
-## Próxima aula
+## **7. Recapitulación**  
 
-Na próxima aula, vamos configurar mais detalhadamente o **Anvil**, incluindo forking de redes e ajustes de mineração manual. Até lá, continue praticando, e nos vemos na próxima aula! 👋
+📌 **Hoy aprendimos:**  
+1. **Cómo ejecutar Anvil** y explorar sus opciones CLI.  
+2. **Cómo conectar MetaMask** y trabajar con cuentas locales.  
+3. **Cómo hacer forks de redes reales** para pruebas avanzadas.  
+4. **Cómo modificar parámetros de minería y gas** para simular diferentes escenarios.  
+
+---
+
+## **8. Tarea para casa**  
+
+✏ **Ejercicio práctico:**  
+
+1. Ejecuta **Anvil** en tu máquina y genera 20 cuentas en lugar de 10.  
+2. Modifica los balances iniciales de las cuentas.  
+3. Conecta MetaMask a Anvil y realiza una transferencia de ETH entre cuentas.  
+4. Haz un **fork de una testnet real** (Goerli o Sepolia) y consulta el estado de un contrato existente con `cast call`.  
+
+📌 **Anota tus dudas y experimenta todo lo posible.**  
+
+---
+
+## **9. Próxima clase**  
+
+📅 **En la próxima clase, aprenderemos a hacer despliegues locales en Anvil y a persistir el estado de la blockchain.**  
+
+🚀 **¡Nos vemos allí!**  
