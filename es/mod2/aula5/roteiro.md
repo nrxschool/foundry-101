@@ -1,113 +1,133 @@
-Aqui está o roteiro da **Aula 5: Debug de Smart Contracts no Foundry** atualizado, corrigido e pronto para uso:
+# **Clase 5: Depuración de Smart Contracts en Foundry**  
+
+## **1. Apertura**  
+
+¡Hola! Bienvenido a la **quinta clase del curso Foundry 101**.  
+
+Hoy exploraremos un recurso extremadamente poderoso: **la depuración de smart contracts**.  
+
+📌 **¿Por qué es importante la depuración?**  
+✅ Ayuda a entender el comportamiento del contrato en la **EVM**.  
+✅ Permite identificar **errores ocultos** que pueden no aparecer en las pruebas.  
+✅ Proporciona herramientas para analizar **opcodes**, la **pila** y la **memoria** en tiempo de ejecución.  
+
+📌 **En esta clase veremos:**  
+
+1. **Qué son los opcodes, la pila y la memoria en la EVM**  
+2. **Cómo acceder al depurador en Foundry**  
+3. **Ejecutar `forge debug` con scripts y pruebas**  
 
 ---
 
-# Aula 5: Debug de Smart Contracts no Foundry
+## **2. Entendiendo Opcodes, Pila y Memoria en la EVM**  
 
-## 1. Abertura
+📌 **¿Qué son los opcodes?**  
 
-Olá, seja bem-vindo à **quinta aula do curso Foundry 101**! Hoje vamos explorar um recurso extremamente poderoso: o **debug de smart contracts**. O debug é essencial para entender o comportamento do seu contrato na EVM (Ethereum Virtual Machine) e identificar falhas que podem não ser visíveis apenas ao rodar os testes.
+Los **opcodes** son las instrucciones de bajo nivel que la **EVM** usa para ejecutar contratos.  
 
-Nesta aula, vamos cobrir os seguintes tópicos:
+Ejemplo de opcodes comunes:  
+- **`PUSH`** → Agrega un valor a la pila.  
+- **`MSTORE`** → Guarda un valor en la memoria.  
+- **`CALL`** → Llama a otro contrato.  
 
-1. Entender o que são **opcodes**, a **stack** e a **memória da EVM**.
-2. Como acessar o debugger com **scripts** e **tests** no Foundry.
+📌 **¿Qué es la pila en la EVM?**  
 
-Vamos direto ao ponto e começar com o acesso ao debugger.
+- Es una estructura de datos **LIFO (Last In, First Out)**.  
+- Cada operación en la EVM consume valores de la pila y puede agregar nuevos.  
+
+📌 **¿Qué es la memoria en la EVM?**  
+
+- Se usa para almacenar datos temporales.  
+- Se borra después de cada transacción.  
+
+📌 **Ejemplo de análisis de pila y memoria**  
+
+Para entender mejor la ejecución de contratos, crearemos un contrato de **contador (`Counter`)** y lo depuraremos en Foundry.  
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+contract Counter {
+    uint256 public number;
+
+    function setNumber(uint256 newNumber) public {
+        number = newNumber;
+    }
+}
+```  
 
 ---
 
-## Entendendo Opcodes, Stack e Memória da EVM
+## **3. Acceder al Depurador en Foundry**  
 
-A Ethereum Virtual Machine (EVM) executa contratos inteligentes usando **opcodes**, que são instruções de baixo nível que a EVM entende. Cada linha do código Solidity que você escreve é compilada em uma sequência de opcodes.
-
-### O que são Opcodes?
-
-- **Opcodes** são as instruções da máquina EVM. Cada opcode realiza uma ação específica, como **PUSH**, **MSTORE** ou **CALL**.
-- Quando você depura um contrato, o **debugger** exibe os opcodes que estão sendo executados no topo da tela.
-
-Exemplo de **opcodes** comuns:
-
-- **PUSH**: Coloca um valor na stack.
-- **MSTORE**: Armazena um valor na memória.
-- **CALL**: Realiza uma chamada a outro contrato.
-
-### Stack e Memória da EVM
-
-- **Stack**: A EVM opera em um modelo de stack, onde os valores são empilhados e consumidos por instruções subsequentes. A stack tem um tamanho limitado, e é fundamental entender como ela funciona para depurar contratos.
-- **Memória**: A memória da EVM é usada para armazenar dados temporários durante a execução de uma transação. Diferente do armazenamento (storage), a memória é volátil e é liberada após a execução do contrato.
-
-Vamos ver um exemplo básico de stack e memória. Pra isso crie um contrato de Contador
-Agora, rodamos um teste para definir e recuperar o valor:
+📌 **Ejecutar el depurador para un contrato específico**  
 
 ```bash
-forge debug ./src/Counter --sig "set(uint256)" 8
+forge debug ./src/Counter.sol --sig "setNumber(uint256)" 8
+```  
+
+📌 **Salida esperada:**  
+
 ```
+[DEBUG] Ejecutando Counter::setNumber(uint256)
+Opcode: PUSH1 0x08
+Stack: [0x00]
+Memory: [0000000000000000000000000000000000000000000000000000000000000000]
+```  
+
+Podemos navegar por los opcodes y ver cómo se comporta el contrato en tiempo de ejecución.  
 
 ---
 
-## Acessando o Debugger com Scripts e Tests
+## **4. Ejecutar `forge debug` con Pruebas y Scripts**  
 
-No Foundry, você pode acessar o **debugger** tanto para **scripts** quanto para **tests**. Esse recurso ajuda a rastrear a execução de cada parte do contrato diretamente na **EVM**, fornecendo insights detalhados sobre como o contrato se comporta durante a execução.
-
-### Testando com `--debug`
-
-Vamos começar depurando um teste. Para isso, podemos usar o comando `forge test` com a flag `--debug`, especificando a função que queremos depurar:
+📌 **Depurar una prueba en Foundry**  
 
 ```bash
-forge test --debug "testInitialAliceBalance()"
-```
+forge test --debug "testInitialSupply"
+```  
 
-Este comando abre o debugger e carrega o teste específico para depuração. Se houver vários testes com o mesmo nome em diferentes contratos, podemos usar os filtros `--match-path` ou `--match-contract` para depurar o teste correto.
-
-### Rodando scripts com `--debug`
-
-Da mesma forma, podemos depurar um script. Vamos rodar o seguinte comando para debugar o **script de deploy**:
+📌 **Depurar un script en Foundry**  
 
 ```bash
-forge script script/Simples.s.sol:Deploy --debug
-```
-
-Isso abre o script no debugger, permitindo navegar pela execução, linha por linha.
-
-### Debug mode
-
-Também podemos executar uma função específica do contrato com o `forge debug`:
-
-```bash
-forge debug ./src/Counter.sol --sig "incc()"
-```
-
-Nesse caso, passamos o nome da função que queremos debugar com `--sig`, e caso a função receba algum parâmetro, usamos:
-
-```bash
-forge debug ./src/Counter.sol --sig "set(uint256)" 7
-```
-
-Agora que já sabemos como acessar o debugger, vamos entender alguns conceitos importantes sobre o que acontece dentro da EVM durante a execução de contratos.
+forge script script/DeployToken.s.sol --debug
+```  
 
 ---
 
-## Conclusão
+## **5. Conclusión**  
 
-Hoje, exploramos o poderoso recurso de **debugging no Foundry**. Vimos como acessar o debugger com **scripts** e **tests**, entendemos os conceitos de **opcodes**, **stack** e **memória**.
+📌 **Hoy aprendimos:**  
 
----
-
-## Recapitulação
-
-- **Entendendo opcodes e memória**: Vimos como a EVM executa contratos com opcodes e armazena dados na stack e memória.
-- **Acessando o debugger**: Usamos comandos para debugar scripts e tests.
+✔ **Qué son los opcodes y cómo afectan la ejecución de contratos.**  
+✔ **Cómo funciona la pila y la memoria en la EVM.**  
+✔ **Cómo usar `forge debug` para analizar contratos.**  
+✔ **Depuración de pruebas y scripts con Foundry.**  
 
 ---
 
-## Lição de casa
+## **6. Recapitulación**  
 
-1. Crie um contrato mais complexo e tente depurá-lo, observando o comportamento dos opcodes.
-2. Experimente alocar diferentes tipos de dados na memória e use o debugger para entender como a EVM gerencia essas alocações.
+📌 **Resumen de la clase:**  
+1. **Fundamentos de la EVM: opcodes, pila y memoria.**  
+2. **Uso de `forge debug` para inspeccionar contratos.**  
+3. **Depuración de scripts y pruebas en Foundry.**  
 
 ---
 
-## Próxima aula
+## **7. Tarea para casa**  
 
-Na próxima aula, vamos nos aprofundar em **boas práticas de otimização de gas**, usando o que aprendemos sobre opcodes e memória para melhorar a eficiência dos seus contratos. Até lá, continue praticando, e nos vemos na próxima aula! 👋
+✏ **Ejercicio práctico:**  
+
+1. Escribe un contrato más complejo e intenta depurarlo con `forge debug`.  
+2. Experimenta con diferentes operaciones en la pila y la memoria.  
+3. Usa `forge debug` para analizar cómo se almacenan variables en la EVM.  
+
+---
+
+## **8. Próxima clase**  
+
+📅 **En la próxima clase, exploraremos optimización de gas en Solidity y cómo reducir costos de transacción.**  
+
+🚀 **¡Nos vemos allí!**  
