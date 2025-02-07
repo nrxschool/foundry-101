@@ -1,53 +1,52 @@
-# Aula 1: Leitura e Escrita com Cast
+# **Clase 1: Lectura y Escritura con Cast**  
 
-## 1. Abertura
+## **1. Apertura**  
 
-Olá e bem-vindo à **Aula 1 do Módulo 4**! Neste módulo, vamos nos aprofundar no **Cast**, a ferramenta de linha de comando (CLI) do **Foundry** para interagir com contratos inteligentes e realizar chamadas RPC diretamente do terminal. Se você já usou o Cast em aulas anteriores, agora vamos explorar seus recursos de maneira mais detalhada.
+¡Hola y bienvenido a la **Clase 1 del Módulo 4**!  
 
-Nesta aula, abordaremos:
+En este módulo, profundizaremos en **Cast**, la herramienta de línea de comandos (**CLI**) de **Foundry** para interactuar con contratos inteligentes y realizar llamadas RPC directamente desde la terminal. Si ya usaste Cast en clases anteriores, ahora exploraremos sus características de manera más detallada.  
 
-1. Uma introdução mais profunda ao **Cast** e sua interface de linha de comando.
-2. **Leitura de dados na blockchain** usando o Cast.
-3. Como **escrever transações** na blockchain.
+📌 **En esta clase veremos:**  
+1. **Introducción avanzada a Cast** y su interfaz CLI.  
+2. **Lectura de datos en la blockchain** con Cast.  
+3. **Cómo escribir transacciones en la blockchain** usando Cast.  
 
-Vamos começar conhecendo melhor o **Cast** e sua CLI!
+✅ **¡Comencemos explorando Cast y su CLI!** 🚀  
 
 ---
 
-## 2. Conhecendo o Cast um pouco mais a fundo
+## **2. Explorando Cast en Profundidad**  
 
-O **Cast** é uma ferramenta poderosa para realizar chamadas e interações com contratos inteligentes, enviar transações e recuperar informações da blockchain, tudo diretamente da linha de comando.
+**Cast** es una herramienta poderosa para realizar llamadas a contratos inteligentes, enviar transacciones y recuperar información de la blockchain directamente desde la terminal.  
 
-### Como usar o Cast
-
-O Cast funciona através de comandos e subcomandos que executam uma variedade de funções na blockchain. A estrutura básica para usar o Cast é:
+📌 **Estructura básica de Cast:**  
 
 ```bash
 cast
 ```
 
-### Principais subcomandos
+### **Principales Subcomandos**  
 
-- **`cast call`**: Faz uma chamada de leitura a um contrato.
-- **`cast send`**: Envia uma transação para a blockchain.
-- **`cast estimate`**: Estima o custo de gas de uma transação.
-- **`cast balance`**: Retorna o saldo de uma conta em wei ou ether.
-- **`cast nonce`**: Exibe o nonce de uma conta.
-- **`cast gas-price`**: Mostra o preço atual do gas.
+- **`cast call`** → Realiza una consulta de lectura a un contrato.  
+- **`cast send`** → Envía una transacción a la blockchain.  
+- **`cast estimate`** → Calcula el costo de gas de una transacción.  
+- **`cast balance`** → Muestra el saldo de una cuenta en wei o ether.  
+- **`cast nonce`** → Muestra el nonce de una cuenta.  
+- **`cast gas-price`** → Muestra el precio actual del gas.  
 
-Ao longo deste módulo, vamos explorar esses subcomandos em detalhes.
+📌 **A lo largo de este módulo, exploraremos estos subcomandos en detalle.**  
 
 ---
 
-## 3. Tudo sobre Leituras na Blockchain
+## **3. Todo Sobre la Lectura en la Blockchain**  
 
-Uma das principais funcionalidades do Cast é a capacidade de realizar leituras na blockchain. Vamos ver como utilizar o **Cast** para fazer leituras eficientes e recuperar dados úteis de contratos e contas.
+Una de las funciones más importantes de **Cast** es la capacidad de **leer datos en la blockchain**. Veamos cómo usar **Cast** para hacer consultas eficientes a contratos y cuentas.  
 
-### **`cast call`**: Fazendo chamadas de leitura em contratos
+### **`cast call` → Consultar datos de contratos**  
 
-O subcomando `cast call` permite realizar chamadas de leitura sem publicar transações na blockchain. Isso é muito útil para obter dados de contratos inteligentes sem gastar gas.
+El subcomando `cast call` permite consultar contratos sin publicar transacciones ni gastar gas.  
 
-**Exemplo**: Vamos recuperar o saldo de tokens de uma conta em um contrato ERC20:
+📌 **Ejemplo: Consultar el saldo de una cuenta en un contrato ERC20**  
 
 ```bash
 CONTRACT=0x6b175474e89094c44da98b954eedeac495271d0f
@@ -58,9 +57,15 @@ cast call \
     --rpc-url http://127.0.0.1:8545
 ```
 
-### **`cast balance`**: Consultando o saldo de uma conta
+✅ **Esto devuelve el saldo de tokens de la cuenta especificada.**  
 
-Com `cast balance`, podemos consultar o saldo de qualquer conta em wei (a menor unidade do ether), ou diretamente em ether com o flag `--ether`:
+---
+
+### **`cast balance` → Consultar saldo de una cuenta**  
+
+Para consultar el saldo de una cuenta en wei o ether:  
+
+📌 **En wei (unidad mínima de ETH):**  
 
 ```bash
 cast balance \
@@ -68,7 +73,7 @@ cast balance \
     --rpc-url http://127.0.0.1:8545
 ```
 
-Para mostrar o saldo diretamente em ether:
+📌 **Convertir el saldo a ether:**  
 
 ```bash
 cast balance \
@@ -77,45 +82,44 @@ cast balance \
     --rpc-url http://127.0.0.1:8545
 ```
 
-### Outros comandos úteis de leitura
+✅ **Esto devuelve el saldo de ETH de la cuenta.**  
 
-**`cast gas-price`**
+---
+
+### **Otros comandos útiles de lectura**  
+
+📌 **`cast gas-price` → Obtener el precio actual del gas**  
 
 ```bash
-# Mostra o preço atual do gas.
 cast gas-price --rpc-url http://127.0.0.1:8545
 ```
 
-**`cast block-number`**
+📌 **`cast block-number` → Obtener el número del último bloque**  
 
 ```bash
-# Retorna o número do bloco mais recente.
 cast block-number --rpc-url http://127.0.0.1:8545
 ```
 
-**`cast code`**
+📌 **`cast code` → Obtener el bytecode de un contrato**  
 
 ```bash
-# Obtém o bytecode de um contrato.
 CONTRACT=0x5FbDB2315678afecb367f032d93F642f64180aa3
 cast code \
     $CONTRACT \
     --rpc-url http://127.0.0.1:8545
 ```
 
-Esses comandos fornecem as informações mais essenciais ao interagir com contratos e contas. Agora que já sabemos como fazer leituras, vamos aprender a enviar transações para a blockchain.
+✅ **Estos comandos permiten acceder a información clave sobre la blockchain de manera rápida y eficiente.**  
 
 ---
 
-## 4. Tudo sobre Escrita na Blockchain
+## **4. Todo Sobre Escritura en la Blockchain**  
 
-Escrever na blockchain envolve a criação e envio de transações que alteram o estado dos contratos. O **Cast** facilita isso com o comando **`cast send`**.
+Para modificar datos en la blockchain, necesitamos **enviar transacciones**. **Cast** nos permite hacerlo con el comando **`cast send`**.  
 
-### **`cast send`**: Enviando transações
+### **`cast send` → Enviar transacciones**  
 
-O comando `cast send` permite enviar ether ou chamar funções que alteram o estado em um contrato inteligente.
-
-**Exemplo**: Vamos enviar 0.1 ether para uma conta específica:
+📌 **Ejemplo: Enviar 0.1 ETH a otra cuenta**  
 
 ```bash
 YOUR_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
@@ -126,11 +130,15 @@ cast send \
     --rpc-url http://127.0.0.1:8545
 ```
 
-Aqui, usamos a chave privada para assinar a transação localmente. Para contratos, podemos invocar funções diretamente.
+✅ **Esto transfiere 0.1 ETH a la cuenta de destino.**  
 
-### Enviando uma transação para um contrato inteligente
+---
 
-Você também pode interagir com contratos enviando dados específicos:
+### **Enviar transacciones a contratos inteligentes**  
+
+También podemos invocar funciones en contratos inteligentes.  
+
+📌 **Ejemplo: Transferir 1 token ERC20**  
 
 ```bash
 YOUR_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
@@ -143,19 +151,15 @@ cast send \
     --rpc-url http://127.0.0.1:8545
 ```
 
-Neste exemplo, estamos enviando 1 token ERC20 (10^18 wei) para um endereço usando a função `transfer`.
+✅ **Esto ejecuta la función `transfer` en el contrato ERC20.**  
 
-### Outras opções importantes de `cast send`
+---
 
-- **`--gas-limit`**: Define o limite de gas para a transação.
-- **`--gas-price`**: Define o preço do gas, ou o valor máximo de gas para transações EIP1559.
-- **`--nonce`**: Define o nonce para a transação.
+### **Otras opciones de `cast send`**  
 
-Por exemplo, se quisermos definir um limite de gas e preço para nossa transação:
+📌 **Definir gas y nonce manualmente**  
 
 ```bash
-YOUR_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-CONTRACT=0x6b175474e89094c44da98b954eedeac495271d0f
 cast send \
     --private-key $YOUR_PRIVATE_KEY \
     0x1234567890abcdef1234567890abcdef12345678 \
@@ -165,35 +169,43 @@ cast send \
     --rpc-url http://127.0.0.1:8545
 ```
 
----
-
-## 5. Conclusão
-
-Nesta primeira aula sobre **Cast**, abordamos:
-
-- Uma introdução à CLI do Cast.
-- Como fazer leituras na blockchain com comandos como `cast call` e `cast balance`.
-- Como enviar transações e interagir com contratos inteligentes usando `cast send`.
-
-Agora você está mais familiarizado com a leitura e escrita na blockchain usando o Cast. Na próxima aula, vamos nos aprofundar nas **ferramentas de ABI** e aprender mais sobre **conversões** e **interações avançadas com a blockchain**.
+✅ **Esto permite mayor control sobre la transacción.**  
 
 ---
 
-## 6. Recapitulação
+## **5. Conclusión**  
 
-- O Cast é uma ferramenta poderosa para interagir com a blockchain diretamente do terminal.
-- **Leitura**: `cast call`, `cast balance`, `cast gas-price`.
-- **Escrita**: `cast send`, permitindo enviar ether e interagir com contratos inteligentes.
+📌 **Hoy aprendimos:**  
+✔ **Introducción a la CLI de Cast y sus comandos principales.**  
+✔ **Cómo leer datos de la blockchain** (`cast call`, `cast balance`).  
+✔ **Cómo enviar transacciones a cuentas y contratos** (`cast send`).  
 
----
-
-## 7. Lição de casa
-
-1. Tente usar o `cast call` para interagir com um contrato ERC20 e verificar o saldo de uma conta.
-2. Envie uma pequena quantia de ether para um endereço usando `cast send`.
+✅ **Ahora sabes cómo interactuar con la blockchain directamente desde la terminal.**  
 
 ---
 
-## 8. Próxima aula
+## **6. Recapitulación**  
 
-Na próxima aula, vamos aprender tudo sobre **utilidades de ABI**, como **decodificar** e **encodar transações**, e explorar comandos de conversão no **Cast**.
+📌 **Resumen de la clase:**  
+1. **Lectura en la blockchain** → `cast call`, `cast balance`, `cast gas-price`.  
+2. **Envío de transacciones** → `cast send` para ETH y contratos inteligentes.  
+
+---
+
+## **7. Tarea para casa**  
+
+✏ **Ejercicio práctico:**  
+
+1. Usa **`cast call`** para consultar el saldo de un token ERC20 en una cuenta.  
+2. Usa **`cast send`** para transferir ETH entre cuentas en **Anvil**.  
+3. Experimenta con el envío de transacciones usando `cast send` con diferentes valores de gas.  
+
+📌 **Anota tus dudas y experimenta al máximo.**  
+
+---
+
+## **8. Próxima clase**  
+
+📅 **En la próxima clase, aprenderemos sobre utilidades de ABI y conversión de datos en Cast.**  
+
+🚀 **¡Nos vemos allí!**  
