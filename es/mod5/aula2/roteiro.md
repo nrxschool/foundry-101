@@ -1,234 +1,249 @@
-# Aula 2: Uso avançado do Chisel
+# **Clase 2: Uso Avanzado de Chisel**  
 
-## Abertura
+## **1. Apertura**  
 
-Bem-vindo à nossa segunda aula sobre o **Chisel**! Hoje, vamos aprender a manipular sessões no Chisel, utilizando comandos como `!load`, `!list`, `!clearcache` e `!export`. Além disso, exploraremos como executar contratos mais complexos dentro do ambiente interativo, incluindo o uso de **arrays**, **mappings**, **structs**, **enums**, **funções** e **eventos**. Por fim, veremos como salvar e recuperar sessões para que possamos trabalhar em projetos mais elaborados.
+¡Bienvenido a la **segunda clase sobre Chisel**! Hoy exploraremos cómo utilizar Chisel de manera más avanzada, manipulando sesiones, estructuras de datos y depurando el estado de la EVM.  
 
-### Programa da aula:
+📌 **Lo que aprenderemos hoy:**  
 
-1. Manipulando sessões no Chisel.
-2. Usando arrays, mappings, structs e enums.
-3. Usando funções, contratos e eventos no Chisel.
-4. Depurando a memória da EVM com `!stackdump`, `!memdump` e `!rawstack`.
+1. **Gestión de sesiones en Chisel** → `!load`, `!list`, `!clearcache`, `!export`.  
+2. **Uso de arrays, mappings, structs y enums** en Solidity dentro de Chisel.  
+3. **Creación y prueba de funciones, contratos y eventos.**  
+4. **Depuración con `!stackdump`, `!memdump`, `!rawstack`**.  
 
-Com essas ferramentas, você será capaz de trabalhar de forma mais eficiente com o Chisel. Vamos começar!
+✅ **¡Vamos a ello!** 🚀  
 
 ---
 
-## 1. Manipulando Sessões no Chisel
+## **2. Gestión de Sesiones en Chisel**  
 
-No Chisel, podemos trabalhar em várias sessões, salvá-las e carregá-las para continuar de onde paramos. Isso é útil ao desenvolver projetos complexos ou quando precisamos alternar entre diferentes experimentos.
+Podemos trabajar en varias sesiones en Chisel, guardarlas y recargarlas más tarde.  
 
-### Listando e Carregando Sessões
-
-Para ver todas as sessões salvas no Chisel, utilizamos o comando `!list`:
+### **📌 Listar Sesiones Guardadas**  
 
 ```bash
 !list
 ```
 
-Isso mostrará todas as sessões armazenadas em cache. Para carregar uma sessão específica, basta usar o comando `!load` seguido do ID da sessão:
+✅ **Muestra todas las sesiones almacenadas en caché.**  
+
+---
+
+### **📌 Cargar una Sesión Anterior**  
 
 ```bash
 !load 101
 ```
 
-### Salvando e Limpando Sessões
+✅ **Carga una sesión previamente guardada para continuar trabajando en ella.**  
 
-Se você estiver no meio de um experimento e quiser salvar o progresso, use o comando `!save`:
+---
+
+### **📌 Guardar una Sesión**  
 
 ```bash
 !save 202
 ```
 
-Se não fornecer um ID, o Chisel atribuirá automaticamente um número. Para limpar o cache de sessões, podemos usar o comando `!clearcache`, removendo todas as sessões armazenadas:
+✅ **Guarda el estado actual de la sesión Chisel.**  
+
+---
+
+### **📌 Limpiar el Caché de Sesiones**  
 
 ```bash
 !clearcache
 ```
 
-### Exportando Sessões
+✅ **Elimina todas las sesiones almacenadas.**  
 
-Ao trabalhar em um projeto mais longo ou complexo, você pode exportar uma sessão para usá-la como um script em seu projeto Foundry. O comando `!export` faz isso:
+---
+
+### **📌 Exportar Código a Foundry**  
 
 ```bash
 !export
 ```
 
-Isso cria um arquivo no diretório `scripts/` do seu projeto, pronto para ser usado.
+✅ **Guarda el código de la sesión en `scripts/` dentro del proyecto Foundry.**  
 
 ---
 
-## 2. Usando Arrays, Mappings, Structs e Enums
+## **3. Uso de Arrays, Mappings, Structs y Enums**  
 
-### Arrays
+Podemos crear estructuras de datos avanzadas en Solidity dentro de Chisel.  
 
-Os arrays são estruturas de dados que armazenam uma coleção de elementos do mesmo tipo. Eles são úteis para armazenar listas de valores.
+---
 
-#### Criando um Array
+### **📌 Arrays en Chisel**  
 
-```javascript
+```solidity
 uint256[] public numeros;
-```
-
-#### Métodos Comuns de Arrays
-
-**Adicionar um elemento**:
-
-```javascript
 numeros.push(10);
+numeros[0];
+numeros.length;
 ```
 
-**Acessar um elemento**:
+✅ **Crea y manipula arrays dinámicos en Chisel.**  
 
-```javascript
-uint256 primeiroNumero = numeros[0];
-```
+---
 
-**Obter o comprimento do array**:
+### **📌 Mappings en Chisel**  
 
-```javascript
-uint256 tamanho = numeros.length;
-```
-
-### Mappings
-
-Os mappings são usados para associar chaves a valores. Eles são muito úteis para criar dicionários.
-
-#### Criando um Mapping
-
-```javascript
+```solidity
 mapping(address => uint256) public saldos;
 saldos[address(0x22)] = 123;
-saldos[address(0x22)]
-saldos[address(0x22222)]
+saldos[address(0x22)];
 ```
 
-#### Limitações dos Mappings
-
-- Os mappings não possuem comprimento.
-- Não é possível iterar sobre os keys ou values diretamente.
-- Os valores padrão são retornados para chaves não definidas (por exemplo, 0 para uint256).
-
-### Structs
-
-As structs permitem criar tipos de dados personalizados.
-
-#### Criando um Struct
-
-```javascript
-struct Pessoa {
-    string nome;
-    uint256 idade;
-}
-Pessoa memory p = Pessoa("nome", 27);
-```
-
-### Enums
-
-Os enums são tipos que podem ter um conjunto fixo de valores. Eles são úteis para representar estados ou categorias.
-
-#### Criando um Enum
-
-```javascript
-enum Status {
-    Ativo,
-    Inativo,
-    Suspenso
-}
-Status st = Status.Ativo
-st == Status.Inativo
-st == Status.Ativo
-uint(st)
-uint(Status.Inativo)
-uint(Status.Suspenso)
-```
+✅ **Los mappings permiten almacenar valores asociados a claves específicas.**  
 
 ---
 
-## 3. Usando Funções, Contratos e Eventos no Chisel
+### **📌 Structs en Chisel**  
 
-### Função de Soma Simples
-
-Vamos começar criando uma função de soma simples.
-
-```javascript
-function soma(uint256 a, uint256 b) public pure returns (uint256) {
-    return a + b;
+```solidity
+struct Persona {
+    string nombre;
+    uint256 edad;
 }
-
-soma(2, 99)
+Persona memory p = Persona("Juan", 30);
 ```
 
-### Criando um Contrato Counter
+✅ **Permiten definir tipos de datos personalizados.**  
 
-Agora, vamos criar um contrato simples que conta.
+---
 
-```javascript
+### **📌 Enums en Chisel**  
+
+```solidity
+enum Estado {
+    Activo,
+    Inactivo,
+    Suspendido
+}
+Estado e = Estado.Activo;
+uint(e);
+```
+
+✅ **Los enums ayudan a representar estados predefinidos en Solidity.**  
+
+---
+
+## **4. Creación de Funciones, Contratos y Eventos**  
+
+Podemos escribir y probar contratos directamente en Chisel.  
+
+### **📌 Función de Suma**  
+
+```solidity
+function suma(uint256 a, uint256 b) public pure returns (uint256) {
+    return a + b;
+}
+suma(5, 10);
+```
+
+✅ **Ejecuta funciones sin necesidad de compilar un contrato.**  
+
+---
+
+### **📌 Creación de un Contrato Counter**  
+
+```solidity
 contract Counter {
     uint256 public count;
-
-    event Incc(uint256 indexed novoValor);
-
-    function incc() public {
+    
+    event Incremento(uint256 nuevoValor);
+    
+    function increment() public {
         count += 1;
-        emit Incc(count);
+        emit Incremento(count);
     }
 }
 
 Counter c = new Counter();
-c.incc();
-c.incc();
-c.incc();
-uint x = c.count();
-x
+c.increment();
+c.count();
 ```
 
-### Eventos e Decodificação
+✅ **Crea e interactúa con contratos en tiempo real.**  
 
-Os eventos são úteis para acompanhar ações em seu contrato. Para capturar os eventos precisamos habilitar o `traces` usando:
+---
+
+### **📌 Captura de Eventos en Chisel**  
+
+Para ver eventos emitidos en el contrato, activamos `!traces`:  
 
 ```bash
 !traces
 ```
 
-#### Executando o Contrato
+✅ **Permite analizar las transacciones dentro de Chisel.**  
 
-```javascript
-Counter c = new Counter();
-c.incc();
+---
+
+## **5. Depuración con Stack y Memoria**  
+
+Podemos inspeccionar el estado de la EVM con herramientas avanzadas.  
+
+📌 **`!stackdump` → Ver el estado de la pila (stack)**  
+
+```bash
+!stackdump
 ```
 
-#### Entendendo os traces
+📌 **`!memdump` → Ver el estado de la memoria**  
 
-Foundry trabalha com traces em todo o seu ecosistema, eles podem ser acessados nos testes e scripts usando `-vvvv` já no chisel usamos `!traces`:
-
-```javascript
-!traces
-
-
+```bash
+!memdump
 ```
 
----
+📌 **`!rawstack` → Inspeccionar la pila en tiempo real**  
 
-## Conclusão
+```bash
+!rawstack
+```
 
-Nesta aula, aprendemos a manipular sessões no Chisel, usando **arrays**, **mappings**, **structs**, **enums**, e como criar funções e contratos simples. Também vimos como usar eventos e como decodificá-los para acompanhar a execução dos contratos.
-
----
-
-## Lição de casa
-
-- Crie um contrato que utilize arrays e mappings.
-- Use eventos para acompanhar a execução do contrato e teste suas funcionalidades no Chisel.
-- Salve sua sessão e recarregue-a para continuar o desenvolvimento posteriormente.
+✅ **Estas herramientas permiten un análisis detallado del comportamiento del contrato.**  
 
 ---
 
-## Próxima Aula
+## **6. Conclusión**  
 
-Na próxima aula, vamos explorar como utilizar o Chisel para depurar contratos e entender melhor a memória e a pilha da EVM. Até lá!
+📌 **Hoy aprendimos:**  
+✔ **Cómo gestionar sesiones en Chisel (`!save`, `!load`, `!export`).**  
+✔ **Cómo trabajar con arrays, mappings, structs y enums.**  
+✔ **Cómo crear y probar contratos, funciones y eventos.**  
+✔ **Cómo depurar la memoria y la pila de la EVM en tiempo real.**  
+
+✅ **Con estas herramientas, podrás desarrollar y probar contratos de forma más eficiente.**  
 
 ---
 
-Se precisar de mais alguma coisa, é só avisar!
+## **7. Recapitulación**  
+
+📌 **Resumen de la clase:**  
+1. **Gestión de sesiones en Chisel.**  
+2. **Manipulación de estructuras de datos en Solidity.**  
+3. **Creación y prueba de contratos y eventos.**  
+4. **Depuración de la EVM en tiempo real.**  
+
+---
+
+## **8. Tarea para Casa**  
+
+✏ **Ejercicio práctico:**  
+
+1. **Crea un contrato en Chisel** que almacene un array de direcciones.  
+2. **Prueba la captura de eventos** activando `!traces`.  
+3. **Usa `!stackdump` y `!memdump`** para analizar la ejecución del contrato.  
+
+📌 **Toma notas de los resultados y experimenta lo máximo posible.**  
+
+---
+
+## **9. Próxima Clase**  
+
+📅 **En la próxima clase, exploraremos cómo usar Chisel para depurar contratos más complejos y analizar la ejecución de transacciones en profundidad.**  
+
+🚀 **¡Nos vemos allí!**  
