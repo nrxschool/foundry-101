@@ -1,178 +1,169 @@
-# Aula 1: Introdução ao Chisel
+# **Clase 1: Introducción a Chisel**  
 
-## Abertura
+## **1. Apertura**  
 
-Bem-vindo à nossa primeira aula sobre **Chisel**, o REPL para Solidity da suíte Foundry. Nesta aula, vamos apresentar o Chisel e explorar seu ambiente interativo, que permite testar rapidamente trechos de código em Solidity. Com o Chisel, você pode iterar sobre suas ideias sem a necessidade de rodar testes completos. Vamos entender os principais comandos, como `!help`, `!source`, `!save`, e `!clear`, além de ver exemplos práticos de uso.
+¡Bienvenido a nuestra primera clase sobre **Chisel**!  
 
-### Programa da aula:
+**Chisel** es el **REPL** (*Read-Eval-Print Loop*) de **Foundry**, diseñado para Solidity. Permite probar rápidamente fragmentos de código, sin necesidad de compilar ni ejecutar pruebas completas.  
 
-1. O que é o Chisel e como funciona.
-2. Principais comandos do Chisel.
-3. Testando códigos simples no Chisel.
-4. Exportando e integrando com Foundry.
+📌 **Lo que aprenderemos hoy:**  
 
-Chisel facilita o desenvolvimento ágil de contratos Solidity. Vamos começar!
+1. **Qué es Chisel y cómo funciona.**  
+2. **Comandos esenciales de Chisel.**  
+3. **Ejecutar y probar código en Chisel.**  
+4. **Exportar código e integrarlo con Foundry.**  
+
+✅ **Chisel es una herramienta poderosa para el desarrollo ágil en Solidity. ¡Vamos a descubrirla!** 🚀  
 
 ---
 
-## 1. O que é o Chisel e como funciona
+## **2. Qué es Chisel y Cómo Funciona**  
 
-O **Chisel** é uma ferramenta que funciona como um REPL (Read-Eval-Print Loop) para **Solidity**, permitindo:
+📌 **¿Qué es un REPL?**  
 
-- Testar rapidamente pequenos trechos de código.
-- Obter feedback imediato e ajustar erros ou melhorias.
-- Testar expressões, variáveis e operações sem a necessidade de configurar um projeto completo.
+Un **REPL** es un entorno interactivo que permite escribir código, ejecutarlo inmediatamente y ver el resultado.  
 
-### Vantagens do REPL
+### **Ventajas de Chisel**  
 
-Ao contrário de um fluxo tradicional de deploy e teste, no Chisel você pode:
+✅ **Pruebas instantáneas** → Ejecuta fragmentos de código sin necesidad de compilar contratos completos.  
+✅ **Depuración rápida** → Encuentra errores sin necesidad de realizar pruebas formales.  
+✅ **Iteración ágil** → Modifica y prueba código en tiempo real.  
 
-- **Executar snippets** sem precisar de um contrato completo.
-- Receber feedback imediato sobre **funcionalidade e erros**.
-- Iterar rapidamente ao longo do desenvolvimento, ajustando e testando o código em tempo real.
+### **Iniciar Chisel**  
 
-### Iniciando o Chisel
-
-Para iniciar o Chisel, basta rodar o comando:
+Para iniciar Chisel, ejecuta:  
 
 ```bash
 chisel
 ```
 
-Uma vez aberto, você poderá digitar expressões ou blocos de código Solidity e receber uma resposta imediata. O Chisel permite rodar tanto em redes locais quanto em forks de redes reais, oferecendo flexibilidade no desenvolvimento.
+📌 **Esto abrirá una consola interactiva donde podrás escribir código Solidity directamente.**  
 
 ---
 
-## 2. Principais Comandos do Chisel
+## **3. Comandos Esenciales de Chisel**  
 
-O Chisel possui uma série de comandos úteis para navegar no ambiente REPL, limpar sessões, salvar código e muito mais. Vamos explorar os comandos principais para entender como utilizá-los no dia a dia.
+Chisel incluye comandos que facilitan la navegación y gestión del entorno de pruebas.  
 
-**`!help`**
+### **📌 `!help` → Mostrar todos los comandos disponibles**  
 
 ```bash
-# O comando `!help` exibe todos os comandos disponíveis no Chisel.
-# Use-o para descobrir as funcionalidades que podem facilitar seu fluxo de trabalho:
 !help
 ```
 
-**`!source`**
-
-```bash
-# Esse comando exibe o código-fonte atual da sessão Chisel, que é gerado conforme você insere o código Solidity.
-# Isso permite acompanhar o que já foi executado:
-!source
-```
-
-**`!clear`**
-
-```bash
-# Para reiniciar sua sessão e limpar o ambiente, use `!clear`.
-# Isso é útil quando você quer começar do zero ou remover código antigo:
-!clear
-```
-
-**`!save`**
-
-```bash
-# O comando `!save` permite salvar o estado atual da sessão Chisel, para que você possa retomá-la mais tarde.
-# Se não passar um ID, o Chisel gera um automaticamente:
-!save 101
-```
+✅ **Lista todos los comandos y su descripción.**  
 
 ---
 
-## 3. Testando Códigos Simples no Chisel
+### **📌 `!source` → Ver el código generado en la sesión actual**  
 
-Agora que conhecemos os comandos, vamos explorar como testar variáveis e operações diretamente no Chisel.
+```bash
+!source
+```
 
-### Definindo Variáveis e Tipos Numéricos
+✅ **Muestra el código que ha sido ejecutado en la sesión de Chisel.**  
 
-No Chisel, você pode definir variáveis e realizar operações matemáticas rapidamente:
+---
 
-```js
+### **📌 `!clear` → Limpiar el entorno**  
+
+```bash
+!clear
+```
+
+✅ **Reinicia la sesión y borra el código ejecutado.**  
+
+---
+
+### **📌 `!save` → Guardar la sesión actual**  
+
+```bash
+!save 101
+```
+
+✅ **Guarda la sesión para poder retomarla más tarde.**  
+
+---
+
+## **4. Ejecutar Código en Chisel**  
+
+📌 **Ejemplo: Definir Variables y Operaciones Matemáticas**  
+
+```solidity
 uint256 a = 42;
 uint256 b = 58;
 a + b;
 ```
 
-Você também pode trabalhar com **operações booleanas**:
+📌 **Operaciones Booleanas**  
 
-```js
+```solidity
 bool isTrue = true;
 bool isFalse = false;
 isTrue && isFalse;
 ```
 
-### Notações e Números com Ether
+📌 **Manejo de Ether y Wei**  
 
-Em Solidity, trabalhamos frequentemente com unidades como **wei**, **gwei**, e **ether**. Você pode definir quantidades de ether e trabalhar com precisão no Chisel:
-
-```js
+```solidity
 1 ether == 1e18 wei;
 0.5 ether;
 ```
 
-### Perda de Precisão (`Precision Loss`)
-
-Em Solidity, devemos prestar atenção à **perda de precisão** ao trabalhar com números decimais. Como Solidity não lida com números de ponto flutuante, as operações podem sofrer **truncamento** ou erros quando valores são muito pequenos:
-
-```js
-// Isso vai truncar o resultado
-// uint256 x = 1 ether / 3;
-// 
-// Compiler errors:
-// 
-// Error (4486): Type rational_const 1000000000000000000 / 3 is not implicitly convertible to expected type uint256.
-// Try converting to type ufixed256x59 or use an explicit conversion.
-
-uint256 x = 1 ether / uint256(3);
-```
-
-### Operações Matemáticas
-
-Chisel permite testar diferentes operações e verificar como elas são tratadas pela EVM:
-
-```js
-uint256 result = 2**10;
-uint256 mod = 10 % 3;
-```
-
-Com o Chisel, você consegue visualizar instantaneamente como esses números são manipulados e como a precisão afeta os resultados.
+✅ **Chisel permite probar estas expresiones instantáneamente.**  
 
 ---
 
-## 4. Exportando e Integrando com Foundry
+## **5. Exportar Código e Integrarlo con Foundry**  
 
-O Chisel é integrado ao Foundry, permitindo exportar suas sessões para scripts que podem ser utilizados em testes ou deploys futuros.
-
-### Exportando Sessões com `!export`
+📌 **Para exportar una sesión a un script en Foundry:**  
 
 ```bash
-# Você pode exportar o código da sessão para um script dentro do seu projeto Foundry
 !export
 ```
 
-Isso cria um arquivo script no diretório `scripts/` do seu projeto, facilitando a reutilização do código.
+✅ **Esto genera un archivo dentro del directorio `scripts/` del proyecto Foundry.**  
 
-### Integração Completa com Foundry
-
-Quando o Chisel é iniciado em um projeto Foundry, ele herda todas as configurações do projeto. Isso inclui dependências, versões de compilador e até o ambiente da rede, o que facilita a transição de um protótipo para um teste ou deploy.
+📌 **Chisel hereda la configuración del proyecto Foundry** → Incluye dependencias, versión de compilador y entorno de red.  
 
 ---
 
-## Conclusão
+## **6. Conclusión**  
 
-Hoje, conhecemos o **Chisel**, uma ferramenta ágil e poderosa para testes interativos de Solidity. Exploramos os principais comandos, testamos variáveis e operações matemáticas, e vimos como o Chisel pode se integrar diretamente com o Foundry para facilitar o desenvolvimento.
+📌 **Hoy aprendimos:**  
+✔ **Qué es Chisel y sus ventajas como REPL.**  
+✔ **Comandos principales (`!help`, `!clear`, `!save`).**  
+✔ **Cómo ejecutar código Solidity de manera interactiva.**  
+✔ **Cómo exportar sesiones y usarlas en Foundry.**  
+
+✅ **Chisel es una herramienta poderosa para agilizar el desarrollo y depuración de contratos en Solidity.**  
 
 ---
 
-## Lição de casa
+## **7. Recapitulación**  
 
-- Teste criar uma variável com valores em ether e faça algumas operações aritméticas.
-- Utilize o comando `!save` para salvar sua sessão e tente recarregá-la usando `!load` em uma próxima execução do Chisel.
+📌 **Resumen de la clase:**  
+1. **Introducción a Chisel** → ¿Qué es y cómo usarlo?  
+2. **Comandos esenciales** → `!help`, `!clear`, `!save`, `!export`.  
+3. **Ejecutar código en Chisel** → Variables, operaciones matemáticas y lógica booleana.  
+4. **Exportar código** → Guardar sesiones y reutilizar en Foundry.  
 
 ---
 
-## Próxima Aula
+## **8. Tarea para Casa**  
 
-Na próxima aula, vamos nos aprofundar no uso avançado do Chisel, incluindo depuração de código Solidity e como integrar contratos complexos em suas sessões. Até lá!
+✏ **Ejercicio práctico:**  
+
+1. **Prueba Chisel** → Define variables y prueba operaciones matemáticas.  
+2. **Usa `!save` para guardar una sesión y `!load` para recuperarla.**  
+3. **Exporta un código y revísalo en Foundry.**  
+
+📌 **Toma notas de los resultados y experimenta lo máximo posible.**  
+
+---
+
+## **9. Próxima Clase**  
+
+📅 **En la próxima clase, aprenderemos sobre funciones avanzadas de Chisel, incluyendo estructuras de datos como arrays, mappings y structs.**  
+
+🚀 **¡Nos vemos allí!**  
