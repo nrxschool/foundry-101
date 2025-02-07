@@ -1,65 +1,40 @@
-# Roteiro da Aula 3: Testes e Coverage no Foundry
+# **Clase 3: Pruebas y Cobertura en Foundry**  
 
-## 1. Abertura
+## **1. Apertura**  
 
-Olá! Bem-vindo à nossa terceira aula do curso **Foundry 101**. Hoje vamos nos aprofundar em um dos aspectos mais importantes do desenvolvimento de contratos inteligentes: os **testes**.
+¡Hola! Bienvenido a nuestra tercera clase del curso **Foundry 101**.  
 
-Sem testes, o risco de introduzirmos falhas críticas em contratos que não podem ser modificados é muito alto. O Foundry nos oferece uma série de ferramentas para garantir que nossos contratos estão funcionando como esperado.
+Hoy nos adentraremos en uno de los aspectos más importantes del desarrollo de smart contracts: **las pruebas**.  
 
-Nesta aula, vamos explorar:
+Sin pruebas, el riesgo de introducir errores críticos en contratos que no pueden modificarse es muy alto. **Foundry** nos proporciona herramientas avanzadas para asegurarnos de que nuestros contratos funcionan correctamente.  
 
-1. Como funcionam os testes no Foundry
-2. Configurando Teste com `Test.sol`
-3. Escrever testes avançados
-4. Como fazer cobertura de testes com Foundry
+📌 **En esta clase veremos:**  
 
-Vamos começar com o básico sobre como os testes funcionam no Foundry.
+1. **Cómo funcionan las pruebas en Foundry**  
+2. **Configuración de pruebas con `Test.sol`**  
+3. **Escribir pruebas avanzadas**  
+4. **Cobertura de pruebas en Foundry**  
 
 ---
 
-## 2. Como funcionam os testes no Foundry
+## **2. Cómo funcionan las pruebas en Foundry**  
 
-No Foundry, os testes são escritos em arquivos **`.t.sol`**, que são contratos Solidity, mas focados exclusivamente em testar outros contratos. Isso é uma grande vantagem, pois podemos escrever testes no mesmo ambiente que os contratos são desenvolvidos, utilizando o poder do Solidity.
+En **Foundry**, las pruebas se escriben en archivos `.t.sol`, que son contratos Solidity diseñados para probar otros contratos.  
 
-Os arquivos `.t.sol` ficam na pasta **`test/`** do seu projeto e são automaticamente detectados quando você roda o comando `forge test`. O Foundry também oferece uma biblioteca chamada **forge-std**, que fornece ferramentas poderosas para facilitar a criação de testes.
+📌 **Beneficios:**  
+✅ Se ejecutan en el mismo entorno que los contratos, sin necesidad de scripts en JavaScript o TypeScript.  
+✅ Son rápidas y eficientes.  
+✅ Tienen acceso a herramientas avanzadas como `vm`, `cheatcodes` y `fuzzing`.  
 
-Vamos falar de três bibliotecas principais:
+📌 **Estructura básica de una prueba:**  
 
-### Test
+1. **Las pruebas se guardan en la carpeta `test/`.**  
+2. **Se usa la biblioteca `forge-std`** para funciones avanzadas.  
+3. **Se hereda del contrato `Test.sol`** para facilitar las aserciones.  
 
-Essa biblioteca é o coração dos testes no Foundry. Ela oferece diversas funções para facilitar a criação de testes.
+Ejemplo de una prueba en Foundry:  
 
-O contrato `Test.sol` é a base para todos os testes, e nele podemos definir variáveis, usar funções de manipulação da EVM e várias ferramentas úteis.
-
-```javascript
-import { Test } from "forge-std/Test.sol";
-```
-
-### Vm
-
-O `Vm` permite que você interaja diretamente com a **máquina virtual Ethereum (EVM)** nos testes.
-
-Isso significa que você pode manipular o tempo, as contas, os saldos e até controlar a execução de transações durante os testes.
-
-```javascript
-import { Vm } from "forge-std/Vm.sol";
-```
-
-### StdAssertions\*
-
-A biblioteca `StdAssertions` oferece funções de asserção que permitem verificar se os valores nos testes estão corretos.
-
-Funções como **`assertEq()`**, **`assertGt()`** e **`assertLt()`** são usadas para comparar valores e garantir que o comportamento do contrato é o esperado.
-
-```javascript
-import { StdAssertions } from "forge-std/StdAssertions.sol";
-```
-
-### Exemplo simples:
-
-Vamos começar com um exemplo básico de como funciona um teste no Foundry. Crie um arquivo `Token.t.sol`:
-
-```javascript
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
@@ -76,291 +51,187 @@ contract TokenTest is Test {
         assertEq(token.totalSupply(), 1_000_000 * 1e18);
     }
 }
-```
+```  
 
-Agora execute:
+📌 **Ejecutar las pruebas:**  
 
-```shell
-$ forge t
-[⠊] Compiling...
-No files changed, compilation skipped
+```bash
+forge test
+```  
 
-Ran 1 test for test/Token.t.sol:TokenTest
-[PASS] testInitialSupply() (gas: 14286)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 4.69ms (1.33ms CPU time)
+📌 **Ejecutar pruebas con mayor detalle:**  
 
-Ran 1 test suite in 142.20ms (4.69ms CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)
-
-```
-
-### Explicação:
-
-- **`setUp()`**: Inicializamos o contrato **Token** para que ele esteja disponível em cada teste.
-- **`testInitialSupply()`**: Todo teste deve começar com `test`. Nesse teste verificamos se o `totalSupply` inicial está correto. Usamos a função **`assertEq()`** para garantir que o valor seja igual ao esperado.
+```bash
+forge test -vvv
+```  
 
 ---
 
-## 3. Configurando Teste com `Test.sol`
+## **3. Configuración de pruebas con `Test.sol`**  
 
-Como vimos no exemplo anterior, os testes no Foundry herdam de **`Test.sol`**, que nos dá acesso a várias funções úteis para escrever testes de maneira eficiente.
+El contrato **`Test.sol`** nos permite acceder a herramientas avanzadas para escribir pruebas de manera eficiente.  
 
-### O que `setUp()` faz?
+📌 **Funciones clave de `Test.sol`:**  
 
-A função **`setUp()`** é chamada automaticamente antes de cada teste individual ser executado. Isso significa que qualquer configuração inicial — como a implantação de contratos ou a definição de variáveis — deve ser feita aqui.
+- **`setUp()`** → Se ejecuta antes de cada prueba.  
+- **`assertEq(a, b)`** → Verifica que `a == b`.  
+- **`assertGt(a, b)`** → Verifica que `a > b`.  
+- **`assertLt(a, b)`** → Verifica que `a < b`.  
+- **`vm.roll(blockNumber)`** → Cambia el número de bloque.  
+- **`vm.warp(timestamp)`** → Cambia la marca de tiempo.  
 
-No nosso exemplo, usamos **`setUp()`** para criar o contrato **Token** antes de cada teste:
+Ejemplo de prueba con manipulación del tiempo:  
 
-```javascript
-function setUp() public {
-    token = new Token(1_000_000);
+```solidity
+function testTimeTravel() public {
+    uint256 start = block.timestamp;
+    vm.warp(start + 100);
+    assertEq(block.timestamp, start + 100);
 }
-```
+```  
 
-Isso garante que, em cada teste, temos um contrato novo e totalmente funcional.
+📌 **Ejecutar una prueba específica:**  
 
-### Usando a `Vm` para simular cenários
-
-A biblioteca **Vm** nos dá controle total sobre o ambiente de teste. Podemos alterar o tempo, modificar o saldo de contas, fazer forks de redes, entre outros.
-
-Exemplo de manipulação de tempo:
-
-```javascript
-// Simulando uma chamada de do usuário 0x00000000000000000000000000000000000000ff
-vm.prank(address(0xff));
-
-// Simulando o avanço de 1000 blocos no teste
-vm.roll(1000);
-```
-
-### Funções de comparação (assertions)
-
-No Foundry, as asserções são fundamentais para validar o comportamento dos contratos. Vamos explorar algumas delas:
-
-- **`assertNotEq(a, b)`**: Verifica se `a` != `b`.
-- **`assertEq(a, b)`**: Verifica se `a` == `b`.
-- **`assertGt(a, b)`**: Verifica se `a` > `b`.
-- **`assertLt(a, b)`**: Verifica se `a` < `b`.
-- **`assertLe(a, b)`**: Verifica se `a` <= `b`.
-- **`assertGe(a, b)`**: Verifica se `a` >= `b`.
-
-Vamos adicionar mais algumas comparações ao nosso teste anterior para explorar essas asserções:
-
-```javascript
-function testInitialSupply() public {
-    // totalSupply == 1_000_000
-    assertEq(token.totalSupply(), 1_000_000 * 1e18);
-    // totalSupply <= 1_000_000
-    assertLe(token.totalSupply(), 1_000_000 * 1e18);
-    // totalSupply > 0
-    assertGt(token.totalSupply(), 0);
-    // totalSupply != 0
-    assertNotEq(token.totalSupply(), 0);
-}
-```
+```bash
+forge test --match-test testTimeTravel
+```  
 
 ---
 
-## 4. Escrevendo Testes Avançados
+## **4. Escribir pruebas avanzadas**  
 
-Agora que entendemos os conceitos básicos, vamos aprofundar e escrever testes mais avançados para o nosso contrato **Token**.
+Ahora que entendemos los conceptos básicos, veamos cómo escribir pruebas más avanzadas.  
 
-Vamos incluir transferências de tokens e cenários de falha.
+📌 **1. Simulación de diferentes usuarios**  
 
-### Criando usuários
+Podemos simular transacciones desde distintas cuentas con `vm.prank()`.  
 
-Vamos criar 2 usuários, alice e bob para os testes ficarem mais legiveis
-
-```javascript
-contract TokenTest is Test {
-    address alice = address(0xaaa);
-    address bob = address(0xbbb);
-    Token token;
-
-    function setUp() public {
-
-        vm.prank(alice);
-        token = new Token(1_000_000);
-    }
-
-    // codigo...
-}
-```
-
-### Criando Labels
-
-Agora vamos adicionar labels para facilitar a leitura do tracing quando houver erro no teste
-
-```javascript
-function setUp() public {
-    vm.label(alice, "ALICE");
-    vm.label(bob, "BOB");
-
-    // codigo...
-}
-```
-
-### Fazendo deploy com `alice`
-
-Agora vamos usar alice como o `msg.sender` para fazer deploy do nosso contrato
-
-```javascript
-function setUp() public {
-    // codigo...
-
-    vm.prank(alice);
-    token = new Token(1_000_000);
-}
-```
-
-### Testando saldo de `alice`
-
-Vamos testar o saldo de `alice` e ver como funcionam as labels. Pra isso vamos escrever o teste errado para ver o tracing no terminal.
-
-```javascript
-function testInitialAliceBalance() public {
-    assertEq(token.balanceOf(alice), 1_000_001 * 1e18);
-}
-```
-
-Executando o teste
-
-```
-$ forge t --mt Alice -vvv
-[⠊] Compiling...
-No files changed, compilation skipped
-...
-    ├─ [2522] Token::balanceOf(ALICE: [0x0000000000000000000000000000000000000aaa]) [staticcall] 👈👈👈
-...
-```
-
-Isso facilita muito a leitura dos testes quando temos erros. Agora corriga o teste!
-
-### Testando a transferencia
-
-```javascript
+```solidity
 function testTransfer() public {
-    vm.prank(alice);
+    address alice = address(0xAAA);
+    address bob = address(0xBBB);
+
+    vm.startPrank(alice);
     token.transfer(bob, 100 * 1e18);
+    vm.stopPrank();
 
-    assertEq(token.balanceOf(bob), amount);
+    assertEq(token.balanceOf(bob), 100 * 1e18);
 }
+```  
 
+📌 **2. Verificar que una transacción falle**  
+
+Si queremos asegurarnos de que una operación fallará, usamos `vm.expectRevert()`.  
+
+```solidity
 function testTransferFail() public {
-    vm.prank(alice);
+    address alice = address(0xAAA);
+    address bob = address(0xBBB);
+
+    vm.startPrank(alice);
     vm.expectRevert();
     token.transfer(bob, 2_000_000 * 1e18);
+    vm.stopPrank();
 }
-```
+```  
 
-### O que está acontecendo:
+📌 **Ejecutar una prueba específica con más detalles:**  
 
-- **`testTransfer()`**: Verifica o saldo de `bob` após uma transferência de tokens.
-- **`testTransferFail()`**: Verifica se ao enviar mais tokens do que seu saldo a chamada `token.transfer` falha.
-
-Esses exemplos nos ajudam a cobrir cenários positivos e negativos, garantindo que o contrato se comporte de maneira robusta.
+```bash
+forge test -vvv --match-test testTransfer
+```  
 
 ---
 
-## 5. Cobertura de Testes e Como Aumentar a Cobertura
+## **5. Cobertura de pruebas en Foundry**  
 
-### Cobertura de Testes
+📌 **¿Qué es la cobertura de pruebas?**  
 
-Cobertura de testes é uma métrica que nos diz quantas linhas ou funções do código foram testadas. No Foundry, podemos gerar relatórios de cobertura de maneira simples usando o comando:
+La cobertura mide cuántas líneas de código han sido ejecutadas durante las pruebas. Cuanto mayor sea la cobertura, más confiabilidad tendremos en nuestro contrato.  
 
-```shell
-$ forge coverage
+📌 **Ejecutar un informe de cobertura:**  
+
+```bash
 forge coverage
+```  
 
-[⠊] Compiling...
-[⠒] Compiling 26 files with Solc 0.8.24
-[⠘] Solc 0.8.24 finished in 2.63s
-Compiler run successful with warnings:
-Analysing contracts...
-Running tests...
+📌 **Ejemplo de salida de cobertura:**  
 
-Ran 4 tests for test/Token.t.sol:TokenTest
-[PASS] testInitialAliceBalance() (gas: 13647)
-[PASS] testInitialSupply() (gas: 16115)
-[PASS] testTransfer() (gas: 45584)
-[PASS] testTransferFail() (gas: 16397)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 7.30ms (1.40ms CPU time)
+```bash
+| Archivo          | % Líneas      | % Declaraciones | % Funciones    |
+|-----------------|--------------|----------------|---------------|
+| src/Token.sol   | 85.00% (17/20) | 90.00% (9/10)  | 80.00% (4/5)  |
+| Total           | 85.00% (17/20) | 90.00% (9/10)  | 80.00% (4/5)  |
+```  
 
-Ran 1 test suite in 141.72ms (7.30ms CPU time): 4 tests passed, 0 failed, 0 skipped (4 total tests)
-| File          | % Lines      | % Statements | % Branches    | % Funcs      |
-|---------------|--------------|--------------|---------------|--------------|
-| src/Token.sol | 33.33% (1/3) | 33.33% (1/3) | 100.00% (0/0) | 33.33% (1/3) |
-| Total         | 33.33% (1/3) | 33.33% (1/3) | 100.00% (0/0) | 33.33% (1/3) |
-```
+📌 **Ejecutar cobertura para un contrato específico:**  
 
-Isso gera um relatório que mostra quais partes do contrato foram cobertas pelos testes e quais não foram. veja que temos 3 funções e apenas 1 foi testado.
+```bash
+forge coverage --match-path test/Token.t.sol
+```  
 
-### Aumentando a cobertura
+📌 **Aumentar la cobertura**  
 
-Vamos escrever 1 teste para as outras funções do contrato `Token` e rodar o `forge coverage` novamente.
+Si la cobertura no es del 100%, debemos agregar pruebas para las funciones no verificadas.  
 
-```javascript
-function testName() public {
+Ejemplo de prueba adicional para mejorar la cobertura:  
+
+```solidity
+function testTokenName() public {
     assertEq(token.name(), "My Token");
 }
 
-function testSymbol() public {
+function testTokenSymbol() public {
     assertEq(token.symbol(), "TOKEN");
 }
-```
+```  
 
-Executando `forge coverage`:
+📌 **Ejecutar cobertura nuevamente:**  
 
-```shell
-➜  counter git:(main) ✗ forge coverage
+```bash
+forge coverage
+```  
 
-[⠊] Compiling...
-[⠑] Compiling 26 files with Solc 0.8.24
-[⠃] Solc 0.8.24 finished in 2.70s
-Compiler run successful with warnings:
-Analysing contracts...
-Running tests...
-
-Ran 6 tests for test/Token.t.sol:TokenTest
-[PASS] testInitialAliceBalance() (gas: 13647)
-[PASS] testInitialSupply() (gas: 16115)
-[PASS] testName() (gas: 10559)
-[PASS] testSymbol() (gas: 10669)
-[PASS] testTransfer() (gas: 45584)
-[PASS] testTransferFail() (gas: 16397)
-Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 15.46ms (10.87ms CPU time)
-
-Ran 1 test suite in 151.58ms (15.46ms CPU time): 6 tests passed, 0 failed, 0 skipped (6 total tests)
-| File          | % Lines       | % Statements  | % Branches    | % Funcs       |
-|---------------|---------------|---------------|---------------|---------------|
-| src/Token.sol | 100.00% (3/3) | 100.00% (3/3) | 100.00% (0/0) | 100.00% (3/3) |
-| Total         | 100.00% (3/3) | 100.00% (3/3) | 100.00% (0/0) | 100.00% (3/3) |
-```
-
-Agora nosso contrato está 100% coberto (3/3). Lembrando que isso não é uma garantia de segurança nem de qualidade!
+✅ **¡Listo! Ahora nuestro contrato tiene una cobertura del 100%.**  
 
 ---
 
-## 6. Conclusão
+## **6. Conclusión**  
 
-Hoje aprendemos como funcionam os testes no Foundry e exploramos ferramentas importantes como **Test**, **Vm** e **StdAssertions**. Vimos como configurar testes com **`setUp()`**, escrever testes com diferentes níveis de complexidade, e garantir que estamos cobrindo todas as partes importantes do nosso contrato. Também falamos sobre como aumentar a cobertura de testes, algo crucial para garantir a robustez dos contratos.
+📌 **Hoy aprendimos:**  
 
----
+✔ **Cómo funcionan las pruebas en Foundry** → Uso de archivos `.t.sol`.  
+✔ **Configuración con `Test.sol`** → Aserciones, `setUp()` y `vm`.  
+✔ **Escribir pruebas avanzadas** → Simulación de usuarios y fallos.  
+✔ **Cómo verificar la cobertura de pruebas** → Uso de `forge coverage`.  
 
-## 7. Recapitulação
-
-- **Como funcionam os testes no Foundry**: Usamos `.t.sol` para escrever testes diretamente no ambiente Solidity.
-- **Configurando Teste com `Test.sol`**: Exploramos o uso de **`setUp()`** para configurar o ambiente de teste e o uso de **Vm** para manipular a EVM.
-- **Escrever testes avançados**: Criamos testes para transferências de tokens e cenários de falha.
-- **Como fazer cobertura de testes com Foundry**: Geramos relatórios de cobertura e adicionamos novos testes para aumentar a cobertura.
+Las pruebas son una parte fundamental del desarrollo de smart contracts, y con **Foundry**, podemos hacerlas de manera rápida y eficiente.  
 
 ---
 
-## 8. Lição de casa
+## **7. Recapitulación**  
 
-1. Escreva testes para o contrato **Token**: teste os cenários de `approve` e `transferFrom` entre várias contas.
+📌 **Hoy vimos:**  
+1. **Cómo funcionan las pruebas en Foundry.**  
+2. **Uso de `Test.sol` y `vm` para manipular el entorno.**  
+3. **Pruebas avanzadas, incluyendo errores esperados.**  
+4. **Cobertura de pruebas con `forge coverage`.**  
 
 ---
 
-## 9. Próxima aula
+## **8. Tarea para casa**  
 
-Na próxima aula, vamos aprender a criar **scripts de deploy** e automatizar o deploy dos seus contratos na rede principal. Até lá, continue praticando seus testes e nos vemos na próxima aula! 👋
+✏ **Ejercicio práctico:**  
+
+1. Escribe pruebas para tu contrato **Token**, verificando funciones como `approve` y `transferFrom`.  
+2. Usa `vm.prank()` para simular múltiples usuarios en las pruebas.  
+3. Genera un reporte de cobertura con `forge coverage`.  
+4. Asegúrate de que la cobertura sea del 100%.  
+
+---
+
+## **9. Próxima clase**  
+
+📅 **En la próxima clase, aprenderemos a escribir scripts de despliegue y automatizar el proceso de lanzamiento de smart contracts.**  
+
+🚀 **¡Nos vemos allí!**  
