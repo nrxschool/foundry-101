@@ -1,41 +1,59 @@
-# Foundry 101
+# **📘 Foundry 101 Course**  
 
-## Módulo 1: Ecosistema Foundry
+Welcome to the **Foundry 101** course, where you will learn how to develop, test, and deploy smart contracts using **Foundry**.  
 
-- ✅ aula 1: Apresentação
-- ✅ aula 2: História do EVM Tooling
-- ✅ aula 3: Foundry - Forge, Anvil, Cast, Chisel
+📌 **Course Structure:**  
+- **[Module 1: Introduction to Foundry](./mod1/)**  
+- **[Module 2: Local Blockchain with Anvil](./mod2/)**  
+- **[Module 3: Forks and Debugging](./mod3/)**  
+- **[Module 4: Interacting with Smart Contracts](./mod4/)**  
+- **[Module 5: Agile Development with Chisel](./mod5/)**  
+- **[Module 6: Security and Optimization](./mod6/)**  
 
-## Módulo 2: Forge
+---
 
-- ✅ aula 1: CLI, Configuração, Criando projeto
-- ✅ aula 2: Estrutura do framework, Instalando Deps e criando um Token
-- ✅ aula 3: Testes e Coverage
-- ✅ aula 4: Deploy (scripts)
-- ✅ aula 5: Debug de Contratos
+## **📂 Course Lessons**  
 
-## Módulo 3: Anvil
+### **🟢 Module 1 - Introduction to Foundry**  
+1️⃣ [Setup and Getting Started](./mod1/aula1/roteiro.md)  
+2️⃣ [Project Structure in Foundry](./mod1/aula2/roteiro.md)  
+3️⃣ [Testing and Coverage in Foundry](./mod1/aula3/roteiro.md)  
 
-- ✅ aula 1: CLI, Executando e Configurando Blockchain
-- ✅ aula 2: Deploy local
-- ✅ aula 3: Forks local
+---
 
-## Módulo 4: Cast
+### **🟠 Module 2 - Local Blockchain with Anvil**  
+1️⃣ [CLI and Running a Local Blockchain with Anvil](./mod2/aula1/roteiro.md)  
+2️⃣ [Local Deployment with Anvil](./mod2/aula2/roteiro.md)  
+3️⃣ [Local Forks with Anvil](./mod2/aula3/roteiro.md)  
+4️⃣ [Smart Contract Debugging in Foundry](./mod2/aula4/roteiro.md)  
+5️⃣ [Gas Optimization in Foundry](./mod2/aula5/roteiro.md)  
 
-- ✅ aula 1: CLI, Interação com smartcontract
-- ✅ aula 2: Utilidades e canivete suíço
-- ✅ aula 3: Gerenciando Contas e Carteiras
+---
 
-## Módulo 5: Chisel
+### **🟡 Module 3 - Forks and Debugging**  
+1️⃣ [Migrating from Hardhat to Foundry](./mod3/aula1/roteiro.md)  
+2️⃣ [Storing Keys with Cast Wallet](./mod3/aula2/roteiro.md)  
+3️⃣ [Integrating Foundry with ScaffoldETH2](./mod3/aula3/roteiro.md)  
 
-- ✅ aula 1: Introdução ao Chisel
-- ✅ aula 2: Uso avançado do Chisel
+---
 
-## Módulo 6: Avançado (Bônus)
+### **🔵 Module 4 - Interacting with Smart Contracts**  
+1️⃣ [Reading and Writing with Cast](./mod4/aula1/roteiro.md)  
+2️⃣ [Cast Utilities](./mod4/aula2/roteiro.md)  
+3️⃣ [Managing Accounts with Cast](./mod4/aula3/roteiro.md)  
 
-- ✅ aula 1: Migração Hardhat para Foundry
-- ✅ aula 2: Guardando chaves com cast wallet
-- ✅ aula 3: Integração ScaffoldETH2 com forge
-- ✅ aula 4: Cheetcodes e Lib Vm
-- ✅ aula 5: Suporte ao Vyper
-- ✅ aula 6: Testes Avançado
+---
+
+### **🟣 Module 5 - Agile Development with Chisel**  
+1️⃣ [Introduction to Chisel](./mod5/aula1/roteiro.md)  
+2️⃣ [Advanced Usage of Chisel](./mod5/aula2/roteiro.md)  
+
+---
+
+### **🔴 Module 6 - Security and Optimization**  
+1️⃣ [Migrating from Hardhat to Foundry](./mod6/aula1/roteiro.md)  
+2️⃣ [Storing Keys with Cast Wallet](./mod6/aula2/roteiro.md)  
+3️⃣ [Integrating ScaffoldETH2 with Forge](./mod6/aula3/roteiro.md)  
+4️⃣ [Gas Optimization in Solidity](./mod6/aula4/roteiro.md)  
+5️⃣ [Meta-Transactions in Solidity](./mod6/aula5/roteiro.md)  
+6️⃣ [Advanced Security in Solidity](./mod6/aula6/roteiro.md)  
